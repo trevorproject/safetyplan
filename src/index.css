@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+@theme {
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  --color-brand-orange: #ff5a3d;
+  --color-brand-purple: #7155ff;
+  --color-brand-purple-light: #9b88ff;
+  --color-brand-gray: #f2f2f2;
+  --color-brand-gray-button: #b2b2b2;
+  --color-brand-ink: #191919;
+}
+
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.5;

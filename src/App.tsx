@@ -9,16 +9,16 @@ import { AdminPage } from './pages/AdminPage';
 function App() {
   return (
     <BrowserRouter>
-      <AppShell>
-        <Routes>
-          <Route path="/" element={<WelcomePage />} />
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route element={<AppShell />}>
           <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/wizard" element={<WizardPage />} />
           <Route path="/plan" element={<CompletedPlanPage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AppShell>
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }
