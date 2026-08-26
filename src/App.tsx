@@ -11,8 +11,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
         <Route element={<AppShell />}>
-          <Route path="/resources" element={<ResourcesPage />} />
           <Route path="/wizard" element={<WizardPage />} />
           <Route path="/plan" element={<CompletedPlanPage />} />
           <Route path="/admin" element={<AdminPage />} />

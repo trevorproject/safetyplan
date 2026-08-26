@@ -14,7 +14,7 @@ export function WelcomeNavbar() {
     <header className="flex items-center justify-center bg-brand-orange px-6 py-4 lg:px-16">
       <div className="flex w-full max-w-[1312px] items-center justify-between gap-8">
         <SmartLink to="/">
-          <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-auto" />
+          <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-hug" />
         </SmartLink>
 
         <div className="hidden items-center gap-8 rounded-full border border-black px-8 py-3 lg:flex">
@@ -44,7 +44,7 @@ export function WelcomeNavbar() {
           </nav>
 
           <PillButton to={navActions.primary.to} label={navActions.primary.label} variant="solid" />
-          <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="solid" />
+          <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
         </div>
 
         <div className="lg:hidden">
