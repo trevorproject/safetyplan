@@ -107,6 +107,60 @@ The visual language should remain:
 - trauma-informed and supportive
 - consistent with the Figma reference
 
+## Responsive Grid & Layout Rules
+These rules define how ANY page adapts across screen sizes. They are the baseline for every layout; a page-specific mobile design (planned separately, per page) becomes the base/mobile layer and these rules govern how it scales up to tablet and desktop, unless a specific design overrides them.
+
+### Breakpoints (Tailwind v4 defaults, mobile-first)
+- Base (no prefix): < 640px — phones
+- `sm:` ≥ 640px — large phones / small tablets
+- `md:` ≥ 768px — tablets
+- `lg:` ≥ 1024px — small laptops / desktop (nav switches from mobile menu to full nav, per [WelcomeNavbar.tsx](src/components/welcome/WelcomeNavbar.tsx))
+- `xl:` ≥ 1280px — desktop
+- `2xl:` ≥ 1536px — large desktop
+- Always write base styles for mobile first, then layer `sm:`/`md:`/`lg:`/`xl:` overrides only where the layout structurally changes. Never write desktop-first styles that get undone at smaller sizes.
+- Minimum supported width is 320px (see `body { min-width: 320px }` in [index.css](src/index.css)); no layout should ever require horizontal scrolling below that.
+
+### Grid columns
+- Mobile (< 640px): 4-column grid, 16px gutters, 24px outer margin (`px-6`)
+- Tablet (640–1023px): 8-column grid, 24px gutters, 32–48px outer margin
+- Desktop (≥ 1024px): 12-column grid, 32px gutters, up to 64px outer margin (`lg:px-16`)
+- Implement with Tailwind `grid grid-cols-4 sm:grid-cols-8 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8`, or with `flex flex-wrap` + fractional basis utilities when a CSS grid isn't a natural fit (e.g. nav items, pill buttons).
+- Content spans should be expressed in column fractions (`col-span-4`, `sm:col-span-4`, `lg:col-span-6`) rather than fixed pixel widths, so sections reflow predictably instead of being redesigned per breakpoint.
+
+### Page container
+- Max content width: `1312px`, centered (`mx-auto`) — this is the existing convention from [WelcomeNavbar.tsx](src/components/welcome/WelcomeNavbar.tsx) and should be reused for every page, not reinvented per page.
+- Outer horizontal padding scales with breakpoint: `px-6` (mobile) → `px-8` (tablet) → `lg:px-16` (desktop).
+- Full-bleed sections (hero backgrounds, color bands) may extend edge-to-edge, but their inner content still sits inside the `max-w-[1312px]` container.
+
+### Spacing
+- Use Tailwind's default 4px-based spacing scale exclusively (`gap-4`, `p-6`, `py-12`, etc.). Only drop to an arbitrary value (`px-[…]`) when matching a specific Figma measurement exactly, as already done for the `1312px` container.
+- Vertical rhythm between major page sections: `py-12` mobile → `py-16` tablet → `py-24` desktop, unless a specific page design says otherwise.
+
+### Typography
+- Body copy line-height stays at ~150–160% at every breakpoint (matches `leading-[160%]` already used for nav/body text).
+- Headings may step up one Tailwind text size per breakpoint (e.g. `text-3xl sm:text-4xl lg:text-5xl`) rather than using one fixed size everywhere.
+
+### Touch targets & interaction
+- Minimum 44×44px hit area for any interactive element on mobile/tablet (buttons, links, form controls), consistent with the existing accessibility principles.
+- Elements that are click/hover-based on desktop (e.g. the language dropdown in the navbar) need a tap-friendly equivalent on touch/mobile — don't rely on `:hover` alone.
+
+### Media & Image Responsiveness
+- Images and illustrations scale with `w-full h-auto` or `object-cover`/`object-contain` inside a constrained container; never set fixed pixel `width`/`height` in CSS/inline styles, except for small fixed assets like logos and icons (e.g. the Trevor Project logo in [FeatureShowcase.tsx](src/components/welcome/FeatureShowcase.tsx)).
+- Every image sits inside a parent with a `max-w-[…]` or grid/flex constraint (per the Grid columns and Page container rules above) so it can never overflow its column on any breakpoint.
+- Use `object-cover` when an image must fill a fixed-aspect box (e.g. a rounded hero image) and `object-contain` when the whole image must stay visible without cropping (e.g. a logo on a colored background).
+- Where an image's proportions must stay consistent across breakpoints, set an explicit `aspect-[w/h]` (or `aspect-square`) on the container instead of a fixed height, so it reflows fluidly instead of jumping.
+- Swap art direction per breakpoint (e.g. cropped hero image on mobile vs. full illustration on desktop) using `hidden`/responsive `block` pairs only when a page's design explicitly calls for different imagery, not as a default.
+- `<img>` tags still need real `width`/`height` attributes (not CSS) matching the source asset's intrinsic ratio, so the browser can reserve space and avoid layout shift — the Tailwind sizing classes then override the rendered size responsively.
+- Do not introduce new image assets, crops, or art direction on your own — per the Design & Content Rules above, new images/illustrations must come from the user; this rule only governs how existing/provided images are made responsive.
+
+### How this interacts with page-specific mobile designs
+When a mobile design is provided for a given page, treat it as the base (unprefixed) Tailwind classes. Then apply the column/container/spacing rules above to derive the `sm:`/`md:`/`lg:` layers, unless the page design specifies a different tablet/desktop treatment. This keeps every page consistent without requiring a full bespoke design at every breakpoint.
+
+## Design & Content Rules
+- Any changes to design must be confirmed with the user before they are made — do not make design changes unilaterally.
+- Do not invent CSS values (colors, spacing, fonts, etc.). If a CSS element/value is needed, ask the user and they will provide it.
+- Do not create new elements or text (copy/content) on your own — this must come from the user.
+
 ## Current Content Approach
 The app uses a default configuration object for core content so content can be edited centrally from the admin screen. This keeps the first version lightweight and easy to maintain while still supporting customization.
 

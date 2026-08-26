@@ -39,11 +39,11 @@ export const featureContent = {
 };
 
 export const footerNavLinks = [
+  { label: 'Get Help', to: '/resources' },
   { label: 'Home', to: '/' },
   { label: 'Resources', to: '/resources' },
   { label: 'Create plan', to: '/wizard' },
   { label: 'Donate', to: 'https://www.thetrevorproject.org/donate/' },
-  { label: 'Emergency', to: '/resources' },
 ];
 
 export const footerLegalLinks = [

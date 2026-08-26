@@ -3,18 +3,21 @@ import { SmartLink } from './SmartLink';
 import { PillButton } from './PillButton';
 import { ChevronDownIcon } from './icons';
 import trevorLogo from '../../assets/ttp_logo_oneline_ko.png';
+import trevorAvatar from '../../assets/ttp_logo_avatar_ko.png';
 import { navLinks, navActions } from '../../data/welcomeContent';
 
 const NAV_LINK_CLASS = 'text-sm leading-[160%] text-black transition hover:opacity-70';
 
 export function WelcomeNavbar() {
   const [langOpen, setLangOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="flex items-center justify-center bg-brand-orange px-6 py-4 lg:px-16">
       <div className="flex w-full max-w-[1312px] items-center justify-between gap-8">
         <SmartLink to="/">
-          <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-hug" />
+          <img src={trevorAvatar} alt="The Trevor Project" className="h-8 w-auto lg:hidden" />
+          <img src={trevorLogo} alt="The Trevor Project" className="hidden h-8 w-auto lg:block" />
         </SmartLink>
 
         <div className="hidden items-center gap-8 rounded-full border border-black px-8 py-3 lg:flex">
@@ -47,8 +50,39 @@ export function WelcomeNavbar() {
           <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
         </div>
 
-        <div className="lg:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
           <PillButton to={navActions.primary.to} label={navActions.primary.label} variant="solid" />
+          <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
+
+          <div className="relative" onMouseLeave={() => setMenuOpen(false)}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="flex items-center justify-center text-black transition hover:opacity-70"
+              aria-expanded={menuOpen}
+              aria-label="Toggle menu"
+            >
+              <ChevronDownIcon className={`h-5 w-5 transition ${menuOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {menuOpen && (
+              <nav
+                aria-label="Primary"
+                className="absolute right-0 top-9 z-20 flex w-44 flex-col gap-4 rounded-3xl border-2 border-black bg-brand-orange p-6"
+              >
+                {navLinks.map((link) => (
+                  <SmartLink
+                    key={link.label}
+                    to={link.to}
+                    className="text-sm leading-[160%] text-white transition hover:opacity-70"
+                  >
+                    {link.label}
+                  </SmartLink>
+                ))}
+                <span className="text-sm leading-[160%] text-white/70">Language</span>
+                <span className="text-sm leading-[160%] text-white">English</span>
+              </nav>
+            )}
+          </div>
         </div>
       </div>
     </header>
