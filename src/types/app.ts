@@ -26,8 +26,7 @@ export interface AppConfig {
 export interface SafetyPlanData {
   warningSigns: string[];
   copingStrategies: string[];
-  supportPeople: Array<{ name: string; contact: string }>;
-  professionals: string[];
+  supports: string[];
   environment: string[];
-  reason: string;
+  message: string;
 }

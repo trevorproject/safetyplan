@@ -12,9 +12,9 @@ function App() {
       <Routes>
         <Route path="/" element={<WelcomePage />} />
         <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/wizard" element={<WizardPage />} />
+        <Route path="/plan" element={<CompletedPlanPage />} />
         <Route element={<AppShell />}>
-          <Route path="/wizard" element={<WizardPage />} />
-          <Route path="/plan" element={<CompletedPlanPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
