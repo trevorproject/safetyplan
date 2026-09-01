@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { SmartLink } from '../components/welcome/SmartLink';
@@ -24,6 +25,15 @@ function buildShareText(plan: SafetyPlanData | null) {
 
 export function CompletedPlanPage() {
   const plan = loadPlan();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // Once the plan is built the user lands here from the wizard; move focus (and
+  // the viewport) to the top of the page so keyboard and screen-reader users
+  // start at the plan heading rather than wherever the wizard button left them.
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+    headingRef.current?.focus();
+  }, []);
 
   const handlePrint = () => window.print();
 
@@ -39,7 +49,7 @@ export function CompletedPlanPage() {
     }
     const subject = encodeURIComponent(finishedPlanContent.shareSubject);
     const body = encodeURIComponent(text);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    window.location.assign(`mailto:?subject=${subject}&body=${body}`);
   };
 
   return (
@@ -49,7 +59,11 @@ export function CompletedPlanPage() {
       <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 lg:px-16 lg:py-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
-            <h1 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black sm:text-4xl lg:text-[52px]">
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black outline-none sm:text-4xl lg:text-[52px]"
+            >
               {completedPlanHeroContent.headingLead}
               <span className="font-script">{completedPlanHeroContent.headingScript}</span>
               {completedPlanHeroContent.headingTail}
@@ -77,9 +91,6 @@ export function CompletedPlanPage() {
       <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 pb-16 lg:px-16 lg:pb-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
-            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black sm:text-4xl lg:text-[52px]">
-              {finishedPlanContent.heading}
-            </h2>
             <p className="text-lg leading-[160%] text-black lg:text-2xl">{finishedPlanContent.body}</p>
           </div>
 

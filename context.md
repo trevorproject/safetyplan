@@ -156,6 +156,64 @@ These rules define how ANY page adapts across screen sizes. They are the baselin
 ### How this interacts with page-specific mobile designs
 When a mobile design is provided for a given page, treat it as the base (unprefixed) Tailwind classes. Then apply the column/container/spacing rules above to derive the `sm:`/`md:`/`lg:` layers, unless the page design specifies a different tablet/desktop treatment. This keeps every page consistent without requiring a full bespoke design at every breakpoint.
 
+## Unit Tests (Responsiveness)
+
+Every component and page has a co-located `*.test.tsx` unit test whose job is to
+prove the component still adapts correctly across screen sizes. The suite is the
+executable counterpart of the "Responsive Grid & Layout Rules" above.
+
+### Stack
+- Runner: [Vitest](https://vitest.dev) (`vitest.config.ts`, kept separate from
+  `vite.config.ts` so the build's `tsc -b` never type-checks it).
+- DOM: `jsdom` + React Testing Library + `@testing-library/user-event`.
+- Global setup: [src/test/setup.ts](src/test/setup.ts) — jest-dom matchers,
+  `matchMedia` / `ResizeObserver` / `scrollTo` polyfills, per-test cleanup.
+
+### Commands
+- `npm test` — run the whole suite once (CI mode).
+- `npm run test:watch` — watch mode while developing.
+- `npm run test:types` — type-check the test files (and app source) against
+  `tsconfig.vitest.json`.
+
+### How "responsiveness" is verified
+jsdom does not apply CSS or run a layout engine, so the tests cannot measure
+rendered pixels. Instead they assert on the responsive **Tailwind utilities**
+each component declares — which is where every layout decision in this project
+actually lives. The shared helpers are in
+[src/test/responsive.tsx](src/test/responsive.tsx):
+- `BREAKPOINTS` / `BREAKPOINT_LIST` — 320, 375, 640, 768, 1024, 1280, 1536px
+  (the Tailwind v4 defaults plus the two narrowest supported phones).
+- `renderResponsive(ui, width, { route })` — render inside a `MemoryRouter` at a
+  simulated viewport width.
+- `atEachBreakpoint(ui, assert)` — re-render and run an assertion once per
+  breakpoint (used for the "renders at every screen width" smoke check).
+- `setViewport(width)` — sets `innerWidth` and installs a real `(min|max)-width`
+  `matchMedia` evaluator, for any component with JS-driven breakpoints.
+- `expectAdaptsAt(container, ['sm','lg', …])` — asserts the subtree declares at
+  least one utility at each of those breakpoint prefixes (i.e. it structurally
+  changes, not one fixed layout).
+- `expectClass(container, 'lg:grid-cols-4')` — assert a specific responsive
+  utility is present.
+- `expectResponsiveHorizontalPadding` — base `px-*` that scales up at a
+  breakpoint (`px-6 → lg:px-16`).
+- `expectHasMaxWidthContainer` — a centered `max-w-*` container exists.
+- `expectResponsiveBaseline` — bundle of: no pixel-locked `<img>` (`style`
+  width/height), every `<img>` carries a sizing utility, and no fixed
+  `w-[Npx]` wider than 320px without a fluid cap (proxy for "no horizontal
+  scroll at 320px").
+
+### Convention for new components
+When you add a component, add `ComponentName.test.tsx` next to it that:
+1. renders it with `atEachBreakpoint` and asserts its key text/roles are present
+   at every width;
+2. calls `expectAdaptsAt` for the breakpoints where its layout changes, plus
+   `expectClass` for the specific grid/flex/size utilities that implement that
+   change (e.g. `grid-cols-1` → `sm:grid-cols-2` → `lg:grid-cols-4`);
+3. calls `expectResponsiveBaseline` (and `expectResponsiveHorizontalPadding` /
+   `expectHasMaxWidthContainer` for full-width sections);
+4. exercises any tap-to-toggle behaviour that replaces a hover interaction on
+   mobile (menus, dropdowns, "Other…" fields).
+
 ## Design & Content Rules
 - Any changes to design must be confirmed with the user before they are made — do not make design changes unilaterally.
 - Do not invent CSS values (colors, spacing, fonts, etc.). If a CSS element/value is needed, ask the user and they will provide it.
