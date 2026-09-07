@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { expect } from 'vitest';
+import { AccessibilityProvider } from '../context/AccessibilityContext';
 
 /**
  * Responsiveness test toolkit.
@@ -102,10 +103,14 @@ interface RenderOptions {
   route?: string;
 }
 
-/** Render a component inside a router at a given viewport width. */
+/** Render a component inside a router (and the accessibility context every page relies on) at a given viewport width. */
 export function renderResponsive(ui: ReactElement, width: number, options: RenderOptions = {}) {
   setViewport(width);
-  return render(<MemoryRouter initialEntries={[options.route ?? '/']}>{ui}</MemoryRouter>);
+  return render(
+    <MemoryRouter initialEntries={[options.route ?? '/']}>
+      <AccessibilityProvider>{ui}</AccessibilityProvider>
+    </MemoryRouter>,
+  );
 }
 
 /** Run `assert` once per breakpoint with the component freshly rendered at that width. */

@@ -7,6 +7,7 @@ import { HowItWorks } from '../components/wizard/HowItWorks';
 import { StepProgress } from '../components/wizard/StepProgress';
 import { MultiSelectField } from '../components/wizard/MultiSelectField';
 import { CheckboxGrid } from '../components/wizard/CheckboxGrid';
+import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import { defaultConfig } from '../data/defaultConfig';
 import { buildPlanContent } from '../data/wizardContent';
 import { clearPlan, loadPlan, savePlan } from '../lib/storage';
@@ -93,8 +94,13 @@ export function WizardPage() {
   return (
     <div className="font-body">
       <WelcomeNavbar />
-      <WizardHero />
-      <HowItWorks />
+      <main>
+      <SpeakableSection id="wizard-hero">
+        <WizardHero />
+      </SpeakableSection>
+      <SpeakableSection id="wizard-how-it-works">
+        <HowItWorks />
+      </SpeakableSection>
 
       <section className="flex flex-col items-center gap-16 bg-white px-6 py-16 lg:px-16 lg:py-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
@@ -105,6 +111,7 @@ export function WizardPage() {
             <p className="text-lg leading-[160%] text-black lg:text-2xl">{buildPlanContent.body}</p>
           </div>
 
+          <SpeakableSection id={`wizard-step-${currentStep.id}`}>
           <div id={currentStep.id} className="flex w-full max-w-xl flex-col gap-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-black/60">{step + 1}/{steps.length}</span>
@@ -196,8 +203,10 @@ export function WizardPage() {
               </button>
             </div>
           </div>
+          </SpeakableSection>
         </div>
       </section>
+      </main>
 
       <WelcomeFooter />
     </div>

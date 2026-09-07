@@ -33,6 +33,31 @@ class ResizeObserverStub {
 }
 window.ResizeObserver ??= ResizeObserverStub as unknown as typeof window.ResizeObserver;
 
+// jsdom has no speech synthesis engine; the accessibility panel's read-aloud
+// controls just need something to call so tests can assert on the calls.
+if (!window.speechSynthesis) {
+  window.speechSynthesis = {
+    speak: () => {},
+    cancel: () => {},
+    pause: () => {},
+    resume: () => {},
+  } as unknown as SpeechSynthesis;
+}
+if (!window.SpeechSynthesisUtterance) {
+  window.SpeechSynthesisUtterance = class {
+    text: string;
+    onend: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    constructor(text: string) {
+      this.text = text;
+    }
+  } as unknown as typeof SpeechSynthesisUtterance;
+}
+
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+
 afterEach(() => {
   cleanup();
   resetViewport();

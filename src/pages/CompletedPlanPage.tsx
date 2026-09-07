@@ -3,6 +3,7 @@ import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { SmartLink } from '../components/welcome/SmartLink';
 import { ChevronRightIcon } from '../components/welcome/icons';
+import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
 import { loadPlan } from '../lib/storage';
 import { completedPlanHeroContent, reminderCardContent, finishedPlanContent } from '../data/completedPlanContent';
@@ -55,7 +56,9 @@ export function CompletedPlanPage() {
   return (
     <div className="font-body">
       <WelcomeNavbar />
+      <main>
 
+      <SpeakableSection id="plan-summary">
       <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 lg:px-16 lg:py-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
@@ -87,7 +90,9 @@ export function CompletedPlanPage() {
           </div>
         </div>
       </section>
+      </SpeakableSection>
 
+      <SpeakableSection id="plan-details">
       <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 pb-16 lg:px-16 lg:pb-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
@@ -138,7 +143,9 @@ export function CompletedPlanPage() {
           </div>
         </div>
       </section>
+      </SpeakableSection>
 
+      </main>
       <WelcomeFooter />
     </div>
   );
