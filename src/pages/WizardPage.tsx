@@ -1,22 +1,31 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
+import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
+import { WizardHero } from '../components/wizard/WizardHero';
+import { HowItWorks } from '../components/wizard/HowItWorks';
+import { StepProgress } from '../components/wizard/StepProgress';
+import { MultiSelectField } from '../components/wizard/MultiSelectField';
+import { CheckboxGrid } from '../components/wizard/CheckboxGrid';
+import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import { defaultConfig } from '../data/defaultConfig';
+import { buildPlanContent } from '../data/wizardContent';
 import { clearPlan, loadPlan, savePlan } from '../lib/storage';
 import type { SafetyPlanData } from '../types/app';
 
 const initialPlan: SafetyPlanData = {
   warningSigns: [],
   copingStrategies: [],
-  supportPeople: [{ name: '', contact: '' }],
-  professionals: [],
+  supports: [],
   environment: [],
-  reason: '',
+  message: '',
 };
 
 export function WizardPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [plan, setPlan] = useState<SafetyPlanData>(() => loadPlan() ?? initialPlan);
+  const [plan, setPlan] = useState<SafetyPlanData>(() => ({ ...initialPlan, ...loadPlan() }));
+  const [consent, setConsent] = useState(false);
 
   const steps = defaultConfig.wizardSteps;
 
@@ -25,9 +34,9 @@ export function WizardPage() {
   }, [plan]);
 
   const currentStep = steps[step];
-  const progress = ((step + 1) / steps.length) * 100;
+  const isLastStep = step === steps.length - 1;
 
-  const handleToggleChip = (field: keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'professionals' | 'environment'>, value: string) => {
+  const handleToggle = (field: keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>, value: string) => {
     setPlan((prev) => {
       const current = prev[field] ?? [];
       return {
@@ -37,32 +46,29 @@ export function WizardPage() {
     });
   };
 
-  const handleSupportPersonChange = (index: number, field: 'name' | 'contact', value: string) => {
+  const handleAddCustom = (field: keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>, value: string) => {
     setPlan((prev) => {
-      const updated = [...prev.supportPeople];
-      updated[index] = { ...updated[index], [field]: value };
-      return { ...prev, supportPeople: updated };
+      const current = prev[field] ?? [];
+      return current.includes(value) ? prev : { ...prev, [field]: [...current, value] };
     });
   };
 
   const isStepValid = useMemo(() => {
     switch (step) {
       case 0:
-        return plan.warningSigns.length > 0 || plan.reason.length > 0;
+        return plan.warningSigns.length > 0;
       case 1:
         return plan.copingStrategies.length > 0;
       case 2:
-        return plan.supportPeople.some((person) => person.name.trim() || person.contact.trim());
+        return plan.supports.length > 0;
       case 3:
-        return plan.professionals.length > 0;
-      case 4:
         return plan.environment.length > 0;
-      case 5:
-        return plan.reason.trim().length > 0;
+      case 4:
+        return plan.message.trim().length > 0 && consent;
       default:
         return true;
     }
-  }, [plan, step]);
+  }, [plan, step, consent]);
 
   const next = () => {
     if (step < steps.length - 1) {
@@ -81,115 +87,128 @@ export function WizardPage() {
   const restart = () => {
     clearPlan();
     setPlan(initialPlan);
+    setConsent(false);
     setStep(0);
   };
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Step {step + 1} of {steps.length}</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-900">{currentStep.title}</h1>
-            <p className="mt-2 max-w-2xl text-base text-slate-700">{currentStep.description}</p>
+    <div className="font-body">
+      <WelcomeNavbar />
+      <main>
+      <SpeakableSection id="wizard-hero">
+        <WizardHero />
+      </SpeakableSection>
+      <SpeakableSection id="wizard-how-it-works">
+        <HowItWorks />
+      </SpeakableSection>
+
+      <section className="flex flex-col items-center gap-16 bg-white px-6 py-16 lg:px-16 lg:py-24">
+        <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
+          <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
+            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black sm:text-4xl lg:text-[52px]">
+              {buildPlanContent.heading}
+            </h2>
+            <p className="text-lg leading-[160%] text-black lg:text-2xl">{buildPlanContent.body}</p>
           </div>
-          <button type="button" onClick={restart} className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
-            Restart
-          </button>
+
+          <SpeakableSection id={`wizard-step-${currentStep.id}`}>
+          <div id={currentStep.id} className="flex w-full max-w-xl flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-black/60">{step + 1}/{steps.length}</span>
+              <button type="button" onClick={restart} className="text-sm font-medium text-black underline hover:opacity-70">
+                {buildPlanContent.restartLabel}
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <h3 className="text-2xl font-medium text-black">{currentStep.title}</h3>
+              <p className="text-base text-black/70">{currentStep.description}</p>
+            </div>
+
+            {step === 0 && (
+              <MultiSelectField
+                options={currentStep.options ?? []}
+                selected={plan.warningSigns}
+                onToggle={(value) => handleToggle('warningSigns', value)}
+                onAddCustom={(value) => handleAddCustom('warningSigns', value)}
+              />
+            )}
+
+            {step === 1 && (
+              <CheckboxGrid
+                options={currentStep.options ?? []}
+                selected={plan.copingStrategies}
+                onToggle={(value) => handleToggle('copingStrategies', value)}
+                onAddCustom={(value) => handleAddCustom('copingStrategies', value)}
+              />
+            )}
+
+            {step === 2 && (
+              <MultiSelectField
+                options={currentStep.options ?? []}
+                selected={plan.supports}
+                onToggle={(value) => handleToggle('supports', value)}
+                onAddCustom={(value) => handleAddCustom('supports', value)}
+              />
+            )}
+
+            {step === 3 && (
+              <CheckboxGrid
+                options={currentStep.options ?? []}
+                selected={plan.environment}
+                onToggle={(value) => handleToggle('environment', value)}
+                onAddCustom={(value) => handleAddCustom('environment', value)}
+              />
+            )}
+
+            {step === 4 && (
+              <textarea
+                value={plan.message}
+                onChange={(event) => setPlan((prev) => ({ ...prev, message: event.target.value }))}
+                className="min-h-40 w-full rounded-3xl border-2 border-black p-4 text-base text-black"
+                placeholder={currentStep.placeholder}
+              />
+            )}
+
+            <StepProgress total={steps.length} current={step} />
+
+            {isLastStep && (
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-black">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => setConsent(event.target.checked)}
+                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple"
+                />
+                {buildPlanContent.consentLabel}
+              </label>
+            )}
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                onClick={back}
+                disabled={step === 0}
+                className="rounded-full border-2 border-black px-6 py-3 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                {buildPlanContent.backLabel}
+              </button>
+              <button
+                type="button"
+                onClick={next}
+                disabled={!isStepValid}
+                className="rounded-full bg-brand-purple px-6 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {isLastStep ? buildPlanContent.submitLabel : buildPlanContent.continueLabel}
+              </button>
+            </div>
+          </div>
+          </SpeakableSection>
         </div>
-        <div className="mt-6 h-2 rounded-full bg-slate-100">
-          <div className="h-2 rounded-full bg-slate-900" style={{ width: `${progress}%` }} />
-        </div>
-      </div>
+      </section>
+      </main>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        {step === 0 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Choose or add warning signs</label>
-            <div className="flex flex-wrap gap-2">
-              {currentStep.options?.map((option) => (
-                <button key={option} type="button" onClick={() => handleToggleChip('warningSigns', option)} className={`rounded-full px-3 py-2 text-sm ${plan.warningSigns.includes(option) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                  {option}
-                </button>
-              ))}
-            </div>
-            <textarea value={plan.warningSigns.join(', ')} onChange={(event) => setPlan((prev) => ({ ...prev, warningSigns: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }))} className="min-h-24 w-full rounded-2xl border border-slate-300 p-3" placeholder={currentStep.placeholder} />
-          </div>
-        )}
-
-        {step === 1 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Choose or add coping strategies</label>
-            <div className="flex flex-wrap gap-2">
-              {currentStep.options?.map((option) => (
-                <button key={option} type="button" onClick={() => handleToggleChip('copingStrategies', option)} className={`rounded-full px-3 py-2 text-sm ${plan.copingStrategies.includes(option) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                  {option}
-                </button>
-              ))}
-            </div>
-            <textarea value={plan.copingStrategies.join(', ')} onChange={(event) => setPlan((prev) => ({ ...prev, copingStrategies: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }))} className="min-h-24 w-full rounded-2xl border border-slate-300 p-3" placeholder={currentStep.placeholder} />
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Add trusted people</label>
-            {plan.supportPeople.map((person, index) => (
-              <div key={index} className="grid gap-3 rounded-2xl border border-slate-200 p-4 sm:grid-cols-2">
-                <input value={person.name} onChange={(event) => handleSupportPersonChange(index, 'name', event.target.value)} className="rounded-2xl border border-slate-300 p-3" placeholder="Name" />
-                <input value={person.contact} onChange={(event) => handleSupportPersonChange(index, 'contact', event.target.value)} className="rounded-2xl border border-slate-300 p-3" placeholder="Contact" />
-              </div>
-            ))}
-            <button type="button" onClick={() => setPlan((prev) => ({ ...prev, supportPeople: [...prev.supportPeople, { name: '', contact: '' }] }))} className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
-              Add another person
-            </button>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Choose or add professional supports</label>
-            <div className="flex flex-wrap gap-2">
-              {currentStep.options?.map((option) => (
-                <button key={option} type="button" onClick={() => handleToggleChip('professionals', option)} className={`rounded-full px-3 py-2 text-sm ${plan.professionals.includes(option) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                  {option}
-                </button>
-              ))}
-            </div>
-            <textarea value={plan.professionals.join(', ')} onChange={(event) => setPlan((prev) => ({ ...prev, professionals: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }))} className="min-h-24 w-full rounded-2xl border border-slate-300 p-3" placeholder={currentStep.placeholder} />
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Choose or add environment changes</label>
-            <div className="flex flex-wrap gap-2">
-              {currentStep.options?.map((option) => (
-                <button key={option} type="button" onClick={() => handleToggleChip('environment', option)} className={`rounded-full px-3 py-2 text-sm ${plan.environment.includes(option) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                  {option}
-                </button>
-              ))}
-            </div>
-            <textarea value={plan.environment.join(', ')} onChange={(event) => setPlan((prev) => ({ ...prev, environment: event.target.value.split(',').map((item) => item.trim()).filter(Boolean) }))} className="min-h-24 w-full rounded-2xl border border-slate-300 p-3" placeholder={currentStep.placeholder} />
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-slate-700">Reason for living</label>
-            <textarea value={plan.reason} onChange={(event) => setPlan((prev) => ({ ...prev, reason: event.target.value }))} className="min-h-40 w-full rounded-2xl border border-slate-300 p-3" placeholder={currentStep.placeholder} />
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-        <button type="button" onClick={back} disabled={step === 0} className="rounded-full border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50">
-          Back
-        </button>
-        <button type="button" onClick={next} disabled={!isStepValid} className="rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-400">
-          {step < steps.length - 1 ? 'Continue' : 'Finish plan'}
-        </button>
-      </div>
-    </section>
+      <WelcomeFooter />
+    </div>
   );
 }
