@@ -102,27 +102,27 @@ export function WizardPage() {
         <HowItWorks />
       </SpeakableSection>
 
-      <section className="flex flex-col items-center gap-16 bg-white px-6 py-16 lg:px-16 lg:py-24">
+      <section className="flex flex-col items-center gap-16 bg-white px-6 py-16 dark:bg-black lg:px-16 lg:py-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
-            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black sm:text-4xl lg:text-[52px]">
+            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black dark:text-white sm:text-4xl lg:text-[52px]">
               {buildPlanContent.heading}
             </h2>
-            <p className="text-lg leading-[160%] text-black lg:text-2xl">{buildPlanContent.body}</p>
+            <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{buildPlanContent.body}</p>
           </div>
 
           <SpeakableSection id={`wizard-step-${currentStep.id}`}>
           <div id={currentStep.id} className="flex w-full max-w-xl flex-col gap-6">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-black/60">{step + 1}/{steps.length}</span>
-              <button type="button" onClick={restart} className="text-sm font-medium text-black underline hover:opacity-70">
+              <span className="text-sm text-black/60 dark:text-white/60">{step + 1}/{steps.length}</span>
+              <button type="button" onClick={restart} className="text-sm font-medium text-black underline hover:opacity-70 dark:text-white">
                 {buildPlanContent.restartLabel}
               </button>
             </div>
 
             <div className="flex flex-col gap-2">
-              <h3 className="text-2xl font-medium text-black">{currentStep.title}</h3>
-              <p className="text-base text-black/70">{currentStep.description}</p>
+              <h3 className="text-2xl font-medium text-black dark:text-white">{currentStep.title}</h3>
+              <p className="text-base text-black/70 dark:text-white/70">{currentStep.description}</p>
             </div>
 
             {step === 0 && (
@@ -165,7 +165,7 @@ export function WizardPage() {
               <textarea
                 value={plan.message}
                 onChange={(event) => setPlan((prev) => ({ ...prev, message: event.target.value }))}
-                className="min-h-40 w-full rounded-3xl border-2 border-black p-4 text-base text-black"
+                className="min-h-40 w-full rounded-3xl border-2 border-black p-4 text-base text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-white"
                 placeholder={currentStep.placeholder}
               />
             )}
@@ -173,12 +173,12 @@ export function WizardPage() {
             <StepProgress total={steps.length} current={step} />
 
             {isLastStep && (
-              <label className="flex cursor-pointer items-start gap-3 text-sm text-black">
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-black dark:text-white">
                 <input
                   type="checkbox"
                   checked={consent}
                   onChange={(event) => setConsent(event.target.checked)}
-                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple"
+                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple dark:border-neutral-500"
                 />
                 {buildPlanContent.consentLabel}
               </label>
@@ -189,7 +189,7 @@ export function WizardPage() {
                 type="button"
                 onClick={back}
                 disabled={step === 0}
-                className="rounded-full border-2 border-black px-6 py-3 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-30"
+                className="rounded-full border-2 border-black px-6 py-3 text-sm font-medium text-black disabled:cursor-not-allowed disabled:opacity-30 dark:border-neutral-500 dark:text-white"
               >
                 {buildPlanContent.backLabel}
               </button>

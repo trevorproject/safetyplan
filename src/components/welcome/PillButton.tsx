@@ -4,8 +4,8 @@ import { ChevronRightIcon } from './icons';
 type PillVariant = 'solid' | 'outline' | 'muted' | 'script';
 
 const VARIANT_CLASSES: Record<PillVariant, string> = {
-  solid: 'border border-black bg-white text-black hover:bg-white/90',
-  outline: 'border border-black text-black hover:bg-black/5',
+  solid: 'bg-brand-purple text-white hover:bg-brand-purple-light',
+  outline: 'bg-brand-purple text-white hover:bg-brand-purple-light',
   muted: 'bg-brand-gray-button border border-brand-ink text-black hover:brightness-95',
   script: 'font-script text-2xl text-inherit gap-2 px-0 py-0',
 };

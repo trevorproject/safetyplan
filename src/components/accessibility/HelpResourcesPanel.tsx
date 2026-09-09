@@ -11,8 +11,8 @@ export function HelpResourcesPanel() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="text-base font-medium text-black">{content.heading}</h3>
-        <p className="mt-1 text-sm text-black/70">{content.body}</p>
+        <h3 className="text-base font-medium text-black dark:text-white">{content.heading}</h3>
+        <p className="mt-1 text-sm text-black/70 dark:text-white/70">{content.body}</p>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -32,7 +32,7 @@ export function HelpResourcesPanel() {
 
       <SmartLink
         to={content.viewAllTo}
-        className="inline-flex items-center justify-center gap-1 rounded-full border-2 border-black px-4 py-3 text-sm font-medium text-black transition hover:bg-black/5"
+        className="inline-flex items-center justify-center gap-1 rounded-full border-2 border-black px-4 py-3 text-sm font-medium text-black transition hover:bg-black/5 dark:border-white dark:text-white dark:hover:bg-white/10"
       >
         {content.viewAllLabel}
         <ChevronRightIcon className="h-4 w-4" />

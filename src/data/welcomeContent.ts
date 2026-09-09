@@ -13,6 +13,7 @@ export const navActions = {
 
 export const introContent = {
   heading: 'Why we believe a safety plan is the right move',
+  headingEmphasis: 'safety plan',
   body: 'A plan is a light in the dark. Watch to see how we help you find your own steady ground when the world gets rough.',
   cta: { label: 'Build your plan', to: '/wizard' },
 };
@@ -49,7 +50,6 @@ export const footerNavLinks = [
 export const footerLegalLinks = [
   { label: 'Privacy policy', to: '/privacy' },
   { label: 'Terms of service', to: '/terms' },
-  { label: 'Cookies settings', to: '/cookies' },
 ];
 
 export const footerCredit = { label: 'The Trevor Project', to: 'https://www.thetrevorproject.org' };

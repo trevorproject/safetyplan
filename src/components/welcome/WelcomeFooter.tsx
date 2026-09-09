@@ -5,7 +5,7 @@ import { footerNavLinks, footerLegalLinks, footerCredit } from '../../data/welco
 
 export function WelcomeFooter() {
   return (
-    <footer className="flex flex-col bg-brand-gray">
+    <footer className="flex flex-col bg-brand-gray dark:bg-neutral-900">
       <div className="hidden items-center justify-center bg-brand-orange px-6 py-4 lg:flex lg:px-16">
         <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-auto" />
       </div>
@@ -18,7 +18,7 @@ export function WelcomeFooter() {
                 <SmartLink
                   key={link.label}
                   to={link.to}
-                  className="text-base font-semibold leading-[160%] text-black hover:opacity-70 lg:text-sm"
+                  className="text-base font-semibold leading-[160%] text-black hover:opacity-70 dark:text-white lg:text-sm"
                 >
                   {link.label}
                 </SmartLink>
@@ -27,16 +27,16 @@ export function WelcomeFooter() {
           </div>
 
           <div className="hidden flex-col gap-8 lg:flex">
-            <hr className="border-t-2 border-[#4c4c4c]" />
+            <hr className="border-t-2 border-[#4c4c4c] dark:border-white/20" />
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div className="flex flex-wrap gap-6">
                 {footerLegalLinks.map((link) => (
-                  <SmartLink key={link.label} to={link.to} className="text-sm leading-[160%] text-black underline hover:opacity-70">
+                  <SmartLink key={link.label} to={link.to} className="text-sm leading-[160%] text-black underline hover:opacity-70 dark:text-white">
                     {link.label}
                   </SmartLink>
                 ))}
               </div>
-              <SmartLink to={footerCredit.to} className="text-sm leading-[160%] text-black underline hover:opacity-70">
+              <SmartLink to={footerCredit.to} className="text-sm leading-[160%] text-black underline hover:opacity-70 dark:text-white">
                 {footerCredit.label}
               </SmartLink>
             </div>

@@ -56,10 +56,10 @@ export function AccessibilityWidget() {
           id="accessibility-panel"
           role="dialog"
           aria-label={accessibilityWidgetContent.heading}
-          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col gap-6 overflow-y-auto border-l-2 border-black bg-white p-6 shadow-2xl print:hidden"
+          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col gap-6 overflow-y-auto border-l-2 border-black bg-white p-6 shadow-2xl dark:border-neutral-700 dark:bg-neutral-900 print:hidden"
         >
           <div className="flex items-center justify-between">
-            <h2 ref={panelHeadingRef} tabIndex={-1} className="text-xl font-medium text-black outline-none">
+            <h2 ref={panelHeadingRef} tabIndex={-1} className="text-xl font-medium text-black outline-none dark:text-white">
               {accessibilityWidgetContent.heading}
             </h2>
             <button
@@ -69,7 +69,7 @@ export function AccessibilityWidget() {
                 triggerRef.current?.focus();
               }}
               aria-label={accessibilityWidgetContent.closeLabel}
-              className="rounded-full p-2 text-black transition hover:bg-black/5"
+              className="rounded-full p-2 text-black transition hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
             >
               <CloseIcon className="h-5 w-5" />
             </button>
@@ -83,8 +83,10 @@ export function AccessibilityWidget() {
                 role="tab"
                 aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 rounded-full border-2 border-black px-3 py-2 text-sm font-medium transition ${
-                  activeTab === tab.id ? 'bg-brand-purple text-white' : 'bg-white text-black hover:bg-black/5'
+                className={`flex-1 rounded-full border-2 border-black px-3 py-2 text-sm font-medium transition dark:border-neutral-600 ${
+                  activeTab === tab.id
+                    ? 'bg-brand-purple text-white'
+                    : 'bg-white text-black hover:bg-black/5 dark:bg-neutral-900 dark:text-white dark:hover:bg-white/10'
                 }`}
               >
                 {tab.label}

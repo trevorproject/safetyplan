@@ -44,35 +44,35 @@ export function MultiSelectField({ options, selected, onToggle, onAddCustom }: M
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between rounded-full border-2 border-black bg-white px-5 py-3 text-left text-base text-black"
+        className="flex w-full items-center justify-between rounded-full border-2 border-black bg-white px-5 py-3 text-left text-base text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-white"
       >
-        <span className={selected.length ? 'text-black' : 'text-black/50'}>
+        <span className={selected.length ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50'}>
           {selected.length ? selected.join(', ') : buildPlanContent.selectPlaceholder}
         </span>
         <ChevronDownIcon className={`h-5 w-5 shrink-0 transition ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute z-10 mt-2 flex w-full flex-col gap-3 rounded-3xl border-2 border-black bg-white p-5">
+        <div className="absolute z-10 mt-2 flex w-full flex-col gap-3 rounded-3xl border-2 border-black bg-white p-5 dark:border-neutral-600 dark:bg-neutral-900">
           {options.map((option) => (
-            <label key={option} className="flex cursor-pointer items-center gap-3 text-base text-black">
+            <label key={option} className="flex cursor-pointer items-center gap-3 text-base text-black dark:text-white">
               <input
                 type="checkbox"
                 checked={selected.includes(option)}
                 onChange={() => onToggle(option)}
-                className="h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple"
+                className="h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple dark:border-neutral-500"
               />
               {option}
             </label>
           ))}
 
           {customSelections.map((custom) => (
-            <label key={custom} className="flex cursor-pointer items-center gap-3 text-base text-black">
+            <label key={custom} className="flex cursor-pointer items-center gap-3 text-base text-black dark:text-white">
               <input
                 type="checkbox"
                 checked
                 onChange={() => onToggle(custom)}
-                className="h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple"
+                className="h-5 w-5 shrink-0 rounded border-2 border-black accent-brand-purple dark:border-neutral-500"
               />
               {custom}
             </label>
@@ -86,11 +86,11 @@ export function MultiSelectField({ options, selected, onToggle, onAddCustom }: M
               onKeyDown={(event) => event.key === 'Enter' && submitOther()}
               onBlur={submitOther}
               placeholder={buildPlanContent.otherLabel}
-              className="w-full rounded-full border-2 border-black px-4 py-2 text-base text-black"
+              className="w-full rounded-full border-2 border-black px-4 py-2 text-base text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-white"
             />
           ) : (
-            <button type="button" onClick={() => setOtherOpen(true)} className="flex items-center gap-3 text-left text-base text-black">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-black">+</span>
+            <button type="button" onClick={() => setOtherOpen(true)} className="flex items-center gap-3 text-left text-base text-black dark:text-white">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-black dark:border-neutral-500">+</span>
               {buildPlanContent.otherLabel}
             </button>
           )}
