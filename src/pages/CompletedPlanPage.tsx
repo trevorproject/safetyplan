@@ -4,7 +4,7 @@ import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { SmartLink } from '../components/welcome/SmartLink';
 import { ChevronRightIcon } from '../components/welcome/icons';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
+import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.webp';
 import { loadPlan } from '../lib/storage';
 import { completedPlanHeroContent, reminderCardContent, finishedPlanContent } from '../data/completedPlanContent';
 import type { SafetyPlanData } from '../types/app';
@@ -75,7 +75,13 @@ export function CompletedPlanPage() {
           </div>
 
           <div className="mx-auto flex w-full max-w-lg flex-col gap-6 rounded-3xl border-2 border-black bg-brand-purple-light p-8">
-            <img src={callIcon} alt="" className="mx-auto h-14 w-14 object-contain" />
+            <img
+              src={callIcon}
+              alt=""
+              className="mx-auto h-14 w-14 object-contain"
+              loading="lazy"
+              decoding="async"
+            />
             <div className="flex flex-col items-start gap-3">
               <h2 className="text-2xl font-medium text-white">{reminderCardContent.heading}</h2>
               <p className="text-base leading-[160%] text-white">{reminderCardContent.body}</p>

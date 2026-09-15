@@ -1,4 +1,4 @@
-import reachForStarsIllustration from '../../assets/TTP_BrandIllustrations_ReachForTheStars_Horizontal.png';
+import reachForStarsIllustration from '../../assets/TTP_BrandIllustrations_ReachForTheStars_Horizontal.webp';
 import { wizardHeroContent } from '../../data/wizardContent';
 
 export function WizardHero() {

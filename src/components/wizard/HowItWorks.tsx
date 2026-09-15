@@ -1,9 +1,9 @@
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
-import warningSignsIcon from '../../assets/TTP_IconsLibrary_White_Program - Education + Public Awareness.png';
-import copingIcon from '../../assets/TTP_IconsLibrary_White_Volunteer.png';
-import supportsIcon from '../../assets/TTP_IconsLibrary_White_Program - Crisis Services.png';
-import environmentIcon from '../../assets/TTP_IconsLibrary_White_Work at Trevor.png';
+import warningSignsIcon from '../../assets/TTP_IconsLibrary_White_Program - Education + Public Awareness.webp';
+import copingIcon from '../../assets/TTP_IconsLibrary_White_Volunteer.webp';
+import supportsIcon from '../../assets/TTP_IconsLibrary_White_Program - Crisis Services.webp';
+import environmentIcon from '../../assets/TTP_IconsLibrary_White_Work at Trevor.webp';
 import { howItWorksContent } from '../../data/wizardContent';
 
 const CARD_ICONS = [warningSignsIcon, copingIcon, supportsIcon, environmentIcon];
@@ -25,7 +25,13 @@ export function HowItWorks() {
               key={card.stepId}
               className="flex flex-col gap-6 rounded-3xl border border-black bg-brand-orange p-6"
             >
-              <img src={CARD_ICONS[index]} alt="" className="h-64 w-64 object-contain" />
+              <img
+                src={CARD_ICONS[index]}
+                alt=""
+                className="h-64 w-64 object-contain"
+                loading="lazy"
+                decoding="async"
+              />
               <div className="flex flex-col gap-2">
                 <h3 className="text-xl font-medium leading-[140%] text-white">{card.heading}</h3>
                 <p className="text-sm leading-[160%] text-white">{card.text}</p>

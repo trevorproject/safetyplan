@@ -1,5 +1,5 @@
 import lifelineImage from '../../assets/988.png';
-import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_LearnTogether_Horizontal.png';
+import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_LearnTogether_Horizontal.webp';
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
 import { freeResourcesContent, lifelineCard, trevorCard } from '../../data/resourcesContent';
@@ -26,6 +26,8 @@ export function FreeResources() {
               src={learnTogetherIllustration}
               alt="The Trevor Project"
               className="h-[405px] w-full rounded-[40px] object-cover"
+              loading="lazy"
+              decoding="async"
             />
             <div className="flex w-full flex-col items-start gap-6">
               <div className="flex flex-col items-start gap-4">
