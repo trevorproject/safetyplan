@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { SmartLink } from './SmartLink';
 import { PillButton } from './PillButton';
 import { ChevronDownIcon } from './icons';
-import { ThemeToggle } from '../common/ThemeToggle';
-import trevorLogo from '../../assets/ttp_logo_primary_ko.png';
+import trevorLogo from '../../assets/ttp_logo_oneline_ko.png';
 import trevorAvatar from '../../assets/ttp_logo_avatar_ko.png';
 import { navLinks, navActions } from '../../data/welcomeContent';
 
@@ -16,9 +15,9 @@ export function WelcomeNavbar() {
   return (
     <header className="relative flex items-center justify-center bg-brand-orange px-6 py-4 lg:px-16">
       <div className="flex w-full max-w-[1312px] items-center justify-between gap-8">
-        <SmartLink to="/" className="shrink-0">
-          <img src={trevorAvatar} alt="The Trevor Project" className="h-10 w-auto lg:hidden" />
-          <img src={trevorLogo} alt="The Trevor Project" className="hidden h-14 w-auto lg:block" />
+        <SmartLink to="/">
+          <img src={trevorAvatar} alt="The Trevor Project" className="h-8 w-auto lg:hidden" />
+          <img src={trevorLogo} alt="The Trevor Project" className="hidden h-8 w-auto lg:block" />
         </SmartLink>
 
         <nav
@@ -53,19 +52,17 @@ export function WelcomeNavbar() {
         <div className="hidden items-center gap-3 lg:flex">
           <PillButton to={navActions.primary.to} label={navActions.primary.label} variant="solid" />
           <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
-          <ThemeToggle />
         </div>
 
         <div className="flex items-center gap-3 lg:hidden">
           <PillButton to={navActions.primary.to} label={navActions.primary.label} variant="solid" />
           <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
-          <ThemeToggle />
 
           <div className="relative" onMouseLeave={() => setMenuOpen(false)}>
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
-              className="flex items-center justify-center text-white transition hover:opacity-70"
+              className="flex items-center justify-center text-black transition hover:opacity-70"
               aria-expanded={menuOpen}
               aria-label="Toggle menu"
             >
@@ -74,7 +71,7 @@ export function WelcomeNavbar() {
             {menuOpen && (
               <nav
                 aria-label="Primary"
-                className="absolute right-0 top-9 z-20 flex w-44 flex-col gap-4 rounded-3xl bg-brand-orange p-6 shadow-lg"
+                className="absolute right-0 top-9 z-20 flex w-44 flex-col gap-4 rounded-3xl border-2 border-black bg-brand-orange p-6"
               >
                 {navLinks.map((link) => (
                   <SmartLink

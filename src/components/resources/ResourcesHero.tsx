@@ -1,4 +1,4 @@
-import dayAndNightIllustration from '../../assets/TTP_BrandIllustrations_DayAndNight_Horizontal.webp';
+import dayAndNightIllustration from '../../assets/TTP_BrandIllustrations_DayAndNight_Horizontal.png';
 import { resourcesHeroContent } from '../../data/resourcesContent';
 
 export function ResourcesHero() {

@@ -3,19 +3,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 import { AccessibilityProvider } from '../context/AccessibilityContext';
-import { ThemeProvider } from '../context/ThemeContext';
-
-/**
- * Responsiveness test toolkit.
- *
- * jsdom does not apply CSS or run a layout engine, so these helpers verify
- * responsiveness the way it is actually authored in this project: every layout
- * decision lives in Tailwind's mobile-first breakpoint utilities (`sm:`, `md:`,
- * `lg:`, `xl:`, `2xl:`). The assertions below encode the "Responsive Grid &
- * Layout Rules" from context.md so a regression (a dropped `lg:` variant, a
- * hard-coded pixel image size, a missing mobile/desktop nav cluster) fails a
- * unit test instead of only showing up in a browser.
- */
 
 /** Tailwind v4 default breakpoints, plus the two narrowest supported phones. */
 export const BREAKPOINTS = {
@@ -62,11 +49,6 @@ function evaluateQuery(query: string, width: number, height: number): boolean {
   });
 }
 
-/**
- * Simulate a screen size. Sets `innerWidth`/`innerHeight`, installs a
- * `matchMedia` that answers against that size, and fires a `resize` event so
- * any listener-based component recalculates.
- */
 export function setViewport(width: number, height: number = DEFAULT_HEIGHT): void {
   Object.defineProperty(window, 'innerWidth', { configurable: true, writable: true, value: width });
   Object.defineProperty(window, 'outerWidth', { configurable: true, writable: true, value: width });
@@ -109,9 +91,7 @@ export function renderResponsive(ui: ReactElement, width: number, options: Rende
   setViewport(width);
   return render(
     <MemoryRouter initialEntries={[options.route ?? '/']}>
-      <ThemeProvider>
-        <AccessibilityProvider>{ui}</AccessibilityProvider>
-      </ThemeProvider>
+      <AccessibilityProvider>{ui}</AccessibilityProvider>
     </MemoryRouter>,
   );
 }
