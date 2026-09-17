@@ -14,7 +14,7 @@ export function StepProgress({ total, current }: StepProgressProps) {
       aria-valuenow={current + 1}
     >
       {Array.from({ length: total }).map((_, index) => (
-        <div key={index} className={`h-2 flex-1 rounded-full ${index <= current ? 'bg-brand-purple' : 'bg-brand-gray dark:bg-neutral-700'}`} />
+        <div key={index} className={`h-2 flex-1 rounded-full ${index <= current ? 'bg-brand-purple' : 'bg-brand-gray'}`} />
       ))}
     </div>
   );

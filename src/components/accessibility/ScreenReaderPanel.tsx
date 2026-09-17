@@ -8,14 +8,14 @@ export function ScreenReaderPanel() {
   const content = accessibilityWidgetContent.reader;
 
   if (!speechSupported) {
-    return <p className="text-sm text-black/70 dark:text-white/70">{content.unsupported}</p>;
+    return <p className="text-sm text-black/70">{content.unsupported}</p>;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="text-base font-medium text-black dark:text-white">{content.heading}</h3>
-        <p className="mt-1 text-sm text-black/70 dark:text-white/70">{content.body}</p>
+        <h3 className="text-base font-medium text-black">{content.heading}</h3>
+        <p className="mt-1 text-sm text-black/70">{content.body}</p>
       </div>
 
       <button
@@ -29,7 +29,7 @@ export function ScreenReaderPanel() {
       </button>
 
       {sections.length === 0 ? (
-        <p className="text-sm text-black/60 dark:text-white/60">{content.emptyState}</p>
+        <p className="text-sm text-black/60">{content.emptyState}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {sections.map((section) => {
@@ -37,16 +37,16 @@ export function ScreenReaderPanel() {
             return (
               <li
                 key={section.id}
-                className="flex items-center justify-between gap-2 rounded-2xl border border-black/20 p-3 dark:border-white/20"
+                className="flex items-center justify-between gap-2 rounded-2xl border border-black/20 p-3"
               >
-                <span className={`text-sm ${isActive ? 'font-medium text-brand-purple' : 'text-black dark:text-white'}`}>
+                <span className={`text-sm ${isActive ? 'font-medium text-brand-purple' : 'text-black'}`}>
                   {section.label}
                 </span>
                 <button
                   type="button"
                   onClick={() => speakSection(section.id)}
                   aria-label={`${content.readSectionLabel}: ${section.label}`}
-                  className="flex items-center justify-center rounded-full border border-black p-2 text-black transition hover:bg-black/5 dark:border-white dark:text-white dark:hover:bg-white/10"
+                  className="flex items-center justify-center rounded-full border border-black p-2 text-black transition hover:bg-black/5"
                 >
                   <PlayIcon className="h-4 w-4" />
                 </button>
@@ -57,12 +57,12 @@ export function ScreenReaderPanel() {
       )}
 
       {speakingId && (
-        <div className="flex items-center justify-center gap-3 border-t border-black/10 pt-4 dark:border-white/10">
+        <div className="flex items-center justify-center gap-3 border-t border-black/10 pt-4">
           {isPaused ? (
             <button
               type="button"
               onClick={resumeSpeech}
-              className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5 dark:border-white dark:text-white dark:hover:bg-white/10"
+              className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5"
             >
               <PlayIcon className="h-4 w-4" />
               {content.resumeLabel}
@@ -71,7 +71,7 @@ export function ScreenReaderPanel() {
             <button
               type="button"
               onClick={pauseSpeech}
-              className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5 dark:border-white dark:text-white dark:hover:bg-white/10"
+              className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5"
             >
               <PauseIcon className="h-4 w-4" />
               {content.pauseLabel}
@@ -80,7 +80,7 @@ export function ScreenReaderPanel() {
           <button
             type="button"
             onClick={stopSpeech}
-            className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5 dark:border-white dark:text-white dark:hover:bg-white/10"
+            className="flex items-center gap-2 rounded-full border-2 border-black px-4 py-2 text-sm font-medium text-black transition hover:bg-black/5"
           >
             <StopIcon className="h-4 w-4" />
             {content.stopLabel}
