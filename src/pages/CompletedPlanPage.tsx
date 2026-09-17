@@ -54,13 +54,76 @@ export function CompletedPlanPage() {
   };
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900">Your finished plan</h1>
-        <p className="mt-3 max-w-2xl text-lg leading-8 text-slate-700">
-          You can print this page, save it as a PDF, or share it with someone you trust when you feel ready.
-        </p>
-      </div>
+    <div className="font-body">
+      <WelcomeNavbar />
+      <main>
+
+      <SpeakableSection id="plan-summary">
+      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 dark:bg-neutral-900 lg:px-16 lg:py-24">
+        <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
+          <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
+            <h1
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black outline-none dark:text-white sm:text-4xl lg:text-[52px]"
+            >
+              {completedPlanHeroContent.headingLead}
+              <span className="font-script">{completedPlanHeroContent.headingScript}</span>
+              {completedPlanHeroContent.headingTail}
+            </h1>
+            <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{completedPlanHeroContent.body}</p>
+          </div>
+
+          <div className="mx-auto flex w-full max-w-lg flex-col gap-6 rounded-3xl border-2 border-black bg-brand-purple-light p-8">
+            <img src={callIcon} alt="" className="mx-auto h-14 w-14 object-contain" />
+            <div className="flex flex-col items-start gap-3">
+              <h2 className="text-2xl font-medium text-white">{reminderCardContent.heading}</h2>
+              <p className="text-base leading-[160%] text-white">{reminderCardContent.body}</p>
+              <SmartLink
+                to={reminderCardContent.action.to}
+                className="inline-flex items-center gap-1 text-base font-medium text-white transition hover:opacity-80"
+              >
+                {reminderCardContent.action.label}
+                <ChevronRightIcon className="h-5 w-5" />
+              </SmartLink>
+            </div>
+          </div>
+        </div>
+      </section>
+      </SpeakableSection>
+
+      <SpeakableSection id="plan-details">
+      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 pb-16 dark:bg-neutral-900 lg:px-16 lg:pb-24">
+        <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
+          <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
+            <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{finishedPlanContent.body}</p>
+          </div>
+
+          <div className="flex w-full max-w-2xl flex-col items-start gap-8">
+            {finishedPlanContent.sections.map((section) => {
+              const items = plan?.[section.field] ?? [];
+              if (!items.length) return null;
+              return (
+                <div key={section.field} className="flex flex-col gap-2">
+                  <h3 className="text-lg font-medium text-black dark:text-white">{section.label}</h3>
+                  <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
+                    {items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+
+            {plan?.message.trim() && (
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-medium text-black dark:text-white">{finishedPlanContent.notesLabel}</h3>
+                <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
+                  <li>{plan.message}</li>
+                </ul>
+              </div>
+            )}
+          </div>
 
           <div className="flex w-full flex-col items-center gap-3 print:hidden">
             <button

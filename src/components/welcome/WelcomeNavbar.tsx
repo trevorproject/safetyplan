@@ -12,7 +12,6 @@ const NAV_LINK_CLASS = 'text-sm leading-[160%] text-white transition hover:opaci
 export function WelcomeNavbar() {
   const [langOpen, setLangOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="relative flex items-center justify-center bg-brand-orange px-6 py-4 lg:px-16">
@@ -57,7 +56,6 @@ export function WelcomeNavbar() {
           <ThemeToggle />
         </div>
 
-        <div className="flex items-center gap-3 lg:hidden">
         <div className="flex items-center gap-3 lg:hidden">
           <PillButton to={navActions.primary.to} label={navActions.primary.label} variant="solid" />
           <PillButton to={navActions.secondary.to} label={navActions.secondary.label} variant="outline" />
