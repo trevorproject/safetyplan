@@ -15,11 +15,7 @@ export function WelcomeFooter() {
           <div className="flex flex-col gap-8">
             <nav aria-label="Footer" className="flex flex-col gap-6 lg:flex-row lg:flex-wrap lg:gap-8">
               {footerNavLinks.map((link) => (
-                <SmartLink
-                  key={link.label}
-                  to={link.to}
-                  className="text-base font-semibold leading-[160%] text-black hover:opacity-70 lg:text-sm"
-                >
+                <SmartLink key={link.label} to={link.to} className="text-sm font-semibold leading-[160%] text-black hover:opacity-70">
                   {link.label}
                 </SmartLink>
               ))}
@@ -31,12 +27,12 @@ export function WelcomeFooter() {
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
               <div className="flex flex-wrap gap-6">
                 {footerLegalLinks.map((link) => (
-                  <SmartLink key={link.label} to={link.to} className="text-sm leading-[160%] text-black underline hover:opacity-70">
+                  <SmartLink key={link.label} to={link.to} className="text-sm leading-[160%] text-black underline hover:opacity-70 dark:text-white">
                     {link.label}
                   </SmartLink>
                 ))}
               </div>
-              <SmartLink to={footerCredit.to} className="text-sm leading-[160%] text-black underline hover:opacity-70">
+              <SmartLink to={footerCredit.to} className="text-sm leading-[160%] text-black underline hover:opacity-70 dark:text-white">
                 {footerCredit.label}
               </SmartLink>
             </div>

@@ -59,19 +59,19 @@ export function CompletedPlanPage() {
       <main>
 
       <SpeakableSection id="plan-summary">
-      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 lg:px-16 lg:py-24">
+      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 dark:bg-neutral-900 lg:px-16 lg:py-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
             <h1
               ref={headingRef}
               tabIndex={-1}
-              className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black outline-none sm:text-4xl lg:text-[52px]"
+              className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black outline-none dark:text-white sm:text-4xl lg:text-[52px]"
             >
               {completedPlanHeroContent.headingLead}
               <span className="font-script">{completedPlanHeroContent.headingScript}</span>
               {completedPlanHeroContent.headingTail}
             </h1>
-            <p className="text-lg leading-[160%] text-black lg:text-2xl">{completedPlanHeroContent.body}</p>
+            <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{completedPlanHeroContent.body}</p>
           </div>
 
           <div className="mx-auto flex w-full max-w-lg flex-col gap-6 rounded-3xl border-2 border-black bg-brand-purple-light p-8">
@@ -93,10 +93,10 @@ export function CompletedPlanPage() {
       </SpeakableSection>
 
       <SpeakableSection id="plan-details">
-      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 pb-16 lg:px-16 lg:pb-24">
+      <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 pb-16 dark:bg-neutral-900 lg:px-16 lg:pb-24">
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
-            <p className="text-lg leading-[160%] text-black lg:text-2xl">{finishedPlanContent.body}</p>
+            <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{finishedPlanContent.body}</p>
           </div>
 
           <div className="flex w-full max-w-2xl flex-col items-start gap-8">
@@ -105,8 +105,8 @@ export function CompletedPlanPage() {
               if (!items.length) return null;
               return (
                 <div key={section.field} className="flex flex-col gap-2">
-                  <h3 className="text-lg font-medium text-black">{section.label}</h3>
-                  <ul className="list-disc space-y-1 pl-5 text-base text-black">
+                  <h3 className="text-lg font-medium text-black dark:text-white">{section.label}</h3>
+                  <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
                     {items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -117,8 +117,8 @@ export function CompletedPlanPage() {
 
             {plan?.message.trim() && (
               <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-medium text-black">{finishedPlanContent.notesLabel}</h3>
-                <ul className="list-disc space-y-1 pl-5 text-base text-black">
+                <h3 className="text-lg font-medium text-black dark:text-white">{finishedPlanContent.notesLabel}</h3>
+                <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
                   <li>{plan.message}</li>
                 </ul>
               </div>
