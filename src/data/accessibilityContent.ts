@@ -1,4 +1,5 @@
-// Copy for the accessibility panel. Centralized here so component files stay free of literal strings.
+
+import { useLanguage } from '../context/language';
 
 export const accessibilityWidgetContent = {
   triggerLabel: 'Accessibility options',
@@ -38,3 +39,49 @@ export const accessibilityWidgetContent = {
     viewAllTo: '/resources',
   },
 };
+
+const en = accessibilityWidgetContent;
+
+const es: typeof en = {
+  triggerLabel: 'Opciones de accesibilidad',
+  heading: 'Accesibilidad',
+  closeLabel: 'Cerrar panel de accesibilidad',
+  tabs: {
+    reader: 'Lector de pantalla',
+    vision: 'Visión del color',
+    help: 'Obtener ayuda',
+  },
+  reader: {
+    heading: 'Escuchar esta página en voz alta',
+    body: 'Elige una sección a continuación para escucharla en voz alta, o escucha toda la página de una vez.',
+    readAllLabel: 'Leer página completa',
+    pauseLabel: 'Pausar',
+    resumeLabel: 'Reanudar',
+    stopLabel: 'Detener',
+    readSectionLabel: 'Leer sección',
+    emptyState: 'Todavía no se encontraron secciones legibles en esta página.',
+    unsupported: 'Este navegador no admite la lectura en voz alta integrada.',
+  },
+  vision: {
+    heading: 'Filtros de visión del color',
+    body: 'Ajusta los colores de este sitio para que sea más fácil distinguirlos.',
+    options: {
+      none: 'Desactivado',
+      protanopia: 'Protanopía (rojo-verde)',
+      deuteranopia: 'Deuteranopía (rojo-verde)',
+      tritanopia: 'Tritanopía (azul-amarillo)',
+      achromatopsia: 'Escala de grises',
+    },
+  },
+  help: {
+    heading: 'Obtener ayuda ahora',
+    body: 'Estos recursos están disponibles en cualquier momento, desde cualquier página.',
+    viewAllLabel: 'Ver todos los recursos',
+    viewAllTo: '/resources',
+  },
+};
+
+export function useAccessibilityContent() {
+  const { language } = useLanguage();
+  return language === 'es' ? es : en;
+}

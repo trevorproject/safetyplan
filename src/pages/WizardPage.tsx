@@ -8,8 +8,8 @@ import { StepProgress } from '../components/wizard/StepProgress';
 import { MultiSelectField } from '../components/wizard/MultiSelectField';
 import { CheckboxGrid } from '../components/wizard/CheckboxGrid';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import { defaultConfig } from '../data/defaultConfig';
-import { buildPlanContent } from '../data/wizardContent';
+import { useDefaultConfig } from '../data/defaultConfig';
+import { useWizardContent } from '../data/wizardContent';
 import { clearPlan, loadPlan, savePlan } from '../lib/storage';
 import type { SafetyPlanData } from '../types/app';
 
@@ -26,8 +26,9 @@ export function WizardPage() {
   const [step, setStep] = useState(0);
   const [plan, setPlan] = useState<SafetyPlanData>(() => ({ ...initialPlan, ...loadPlan() }));
   const [consent, setConsent] = useState(false);
+  const { buildPlanContent } = useWizardContent();
 
-  const steps = defaultConfig.wizardSteps;
+  const steps = useDefaultConfig().wizardSteps;
 
   useEffect(() => {
     savePlan(plan);

@@ -1,14 +1,18 @@
+import { useWizardContent } from '../../data/wizardContent';
+
 interface StepProgressProps {
   total: number;
   current: number;
 }
 
 export function StepProgress({ total, current }: StepProgressProps) {
+  const { buildPlanContent } = useWizardContent();
+
   return (
     <div
       className="flex w-full max-w-md gap-2"
       role="progressbar"
-      aria-label="Safety plan progress"
+      aria-label={buildPlanContent.progressLabel}
       aria-valuemin={1}
       aria-valuemax={total}
       aria-valuenow={current + 1}

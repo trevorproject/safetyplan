@@ -1,8 +1,10 @@
 import laptopIllustration from '../../assets/TTP_BrandIllustrations_SharedResources_Horizontal.png';
 import { PillButton } from './PillButton';
-import { heroContent } from '../../data/welcomeContent';
+import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function PhotoHero() {
+  const { heroContent } = useWelcomeContent();
+
   return (
     <section
       className="relative flex min-h-[520px] items-center justify-center overflow-hidden bg-brand-purple px-6 py-20 lg:min-h-[816px] lg:px-16"

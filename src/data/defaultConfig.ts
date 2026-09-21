@@ -1,6 +1,7 @@
-import type { AppConfig } from '../types/app';
+import { useLanguage } from '../context/language';
+import type { AppConfig, LocalizedConfig } from '../types/app';
 
-export const defaultConfig: AppConfig = {
+const en: LocalizedConfig = {
   title: 'Safety Plan',
   description: 'A private, supportive guide for creating a personalized safety plan.',
   intro:
@@ -71,5 +72,84 @@ export const defaultConfig: AppConfig = {
       placeholder: 'Type your message...',
     },
   ],
-  adminPassword: 'safety-plan-2026',
 };
+
+const es: LocalizedConfig = {
+  title: 'Plan de Seguridad',
+  description: 'Una guía privada y de apoyo para crear un plan de seguridad personalizado.',
+  intro:
+    'Este espacio está aquí para ayudarte a construir un plan que se sienta estable, personal y seguro de usar durante los momentos difíciles.',
+  resources: [
+    {
+      id: 'trevor',
+      title: 'The Trevor Project',
+      description: 'Apoyo confidencial en crisis para jóvenes LGBTQ+.',
+      url: 'https://www.thetrevorproject.org/get-help/',
+      category: 'crisis',
+    },
+    {
+      id: 'crisis-text',
+      title: 'Línea de Texto de Crisis',
+      description: 'Envía HOME al 741741 para recibir apoyo gratuito las 24 horas, los 7 días de la semana.',
+      url: 'https://www.crisistextline.org/',
+      category: 'crisis',
+    },
+    {
+      id: 'suicide-prevention',
+      title: 'Línea 988 de Prevención del Suicidio y Crisis',
+      description: 'Llama o envía un mensaje de texto al 988 para recibir apoyo inmediato en Estados Unidos.',
+      url: 'https://988lifeline.org/',
+      category: 'crisis',
+    },
+    {
+      id: 'support-group',
+      title: 'Apoyo comunitario LGBTQ+ local',
+      description: 'Busca grupos de apoyo acogedores en tu área.',
+      url: 'https://www.lgbtcenter.org/',
+      category: 'support',
+    },
+  ],
+  wizardSteps: [
+    {
+      id: 'warning-signs',
+      title: 'Señales de alerta',
+      description: '¿Qué piensas, sientes o haces cuando los momentos se ponen difíciles?',
+      placeholder: 'Agrega la tuya',
+      options: ['Llorar', 'Autolesión', 'Pensamientos intrusivos', 'No comer', 'Temblores', 'Desesperanza', 'Taquicardia', 'Aislamiento'],
+    },
+    {
+      id: 'coping',
+      title: 'Afrontamiento',
+      description: '¿Qué te hace sentir mejor cuando aparecen las señales de alerta?',
+      placeholder: 'Agrega la tuya',
+      options: ['Escuchar música', 'Bañarte', 'Escribir', 'Respirar', 'Dibujar', 'Hablar con alguien', 'Dormir'],
+    },
+    {
+      id: 'supports',
+      title: 'Apoyos',
+      description: '¿Con quién te sientes cómodo o cómoda hablando sobre lo que estás viviendo?',
+      placeholder: 'Agrega la tuya',
+      options: ['Amigue', 'Mamá/Papá', 'Terapeuta', 'Pareja', 'Hermane', 'Consejere', 'Psiquiatra', 'Línea de ayuda'],
+    },
+    {
+      id: 'environment',
+      title: 'Entorno más seguro',
+      description: '¿Qué se puede hacer para que tu entorno sea más seguro para ti?',
+      placeholder: 'Agrega la tuya',
+      options: ['Quitar objetos punzocortantes', 'Quitar encendedores de fuego', 'Quitar medicamentos', 'Mantenerte alejade de alturas', 'Mantenerte alejade de maquinaria pesada'],
+    },
+    {
+      id: 'message',
+      title: 'Comparte lo que quieras',
+      description: 'Escribe cualquier cosa que pueda ayudarte a estar más segure.',
+      placeholder: 'Escribe tu mensaje...',
+    },
+  ],
+};
+
+export const defaultConfig: AppConfig = { en, es, adminPassword: 'safety-plan-2026' };
+
+export function useDefaultConfig(): LocalizedConfig {
+  const { language } = useLanguage();
+  return defaultConfig[language];
+}

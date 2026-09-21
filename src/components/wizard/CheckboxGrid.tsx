@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { buildPlanContent } from '../../data/wizardContent';
+import { useWizardContent } from '../../data/wizardContent';
 
 interface CheckboxGridProps {
   options: string[];
@@ -9,6 +9,7 @@ interface CheckboxGridProps {
 }
 
 export function CheckboxGrid({ options, selected, onToggle, onAddCustom }: CheckboxGridProps) {
+  const { buildPlanContent } = useWizardContent();
   const [otherOpen, setOtherOpen] = useState(false);
   const [otherValue, setOtherValue] = useState('');
 

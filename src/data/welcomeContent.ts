@@ -1,4 +1,5 @@
-// Copy for the welcome page. Centralized here so component files stay free of literal strings.
+
+import { useLanguage } from '../context/language';
 
 export const navLinks = [
   { label: 'Home', to: '/' },
@@ -10,6 +11,10 @@ export const navActions = {
   primary: { label: 'Get Help', to: '/resources' },
   secondary: { label: 'Donate', to: 'https://www.thetrevorproject.org/donate/' },
 };
+
+export const navLanguageLabel = 'Language';
+export const primaryNavAriaLabel = 'Primary';
+export const toggleMenuAriaLabel = 'Toggle menu';
 
 export const introContent = {
   heading: 'Why we believe a safety plan is the right move',
@@ -53,3 +58,77 @@ export const footerLegalLinks = [
 ];
 
 export const footerCredit = { label: 'The Trevor Project', to: 'https://www.thetrevorproject.org' };
+export const footerNavAriaLabel = 'Footer';
+
+const en = {
+  navLinks,
+  navActions,
+  navLanguageLabel,
+  primaryNavAriaLabel,
+  toggleMenuAriaLabel,
+  introContent,
+  heroContent,
+  featureContent,
+  footerNavLinks,
+  footerLegalLinks,
+  footerCredit,
+  footerNavAriaLabel,
+};
+
+const es: typeof en = {
+  navLinks: [
+    { label: 'Inicio', to: '/' },
+    { label: 'Recursos', to: '/resources' },
+    { label: 'Crear plan', to: '/wizard' },
+  ],
+  navActions: {
+    primary: { label: 'Obtener ayuda', to: '/resources' },
+    secondary: { label: 'Donar', to: 'https://www.thetrevorproject.org/donate/' },
+  },
+  navLanguageLabel: 'Idioma',
+  primaryNavAriaLabel: 'Principal',
+  toggleMenuAriaLabel: 'Alternar menú',
+  introContent: {
+    heading: 'Creemos que un plan de seguridad es la decisión correcta',
+    headingEmphasis: 'plan de seguridad',
+    body: 'Un plan es una luz en la oscuridad. Descubre cómo te ayudamos a encontrar tu propio equilibrio cuando el mundo se pone difícil.',
+    cta: { label: 'Crea tu plan', to: '/wizard' },
+  },
+  heroContent: {
+    heading: 'Planeemos juntos',
+    body: 'No estás por tu cuenta. Crea tu propio plan de seguridad ahora o encuentra ayuda inmediata.',
+    cta: { label: 'Crear plan de seguridad', to: '/wizard' },
+  },
+  featureContent: {
+    intro:
+      'Creemos que cada joven merece un lugar seguro en el cual apoyarse. Nuestro trabajo es asegurarnos de que tengas las herramientas para afrontar cualquier crisis.',
+    items: [
+      {
+        heading: 'Siempre aquí para ayudar',
+        text: 'Nos dedicamos a garantizar que las personas jóvenes LGBTQ+ nunca se sientan solas. Nuestro personal de consejería, apasionado y empático, brinda apoyo incondicional todo el día, todos los días, sin excepciones. Además, ofrecemos distintas formas de encontrar ayuda para que puedas elegir el método que mejor te funcione.',
+      },
+      {
+        heading: 'Todas las personas son bienvenidas',
+        text: 'Celebramos la individualidad y recibimos con oídos y corazones abiertos a cada persona que se acerca, sin importar por lo que esté pasando.',
+      },
+    ],
+  },
+  footerNavLinks: [
+    { label: 'Obtener ayuda', to: '/resources' },
+    { label: 'Inicio', to: '/' },
+    { label: 'Recursos', to: '/resources' },
+    { label: 'Crear plan', to: '/wizard' },
+    { label: 'Donar', to: 'https://www.thetrevorproject.org/donate/' },
+  ],
+  footerLegalLinks: [
+    { label: 'Política de privacidad', to: '/privacy' },
+    { label: 'Términos de servicio', to: '/terms' },
+  ],
+  footerCredit: { label: 'The Trevor Project', to: 'https://www.thetrevorproject.org' },
+  footerNavAriaLabel: 'Pie de página',
+};
+
+export function useWelcomeContent() {
+  const { language } = useLanguage();
+  return language === 'es' ? es : en;
+}

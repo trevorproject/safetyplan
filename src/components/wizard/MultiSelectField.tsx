@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon } from '../welcome/icons';
-import { buildPlanContent } from '../../data/wizardContent';
+import { useWizardContent } from '../../data/wizardContent';
 
 interface MultiSelectFieldProps {
   options: string[];
@@ -10,6 +10,7 @@ interface MultiSelectFieldProps {
 }
 
 export function MultiSelectField({ options, selected, onToggle, onAddCustom }: MultiSelectFieldProps) {
+  const { buildPlanContent } = useWizardContent();
   const [open, setOpen] = useState(false);
   const [otherOpen, setOtherOpen] = useState(false);
   const [otherValue, setOtherValue] = useState('');

@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { ThemeToggle } from '../common/ThemeToggle';
+import { useAppShellContent } from '../../data/appShellContent';
 
 const NAV_LINK_CLASS = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-3 py-2 ${
@@ -9,25 +10,27 @@ const NAV_LINK_CLASS = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 export function AppShell() {
+  const { brand, primaryNavAriaLabel, nav, footer } = useAppShellContent();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-black dark:text-slate-100">
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-black/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-            Safety Plan
+            {brand}
           </Link>
-          <nav aria-label="Primary" className="flex items-center gap-2 text-sm font-medium">
+          <nav aria-label={primaryNavAriaLabel} className="flex items-center gap-2 text-sm font-medium">
             <NavLink to="/" className={NAV_LINK_CLASS}>
-              Welcome
+              {nav.welcome}
             </NavLink>
             <NavLink to="/resources" className={NAV_LINK_CLASS}>
-              Resources
+              {nav.resources}
             </NavLink>
             <NavLink to="/wizard" className={NAV_LINK_CLASS}>
-              Plan
+              {nav.plan}
             </NavLink>
             <NavLink to="/admin" className={NAV_LINK_CLASS}>
-              Admin
+              {nav.admin}
             </NavLink>
             <ThemeToggle className="ml-2" />
           </nav>
@@ -38,7 +41,7 @@ export function AppShell() {
       </main>
       <footer className="border-t border-slate-200 bg-white/80 dark:border-neutral-800 dark:bg-black/60">
         <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-600 sm:px-6 lg:px-8 dark:text-slate-400">
-          A private, supportive tool for building a safety plan.
+          {footer}
         </div>
       </footer>
     </div>

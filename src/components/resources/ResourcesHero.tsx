@@ -1,7 +1,9 @@
 import dayAndNightIllustration from '../../assets/TTP_BrandIllustrations_DayAndNight_Horizontal.png';
-import { resourcesHeroContent } from '../../data/resourcesContent';
+import { useResourcesContent } from '../../data/resourcesContent';
 
 export function ResourcesHero() {
+  const { resourcesHeroContent } = useResourcesContent();
+
   return (
     <section
       className="flex flex-col items-center gap-20 px-6 py-16 lg:px-16 lg:py-36"
