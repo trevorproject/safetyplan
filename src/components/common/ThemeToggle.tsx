@@ -1,5 +1,4 @@
 import { useTheme } from '../../context/theme';
-import { useThemeToggleContent } from '../../data/themeToggleContent';
 
 function SunIcon({ className }: { className?: string }) {
   return (
@@ -25,7 +24,6 @@ function MoonIcon({ className }: { className?: string }) {
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, toggleTheme } = useTheme();
-  const { switchToLight, switchToDark } = useThemeToggleContent();
   const isDark = theme === 'dark';
 
   return (
@@ -33,8 +31,8 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       type="button"
       onClick={toggleTheme}
       aria-pressed={isDark}
-      aria-label={isDark ? switchToLight : switchToDark}
-      title={isDark ? switchToLight : switchToDark}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black text-black transition hover:opacity-70 dark:border-white dark:text-white ${className}`}
     >
       {isDark ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}

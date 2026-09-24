@@ -1,6 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { ThemeToggle } from '../common/ThemeToggle';
-import { useAppShellContent } from '../../data/appShellContent';
 
 const NAV_LINK_CLASS = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-3 py-2 ${
@@ -17,20 +16,20 @@ export function AppShell() {
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur dark:border-neutral-800 dark:bg-black/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link to="/" className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">
-            {brand}
+            Safety Plan
           </Link>
-          <nav aria-label={primaryNavAriaLabel} className="flex items-center gap-2 text-sm font-medium">
+          <nav aria-label="Primary" className="flex items-center gap-2 text-sm font-medium">
             <NavLink to="/" className={NAV_LINK_CLASS}>
-              {nav.welcome}
+              Welcome
             </NavLink>
             <NavLink to="/resources" className={NAV_LINK_CLASS}>
-              {nav.resources}
+              Resources
             </NavLink>
             <NavLink to="/wizard" className={NAV_LINK_CLASS}>
-              {nav.plan}
+              Plan
             </NavLink>
             <NavLink to="/admin" className={NAV_LINK_CLASS}>
-              {nav.admin}
+              Admin
             </NavLink>
             <ThemeToggle className="ml-2" />
           </nav>
@@ -41,7 +40,7 @@ export function AppShell() {
       </main>
       <footer className="border-t border-slate-200 bg-white/80 dark:border-neutral-800 dark:bg-black/60">
         <div className="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-600 sm:px-6 lg:px-8 dark:text-slate-400">
-          {footer}
+          A private, supportive tool for building a safety plan.
         </div>
       </footer>
     </div>
