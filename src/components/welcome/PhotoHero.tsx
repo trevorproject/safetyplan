@@ -1,4 +1,4 @@
-import laptopIllustration from '../../assets/TTP_BrandIllustrations_SharedResources_Horizontal.png';
+import laptopIllustration from '../../assets/TTP_BrandIllustrations_SharedResources_Horizontal.webp';
 import { PillButton } from './PillButton';
 import { useWelcomeContent } from '../../data/welcomeContent';
 

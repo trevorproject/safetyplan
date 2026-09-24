@@ -13,23 +13,21 @@ import { LanguageProvider } from './context/LanguageContext';
 function App() {
   return (
     <BrowserRouter>
-      <LanguageProvider>
-        <ThemeProvider>
-          <AccessibilityProvider>
-            <Routes>
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/resources" element={<ResourcesPage />} />
-              <Route path="/wizard" element={<WizardPage />} />
-              <Route path="/plan" element={<CompletedPlanPage />} />
-              <Route element={<AppShell />}>
-                <Route path="/admin" element={<AdminPage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <AccessibilityWidget />
-          </AccessibilityProvider>
-        </ThemeProvider>
-      </LanguageProvider>
+      <ThemeProvider>
+        <AccessibilityProvider>
+          <Routes>
+            <Route path="/" element={<WelcomePage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/wizard" element={<WizardPage />} />
+            <Route path="/plan" element={<CompletedPlanPage />} />
+            <Route element={<AppShell />}>
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <AccessibilityWidget />
+        </AccessibilityProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
