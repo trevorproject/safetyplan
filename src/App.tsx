@@ -8,6 +8,7 @@ import { AdminPage } from './pages/AdminPage';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import { AccessibilityWidget } from './components/accessibility/AccessibilityWidget';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 function App() {
   return (

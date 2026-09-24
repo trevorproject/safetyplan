@@ -1,12 +1,12 @@
 import { useAccessibility } from '../../context/accessibility';
 import type { ColorVisionMode } from '../../context/accessibility';
-import { accessibilityWidgetContent } from '../../data/accessibilityContent';
+import { useAccessibilityContent } from '../../data/accessibilityContent';
 
 const MODES: ColorVisionMode[] = ['none', 'protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia'];
 
 export function ColorVisionPanel() {
   const { colorVisionMode, setColorVisionMode } = useAccessibility();
-  const content = accessibilityWidgetContent.vision;
+  const content = useAccessibilityContent().vision;
 
   return (
     <div className="flex flex-col gap-4">

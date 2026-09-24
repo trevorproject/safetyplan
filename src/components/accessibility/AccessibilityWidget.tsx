@@ -1,23 +1,24 @@
 import { useEffect, useRef } from 'react';
 import { useAccessibility } from '../../context/accessibility';
 import type { AccessibilityTab } from '../../context/accessibility';
-import { accessibilityWidgetContent } from '../../data/accessibilityContent';
+import { useAccessibilityContent } from '../../data/accessibilityContent';
 import { AccessibilityIcon, CloseIcon } from './icons';
 import { ColorVisionFilterDefs } from './colorVisionFilters';
 import { ScreenReaderPanel } from './ScreenReaderPanel';
 import { ColorVisionPanel } from './ColorVisionPanel';
 import { HelpResourcesPanel } from './HelpResourcesPanel';
 
-const TABS: { id: AccessibilityTab; label: string }[] = [
-  { id: 'reader', label: accessibilityWidgetContent.tabs.reader },
-  { id: 'vision', label: accessibilityWidgetContent.tabs.vision },
-  { id: 'help', label: accessibilityWidgetContent.tabs.help },
-];
-
 export function AccessibilityWidget() {
   const { panelOpen, activeTab, setActiveTab, openPanel, closePanel } = useAccessibility();
+  const accessibilityWidgetContent = useAccessibilityContent();
   const panelHeadingRef = useRef<HTMLHeadingElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+
+  const TABS: { id: AccessibilityTab; label: string }[] = [
+    { id: 'reader', label: accessibilityWidgetContent.tabs.reader },
+    { id: 'vision', label: accessibilityWidgetContent.tabs.vision },
+    { id: 'help', label: accessibilityWidgetContent.tabs.help },
+  ];
 
   useEffect(() => {
     if (panelOpen) panelHeadingRef.current?.focus();

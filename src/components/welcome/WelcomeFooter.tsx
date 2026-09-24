@@ -1,9 +1,11 @@
 import { SmartLink } from './SmartLink';
 import trevorLogo from '../../assets/ttp_logo_oneline_ko.png';
 import trevorAvatar from '../../assets/ttp_logo_avatar_ko.png';
-import { footerNavLinks, footerLegalLinks, footerCredit } from '../../data/welcomeContent';
+import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function WelcomeFooter() {
+  const { footerNavLinks, footerLegalLinks, footerCredit, footerNavAriaLabel } = useWelcomeContent();
+
   return (
     <footer className="flex flex-col bg-brand-gray">
       <div className="hidden items-center justify-center bg-brand-orange px-6 py-4 lg:flex lg:px-16">
@@ -13,7 +15,7 @@ export function WelcomeFooter() {
       <div className="flex flex-col items-center gap-16 px-6 py-16 lg:px-16">
         <div className="flex w-full max-w-[1280px] flex-col gap-16">
           <div className="flex flex-col gap-8">
-            <nav aria-label="Footer" className="flex flex-col gap-6 lg:flex-row lg:flex-wrap lg:gap-8">
+            <nav aria-label={footerNavAriaLabel} className="flex flex-col gap-6 lg:flex-row lg:flex-wrap lg:gap-8">
               {footerNavLinks.map((link) => (
                 <SmartLink key={link.label} to={link.to} className="text-sm font-semibold leading-[160%] text-black hover:opacity-70">
                   {link.label}

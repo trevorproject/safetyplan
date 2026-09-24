@@ -6,10 +6,12 @@ import { ChevronRightIcon } from '../components/welcome/icons';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
 import { loadPlan } from '../lib/storage';
-import { completedPlanHeroContent, reminderCardContent, finishedPlanContent } from '../data/completedPlanContent';
+import { useCompletedPlanContent } from '../data/completedPlanContent';
 import type { SafetyPlanData } from '../types/app';
 
-function buildShareText(plan: SafetyPlanData | null) {
+type FinishedPlanContent = ReturnType<typeof useCompletedPlanContent>['finishedPlanContent'];
+
+function buildShareText(plan: SafetyPlanData | null, finishedPlanContent: FinishedPlanContent) {
   if (!plan) return '';
   const lines = [finishedPlanContent.shareSubject, ''];
   for (const section of finishedPlanContent.sections) {
@@ -26,6 +28,7 @@ function buildShareText(plan: SafetyPlanData | null) {
 
 export function CompletedPlanPage() {
   const plan = loadPlan();
+  const { completedPlanHeroContent, reminderCardContent, finishedPlanContent } = useCompletedPlanContent();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   // Once the plan is built the user lands here from the wizard; move focus (and
@@ -39,7 +42,7 @@ export function CompletedPlanPage() {
   const handlePrint = () => window.print();
 
   const handleShare = async () => {
-    const text = buildShareText(plan);
+    const text = buildShareText(plan, finishedPlanContent);
     if (navigator.share) {
       try {
         await navigator.share({ title: finishedPlanContent.shareSubject, text });

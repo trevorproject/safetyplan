@@ -1,11 +1,11 @@
 import { useAccessibility } from '../../context/accessibility';
-import { accessibilityWidgetContent } from '../../data/accessibilityContent';
+import { useAccessibilityContent } from '../../data/accessibilityContent';
 import { PauseIcon, PlayIcon, StopIcon } from './icons';
 
 export function ScreenReaderPanel() {
   const { sections, speakSection, speakAll, pauseSpeech, resumeSpeech, stopSpeech, speakingId, isPaused, speechSupported } =
     useAccessibility();
-  const content = accessibilityWidgetContent.reader;
+  const content = useAccessibilityContent().reader;
 
   if (!speechSupported) {
     return <p className="text-sm text-black/70">{content.unsupported}</p>;

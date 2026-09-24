@@ -4,11 +4,13 @@ import warningSignsIcon from '../../assets/TTP_IconsLibrary_White_Program - Educ
 import copingIcon from '../../assets/TTP_IconsLibrary_White_Volunteer.png';
 import supportsIcon from '../../assets/TTP_IconsLibrary_White_Program - Crisis Services.png';
 import environmentIcon from '../../assets/TTP_IconsLibrary_White_Work at Trevor.png';
-import { howItWorksContent } from '../../data/wizardContent';
+import { useWizardContent } from '../../data/wizardContent';
 
 const CARD_ICONS = [warningSignsIcon, copingIcon, supportsIcon, environmentIcon];
 
 export function HowItWorks() {
+  const { howItWorksContent } = useWizardContent();
+
   return (
     <section className="flex flex-col items-center gap-16 bg-brand-gray px-6 py-16 lg:px-16 lg:py-24">
       <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">

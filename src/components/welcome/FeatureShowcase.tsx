@@ -1,8 +1,10 @@
 import gardenIllustration from '../../assets/TTP_BrandIllustrations_TogetherWeGrow_Horizontal.webp';
 import trevorLogo from '../../assets/ttp_logo_primary_tagline_ko.png';
-import { featureContent } from '../../data/welcomeContent';
+import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function FeatureShowcase() {
+  const { featureContent } = useWelcomeContent();
+
   return (
     <section className="flex flex-col items-center gap-20 bg-brand-purple px-6 py-16 lg:px-16 lg:py-28">
       <div className="flex w-full max-w-[1280px] flex-col gap-20">

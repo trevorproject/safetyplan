@@ -3,6 +3,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 import { AccessibilityProvider } from '../context/AccessibilityContext';
+import { LanguageProvider } from '../context/LanguageContext';
+import { ThemeProvider } from '../context/ThemeContext';
 
 /** Tailwind v4 default breakpoints, plus the two narrowest supported phones. */
 export const BREAKPOINTS = {
@@ -91,7 +93,11 @@ export function renderResponsive(ui: ReactElement, width: number, options: Rende
   setViewport(width);
   return render(
     <MemoryRouter initialEntries={[options.route ?? '/']}>
-      <AccessibilityProvider>{ui}</AccessibilityProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <AccessibilityProvider>{ui}</AccessibilityProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </MemoryRouter>,
   );
 }

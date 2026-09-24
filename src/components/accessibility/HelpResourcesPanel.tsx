@@ -1,12 +1,12 @@
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
-import { accessibilityWidgetContent } from '../../data/accessibilityContent';
-import { lifelineCard, trevorCard } from '../../data/resourcesContent';
-
-const CARDS = [trevorCard, lifelineCard];
+import { useAccessibilityContent } from '../../data/accessibilityContent';
+import { useResourcesContent } from '../../data/resourcesContent';
 
 export function HelpResourcesPanel() {
-  const content = accessibilityWidgetContent.help;
+  const content = useAccessibilityContent().help;
+  const { lifelineCard, trevorCard } = useResourcesContent();
+  const CARDS = [trevorCard, lifelineCard];
 
   return (
     <div className="flex flex-col gap-4">
