@@ -1,4 +1,4 @@
-import gardenIllustration from '../../assets/TTP_BrandIllustrations_TogetherWeGrow_Horizontal.png';
+import gardenIllustration from '../../assets/TTP_BrandIllustrations_TogetherWeGrow_Horizontal.webp';
 import trevorLogo from '../../assets/ttp_logo_primary_tagline_ko.png';
 import { featureContent } from '../../data/welcomeContent';
 
@@ -24,7 +24,13 @@ export function FeatureShowcase() {
           </div>
         </div>
 
-        <img src={gardenIllustration} alt="" className="h-auto w-full rounded-[40px] object-cover" />
+        <img
+          src={gardenIllustration}
+          alt=""
+          className="h-auto w-full rounded-[40px] object-cover"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     </section>
   );
