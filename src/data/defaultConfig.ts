@@ -1,5 +1,5 @@
-import { useLanguage } from '../context/language';
-import type { AppConfig, LocalizedConfig } from '../types/app';
+import { LANGUAGE_OPTIONS, useLanguage, type Language } from '../context/language';
+import type { AppConfig, LocalizedConfig, SafetyPlanData } from '../types/app';
 
 const en: LocalizedConfig = {
   title: 'Safety Plan',
@@ -152,4 +152,39 @@ export const defaultConfig: AppConfig = { en, es, adminPassword: 'safety-plan-20
 export function useDefaultConfig(): LocalizedConfig {
   const { language } = useLanguage();
   return defaultConfig[language];
+}
+
+type PlanListField = keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>;
+
+const PLAN_FIELD_STEP_IDS: Record<PlanListField, string> = {
+  warningSigns: 'warning-signs',
+  copingStrategies: 'coping',
+  supports: 'supports',
+  environment: 'environment',
+};
+
+function stepOptions(language: Language, stepId: string): string[] {
+  return defaultConfig[language].wizardSteps.find((step) => step.id === stepId)?.options ?? [];
+}
+
+/**
+ * The plan stores the option labels the user picked, so a language switch would
+ * leave earlier answers in the old language. Preset options are matched by their
+ * position in each language's list; anything the user typed is kept as-is.
+ */
+function translateOption(value: string, stepId: string, target: Language): string {
+  const targetOptions = stepOptions(target, stepId);
+  for (const { code } of LANGUAGE_OPTIONS) {
+    const index = stepOptions(code, stepId).indexOf(value);
+    if (index !== -1 && targetOptions[index]) return targetOptions[index];
+  }
+  return value;
+}
+
+export function localizePlan(plan: SafetyPlanData, language: Language): SafetyPlanData {
+  const localized = { ...plan };
+  for (const [field, stepId] of Object.entries(PLAN_FIELD_STEP_IDS) as [PlanListField, string][]) {
+    localized[field] = Array.from(new Set((plan[field] ?? []).map((value) => translateOption(value, stepId, language))));
+  }
+  return localized;
 }

@@ -7,6 +7,7 @@ import {
   type ColorVisionMode,
   type SpeakableSectionEntry,
 } from './accessibility';
+import { useLanguage } from './language';
 
 const COLOR_VISION_STORAGE_KEY = 'safety-plan-color-vision';
 const COLOR_VISION_MODES: ColorVisionMode[] = ['none', 'protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia'];
@@ -34,6 +35,7 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  const { language } = useLanguage();
   const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
   useEffect(() => {
@@ -82,13 +84,14 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       window.speechSynthesis.cancel();
       node?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language;
       utterance.onend = () => setSpeakingId((current) => (current === id ? null : current));
       utterance.onerror = () => setSpeakingId((current) => (current === id ? null : current));
       setSpeakingId(id);
       setIsPaused(false);
       window.speechSynthesis.speak(utterance);
     },
-    [speechSupported],
+    [speechSupported, language],
   );
 
   const speakSection = useCallback(

@@ -3,6 +3,7 @@ import { ImagePlaceholderIcon } from './icons';
 import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function IntroSection() {
+  const { introContent } = useWelcomeContent();
   const [headingBefore, headingAfter] = introContent.heading.split(introContent.headingEmphasis);
 
   return (

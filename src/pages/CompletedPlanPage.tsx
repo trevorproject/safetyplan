@@ -7,6 +7,8 @@ import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
 import { loadPlan } from '../lib/storage';
 import { useCompletedPlanContent } from '../data/completedPlanContent';
+import { localizePlan } from '../data/defaultConfig';
+import { useLanguage } from '../context/language';
 import type { SafetyPlanData } from '../types/app';
 
 type FinishedPlanContent = ReturnType<typeof useCompletedPlanContent>['finishedPlanContent'];
@@ -27,7 +29,9 @@ function buildShareText(plan: SafetyPlanData | null, finishedPlanContent: Finish
 }
 
 export function CompletedPlanPage() {
-  const plan = loadPlan();
+  const { language } = useLanguage();
+  const storedPlan = loadPlan();
+  const plan = storedPlan && localizePlan(storedPlan, language);
   const { completedPlanHeroContent, reminderCardContent, finishedPlanContent } = useCompletedPlanContent();
   const headingRef = useRef<HTMLHeadingElement>(null);
 

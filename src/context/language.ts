@@ -9,6 +9,11 @@ export interface LanguageContextValue {
 
 export const LANGUAGE_STORAGE_KEY = 'safety-plan-language';
 
+export const LANGUAGE_OPTIONS: { code: Language; label: string }[] = [
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+];
+
 /**
  * Resolves the initial language: a previously saved choice wins, otherwise we
  * fall back to the browser's language setting, defaulting to English.
