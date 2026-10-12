@@ -14,6 +14,7 @@ The current implementation includes:
 - a six-step wizard for building a plan
 - a completed plan page that can be printed
 - an admin page protected by a shared password for editing the app content
+- the whole site in English and Spanish, switchable at any time
 
 ## Core Principles
 
@@ -53,6 +54,14 @@ Then open:
 http://localhost:5173/
 ```
 
+## Run Tests
+
+```bash
+npm test            # run the whole suite once
+npm run test:watch  # watch mode while developing
+npm run test:types  # type-check the test files
+```
+
 ## Build for Production
 
 ```bash
@@ -63,9 +72,16 @@ npm run build
 
 - src/pages: page-level views for the experience
 - src/components: reusable UI elements and layout
-- src/data: default content and config defaults
+- src/context: app-wide state (language, theme, accessibility)
+- src/data: all user-facing text, in English and Spanish, and config defaults
 - src/lib: local persistence helpers
 - src/types: shared TypeScript types
+
+## Languages (English / Spanish)
+
+The site is available in English and Spanish. Users switch from the **Language / Idioma** menu in the navbar (desktop dropdown or mobile menu). On the first visit the app follows the browser language, and after that it remembers the user's choice in `localStorage`. Switching also updates the page `lang`, the tab title, the read-aloud voice and any wizard answers already selected.
+
+All text lives in `src/data/`: each file has an English and a Spanish version and a `useXContent()` hook that returns the active one. To change any text, edit **both** versions in the same file. `npm test` fails if the two languages stop matching. See the "Multilanguage" section in [context.md](context.md) for how it works, how to add text, and how to add another language.
 
 ## Admin Configuration
 
@@ -74,6 +90,8 @@ The admin screen is currently a simple password-protected interface for editing:
 - welcome intro text
 - resources
 - wizard step content
+
+Content is edited separately for each language; use the language toggle at the top of the editor to switch between English and Spanish.
 
 This is intentionally lightweight and browser-based for the current phase.
 

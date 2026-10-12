@@ -37,6 +37,7 @@ The initial version now includes:
 - a completed plan view that can be printed
 - an admin configuration page with a simple shared password gate
 - browser-based persistence for the plan and editable content
+- the whole site in English and Spanish, switchable at any time from the navbar (see "Multilanguage (English / Spanish)")
 
 ## Core Experience
 
@@ -98,6 +99,64 @@ UX expectations:
 - visible focus states
 - no shame-based or overly clinical language
 - calm visual design informed by the Figma prototype
+
+## Multilanguage (English / Spanish)
+Every page, including the accessibility panel and the admin page, is available in English (`en`) and Spanish (`es`). The user can switch at any moment from the **Language / Idioma** dropdown in the desktop navbar or from the mobile menu, and the admin page has its own language toggle that also selects which language's content is being edited.
+
+### How the language is chosen
+- The active language lives in `LanguageProvider` ([LanguageContext.tsx](src/context/LanguageContext.tsx)), mounted in [App.tsx](src/App.tsx) around the routes and the accessibility provider.
+- On first load, `loadStoredLanguage()` ([language.ts](src/context/language.ts)) uses a previously saved choice if there is one, otherwise the browser language (`es-*` → Spanish, anything else → English).
+- The choice is saved in `localStorage` under `safety-plan-language`. Like the theme, this is a preference, not user data.
+- When the language changes, the provider also updates `<html lang>`, the browser tab title and the meta description, so screen readers and the browser use the right language.
+- Read-aloud (accessibility panel) uses a voice in the active language, and the panel's section names update after a switch.
+
+### Where the text lives
+All user-facing copy lives in `src/data/`, never directly in components. Each content file follows the same pattern:
+
+```ts
+export const thingContent = { heading: 'English text', ... };  // English
+const en = thingContent;
+const es: typeof en = { heading: 'Texto en español', ... };     // Spanish
+export function useThingContent() {
+  const { language } = useLanguage();
+  return language === 'es' ? es : en;
+}
+```
+
+- `const es: typeof en` makes TypeScript reject a Spanish version that is missing a key or has an extra one.
+- Components call the hook (`const { heroContent } = useWelcomeContent();`) and never import text in a specific language.
+- Routes, URLs and ids (`to`, `url`, `id`, `stepId`, `field`, `category`) must be identical in both languages; only the text is translated.
+- The English exports (`thingContent`) are still exported so existing tests can reference the default copy.
+
+| File | Used by |
+| --- | --- |
+| `welcomeContent.ts` | navbar, footer, welcome page |
+| `resourcesContent.ts` | resources page, "Get help" tab of the accessibility panel |
+| `wizardContent.ts` | wizard page and its components |
+| `defaultConfig.ts` | wizard steps and options, resources list, admin defaults (`defaultConfig.en` / `defaultConfig.es`) |
+| `completedPlanContent.ts` | completed plan page |
+| `accessibilityContent.ts` | accessibility widget and panels |
+| `adminContent.ts` | admin page |
+| `appShellContent.ts` | admin layout (`AppShell`) |
+| `themeToggleContent.ts` | dark / light mode button |
+
+### Wizard answers and the language switch
+The plan stores the text of the options the user picked (e.g. `"Crying"`). So that answers are not left in the old language, `localizePlan()` in [defaultConfig.ts](src/data/defaultConfig.ts) translates them:
+- preset options are matched by their **position** in the step's option list, so `options[i]` in English must mean the same as `options[i]` in Spanish;
+- anything the user typed ("Other…") and the final free-text message are kept exactly as written;
+- the wizard re-translates its saved plan when the language changes, and the completed plan page translates on display.
+
+### Adding or changing text
+1. Edit the English value and the Spanish value in the same `src/data/*Content.ts` file. Both are required.
+2. For wizard options, keep both lists in the same order and the same length.
+3. Run `npm test`. `src/data/translations.test.tsx` fails if the two languages stop matching.
+
+### Adding another language
+1. Add the code to `Language` and `LANGUAGE_OPTIONS` in [language.ts](src/context/language.ts), and update the checks in `loadStoredLanguage()`.
+2. Add its title and description to `DOCUMENT_META` in [LanguageContext.tsx](src/context/LanguageContext.tsx).
+3. Add a translated object to each file in `src/data/` and return it from that file's hook.
+4. Add it to `AppConfig` in [app.ts](src/types/app.ts) and to `defaultConfig`.
+5. Add the language to the tests (see "Multilanguage tests" below).
 
 ## Design Direction
 The visual language should remain:
@@ -214,13 +273,29 @@ When you add a component, add `ComponentName.test.tsx` next to it that:
 4. exercises any tap-to-toggle behaviour that replaces a hover interaction on
    mobile (menus, dropdowns, "Other…" fields).
 
+## Multilanguage tests
+These tests check that switching language works and that English and Spanish stay in sync. Like the rest of the suite they run with `npm test`.
+
+| Test file | What it checks |
+| --- | --- |
+| [language.test.ts](src/context/language.test.ts) | initial language (saved choice, then browser locale, then English), the language options, and the safe default when there is no provider |
+| [LanguageContext.test.tsx](src/context/LanguageContext.test.tsx) | switching from the desktop dropdown and the mobile menu, `<html lang>`, tab title and meta description, saving the choice, every page rendered in Spanish, wizard answers carried across a switch, and the read-aloud voice language |
+| [translations.test.tsx](src/data/translations.test.tsx) | for every `src/data` content hook: Spanish has exactly the same structure as English, routes/URLs/ids are identical, and no text is empty |
+| [defaultConfig.test.ts](src/data/defaultConfig.test.ts) | wizard steps and option counts match across languages, and `localizePlan()` (translation, round trip, custom answers, duplicates, old partial data) |
+| [ThemeToggle.test.tsx](src/components/common/ThemeToggle.test.tsx), [SpeakableSection.test.tsx](src/components/accessibility/SpeakableSection.test.tsx), [AdminPage.test.tsx](src/pages/AdminPage.test.tsx) | each component's own Spanish labels, and the admin editor editing each language separately |
+
+Notes for writing more of these tests:
+- The chosen language is saved in `localStorage`, so clear it in `beforeEach` to keep tests independent. To start a test in Spanish, set `localStorage.setItem(LANGUAGE_STORAGE_KEY, 'es')` before rendering.
+- `renderResponsive` already wraps the UI in `LanguageProvider`.
+- Use `fireEvent` (not `userEvent`) to pick a language from the desktop dropdown: the dropdown closes on `mouseleave`, and `userEvent`'s simulated pointer movement triggers that in jsdom.
+
 ## Design & Content Rules
 - Any changes to design must be confirmed with the user before they are made — do not make design changes unilaterally.
 - Do not invent CSS values (colors, spacing, fonts, etc.). If a CSS element/value is needed, ask the user and they will provide it.
 - Do not create new elements or text (copy/content) on your own — this must come from the user.
 
 ## Current Content Approach
-The app uses a default configuration object for core content so content can be edited centrally from the admin screen. This keeps the first version lightweight and easy to maintain while still supporting customization.
+The app uses a default configuration object for core content so content can be edited centrally from the admin screen. This keeps the first version lightweight and easy to maintain while still supporting customization. All content exists in English and Spanish (see "Multilanguage (English / Spanish)"), and the admin screen edits each language separately.
 
 ## Planned Next Steps
 - refine the UI to match the Figma more closely
@@ -228,6 +303,7 @@ The app uses a default configuration object for core content so content can be e
 - improve the printable plan layout and export experience
 - strengthen admin editing flows and content validation
 - consider a future serverless setup if admin configuration needs to be shared across devices
+- make the pages read the content saved from the admin screen (today they use the defaults in `src/data/defaultConfig.ts`, in both languages)
 
 ## Deployment Notes
 - The app is being prepared for Vercel-style deployment
