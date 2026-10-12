@@ -9,12 +9,14 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { AccessibilityWidget } from './components/accessibility/AccessibilityWidget';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { RegionProvider } from './context/RegionContext';
 
 function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
         <LanguageProvider>
+        <RegionProvider>
         <AccessibilityProvider>
           <Routes>
             <Route path="/" element={<WelcomePage />} />
@@ -28,6 +30,7 @@ function App() {
           </Routes>
           <AccessibilityWidget />
         </AccessibilityProvider>
+        </RegionProvider>
         </LanguageProvider>
       </ThemeProvider>
     </BrowserRouter>

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { expect } from 'vitest';
 import { AccessibilityProvider } from '../context/AccessibilityContext';
 import { LanguageProvider } from '../context/LanguageContext';
+import { RegionProvider } from '../context/RegionContext';
 import { ThemeProvider } from '../context/ThemeContext';
 
 /**
@@ -106,9 +107,11 @@ export function renderResponsive(ui: ReactElement, width: number, options: Rende
   return render(
     <MemoryRouter initialEntries={[options.route ?? '/']}>
       <LanguageProvider>
-        <ThemeProvider>
-          <AccessibilityProvider>{ui}</AccessibilityProvider>
-        </ThemeProvider>
+        <RegionProvider>
+          <ThemeProvider>
+            <AccessibilityProvider>{ui}</AccessibilityProvider>
+          </ThemeProvider>
+        </RegionProvider>
       </LanguageProvider>
     </MemoryRouter>,
   );

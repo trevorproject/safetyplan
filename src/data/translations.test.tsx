@@ -31,7 +31,7 @@ const CONTENT_HOOKS: Record<string, () => unknown> = {
 };
 
 /** Keys whose values are identifiers or links, never translated copy. */
-const NON_TRANSLATABLE_KEYS = new Set(['to', 'url', 'id', 'stepId', 'field', 'category']);
+const NON_TRANSLATABLE_KEYS = new Set(['to', 'url', 'id', 'stepId', 'field', 'category', 'code']);
 
 function contentIn(hook: () => unknown, language: Language) {
   window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
