@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '../../context/ThemeContext';
 import { THEME_STORAGE_KEY } from '../../context/theme';
+import { LanguageProvider } from '../../context/LanguageContext';
+import { LANGUAGE_STORAGE_KEY } from '../../context/language';
 import { ThemeToggle } from './ThemeToggle';
 
 function renderToggle() {
@@ -57,5 +59,25 @@ describe('ThemeToggle', () => {
     renderToggle();
 
     expect(screen.getByRole('button', { name: 'Switch to light mode' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});
+
+describe('ThemeToggle in Spanish', () => {
+  it('labels both states in Spanish when Spanish is active', async () => {
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, 'es');
+    const user = userEvent.setup();
+    render(
+      <LanguageProvider>
+        <ThemeProvider>
+          <ThemeToggle />
+        </ThemeProvider>
+      </LanguageProvider>,
+    );
+
+    const button = screen.getByRole('button', { name: 'Cambiar a modo oscuro' });
+    expect(button).toHaveAttribute('title', 'Cambiar a modo oscuro');
+
+    await user.click(button);
+    expect(screen.getByRole('button', { name: 'Cambiar a modo claro' })).toHaveAttribute('title', 'Cambiar a modo claro');
   });
 });

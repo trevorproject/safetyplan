@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { AccessibilityProvider } from '../../context/AccessibilityContext';
 import { useAccessibility } from '../../context/accessibility';
+import { LanguageProvider } from '../../context/LanguageContext';
+import { useLanguage } from '../../context/language';
 import { SpeakableSection } from './SpeakableSection';
 
 function SectionList() {
@@ -73,6 +75,35 @@ describe('SpeakableSection', () => {
 
     rerender(<Wrapper show={false} />);
     expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+  });
+
+  it('re-reads its heading-derived label after a language switch', () => {
+    window.localStorage.clear();
+    function LocalizedHeading() {
+      const { language, setLanguage } = useLanguage();
+      return (
+        <>
+          <h2>{language === 'es' ? 'Hola' : 'Hello'}</h2>
+          <button type="button" onClick={() => setLanguage('es')}>
+            switch
+          </button>
+        </>
+      );
+    }
+    render(
+      <LanguageProvider>
+        <AccessibilityProvider>
+          <SpeakableSection id="greeting">
+            <LocalizedHeading />
+          </SpeakableSection>
+          <SectionList />
+        </AccessibilityProvider>
+      </LanguageProvider>,
+    );
+    expect(screen.getByRole('listitem')).toHaveTextContent('Hello');
+
+    fireEvent.click(screen.getByRole('button', { name: 'switch' }));
+    expect(screen.getByRole('listitem')).toHaveTextContent('Hola');
   });
 
   it('renders with display: contents by default so it never affects layout', () => {

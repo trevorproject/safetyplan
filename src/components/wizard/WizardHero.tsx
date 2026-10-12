@@ -1,7 +1,9 @@
 import reachForStarsIllustration from '../../assets/TTP_BrandIllustrations_ReachForTheStars_Horizontal.png';
-import { wizardHeroContent } from '../../data/wizardContent';
+import { useWizardContent } from '../../data/wizardContent';
 
 export function WizardHero() {
+  const { wizardHeroContent } = useWizardContent();
+
   return (
     <section
       className="flex flex-col items-center gap-20 px-6 py-16 lg:px-16 lg:py-36"

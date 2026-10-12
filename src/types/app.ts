@@ -14,12 +14,17 @@ export interface WizardStepConfig {
   options?: string[];
 }
 
-export interface AppConfig {
+export interface LocalizedConfig {
   title: string;
   description: string;
   intro: string;
   resources: ResourceItem[];
   wizardSteps: WizardStepConfig[];
+}
+
+export interface AppConfig {
+  en: LocalizedConfig;
+  es: LocalizedConfig;
   adminPassword: string;
 }
 

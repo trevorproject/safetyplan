@@ -1,4 +1,5 @@
-// Copy for the wizard page. Centralized here so component files stay free of literal strings.
+
+import { useLanguage } from '../context/language';
 
 export const wizardHeroContent = {
   heading: 'Your safety plan',
@@ -46,4 +47,61 @@ export const buildPlanContent = {
   backLabel: 'Back',
   restartLabel: 'Restart',
   selectPlaceholder: 'Select...',
+  progressLabel: 'Safety plan progress',
 };
+
+const en = { wizardHeroContent, howItWorksContent, buildPlanContent };
+
+const es: typeof en = {
+  wizardHeroContent: {
+    heading: 'Tu plan de seguridad',
+    body: 'Un camino claro hacia adelante, ya sea que necesites ayuda ahora mismo o quieras prepararte para los días difíciles.',
+  },
+  howItWorksContent: {
+    heading: 'Cómo funciona el plan',
+    body: 'Unas preguntas sencillas para construir algo sólido y verdadero.',
+    cards: [
+      {
+        stepId: 'warning-signs',
+        heading: 'Nombra los momentos difíciles',
+        text: 'Te preguntamos qué aparece antes de la oscuridad. Los lugares. Los sentimientos.',
+        linkLabel: 'Señales de alerta',
+      },
+      {
+        stepId: 'coping',
+        heading: 'Encuentra lo que te da estabilidad',
+        text: 'Nos dices qué acción calma el ruido. Una caminata. Una canción.',
+        linkLabel: 'Afrontamiento',
+      },
+      {
+        stepId: 'supports',
+        heading: 'Elige a tu gente',
+        text: 'Selecciona las voces de confianza a las que puedes llamar cuando el peso es demasiado.',
+        linkLabel: 'Apoyos',
+      },
+      {
+        stepId: 'environment',
+        heading: 'Construye un espacio seguro',
+        text: 'Define el lugar físico o la imagen mental que se siente como refugio.',
+        linkLabel: 'Entorno',
+      },
+    ],
+  },
+  buildPlanContent: {
+    heading: 'Crea tu plan',
+    body: 'Responde con honestidad. Aquí no hay respuestas incorrectas.',
+    otherLabel: 'Otro...',
+    consentLabel: 'Entiendo que esto no es atención de emergencia',
+    submitLabel: 'Crear tu plan',
+    continueLabel: 'Continuar',
+    backLabel: 'Atrás',
+    restartLabel: 'Reiniciar',
+    selectPlaceholder: 'Selecciona...',
+    progressLabel: 'Progreso del plan de seguridad',
+  },
+};
+
+export function useWizardContent() {
+  const { language } = useLanguage();
+  return language === 'es' ? es : en;
+}

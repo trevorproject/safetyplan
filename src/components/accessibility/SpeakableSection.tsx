@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useAccessibility } from '../../context/accessibility';
+import { useLanguage } from '../../context/language';
 
 function humanizeId(id: string): string {
   return id
@@ -26,6 +27,7 @@ interface SpeakableSectionProps {
  */
 export function SpeakableSection({ id, label, className = 'contents', children }: SpeakableSectionProps) {
   const { registerSection, unregisterSection } = useAccessibility();
+  const { language } = useLanguage();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +35,8 @@ export function SpeakableSection({ id, label, className = 'contents', children }
     const derivedLabel = label ?? node?.querySelector('h1,h2,h3,h4')?.textContent?.trim() ?? humanizeId(id);
     registerSection({ id, label: derivedLabel, getNode: () => ref.current });
     return () => unregisterSection(id);
-  }, [id, label, registerSection, unregisterSection]);
+    // `language` re-runs this so the heading-derived label follows a language switch.
+  }, [id, label, language, registerSection, unregisterSection]);
 
   return (
     <div ref={ref} className={className}>

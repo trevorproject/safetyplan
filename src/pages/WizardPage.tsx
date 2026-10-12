@@ -8,8 +8,9 @@ import { StepProgress } from '../components/wizard/StepProgress';
 import { MultiSelectField } from '../components/wizard/MultiSelectField';
 import { CheckboxGrid } from '../components/wizard/CheckboxGrid';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import { defaultConfig } from '../data/defaultConfig';
-import { buildPlanContent } from '../data/wizardContent';
+import { localizePlan, useDefaultConfig } from '../data/defaultConfig';
+import { useWizardContent } from '../data/wizardContent';
+import { useLanguage } from '../context/language';
 import { clearPlan, loadPlan, savePlan } from '../lib/storage';
 import type { SafetyPlanData } from '../types/app';
 
@@ -24,10 +25,20 @@ const initialPlan: SafetyPlanData = {
 export function WizardPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [plan, setPlan] = useState<SafetyPlanData>(() => ({ ...initialPlan, ...loadPlan() }));
+  const { language } = useLanguage();
+  const [plan, setPlan] = useState<SafetyPlanData>(() => localizePlan({ ...initialPlan, ...loadPlan() }, language));
+  const [planLanguage, setPlanLanguage] = useState(language);
   const [consent, setConsent] = useState(false);
+  const { buildPlanContent } = useWizardContent();
 
-  const steps = defaultConfig.wizardSteps;
+  const steps = useDefaultConfig().wizardSteps;
+
+  // Keep already-selected options in step with the active language so they stay
+  // checked and read correctly after switching languages mid-wizard.
+  if (planLanguage !== language) {
+    setPlanLanguage(language);
+    setPlan((prev) => localizePlan(prev, language));
+  }
 
   useEffect(() => {
     savePlan(plan);

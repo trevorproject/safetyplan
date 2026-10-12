@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from './AppShell';
+import { ThemeProvider } from '../../context/ThemeContext';
 import {
   BREAKPOINT_LIST,
   setViewport,
@@ -16,11 +17,13 @@ function renderShell(width: number) {
   setViewport(width);
   return render(
     <MemoryRouter initialEntries={['/admin']}>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route path="/admin" element={<p>admin outlet</p>} />
-        </Route>
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route path="/admin" element={<p>admin outlet</p>} />
+          </Route>
+        </Routes>
+      </ThemeProvider>
     </MemoryRouter>,
   );
 }

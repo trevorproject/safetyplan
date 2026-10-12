@@ -2,9 +2,11 @@ import lifelineImage from '../../assets/988.png';
 import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_LearnTogether_Horizontal.png';
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
-import { freeResourcesContent, lifelineCard, trevorCard } from '../../data/resourcesContent';
+import { useResourcesContent } from '../../data/resourcesContent';
 
 export function FreeResources() {
+  const { freeResourcesContent, lifelineCard, trevorCard } = useResourcesContent();
+
   return (
     <section className="flex flex-col items-center gap-20 bg-brand-purple px-6 pb-16 pt-[24px] lg:px-16 lg:pb-28">
       <div className="flex w-full max-w-[1280px] flex-col items-start gap-20">
@@ -24,7 +26,7 @@ export function FreeResources() {
           <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-8">
             <img
               src={learnTogetherIllustration}
-              alt="The Trevor Project"
+              alt={freeResourcesContent.learnTogetherImageAlt}
               className="h-[405px] w-full rounded-[40px] object-cover"
             />
             <div className="flex w-full flex-col items-start gap-6">
@@ -49,7 +51,7 @@ export function FreeResources() {
           <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-0.5">
             <img
               src={lifelineImage}
-              alt="988 Suicide & Crisis Lifeline"
+              alt={lifelineCard.imageAlt}
               className="h-[189px] w-full rounded-[40px] object-cover"
             />
             <div className="flex w-full flex-col items-start gap-6 pt-6">
