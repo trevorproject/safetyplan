@@ -38,7 +38,7 @@ The initial version now includes:
 - an admin configuration page with a simple shared password gate
 - browser-based persistence for the plan and editable content
 - the whole site in English and Spanish, switchable at any time from the navbar (see "Multilanguage (English / Spanish)")
-- a region preference (United States / Mexico) in the navbar, with regional date and phone formats (see "Localization (region: United States / Mexico)")
+- a region preference (United States / Mexico / Global) in the navbar, with regional date and phone formats (see "Localization (region: United States / Mexico / Global)")
 
 ## Core Experience
 
@@ -159,34 +159,34 @@ The plan stores the text of the options the user picked (e.g. `"Crying"`). So th
 4. Add it to `AppConfig` in [app.ts](src/types/app.ts) and to `defaultConfig`.
 5. Add the language to the tests (see "Multilanguage tests" below).
 
-## Localization (region: United States / Mexico)
-Separate from the language, the user can say which country they are in from the **Region / Región** dropdown in the desktop navbar or from the mobile menu. Language and region are independent (e.g. Spanish in the United States is valid). The region will decide which resources are shown on the resources page (not wired yet).
+## Localization (region: United States / Mexico / Global)
+Separate from the language, the user can say where they are from the **Region / Región** dropdown in the desktop navbar or from the mobile menu: **United States**, **Mexico**, or **Global** for the rest of the world. Language and region are independent (e.g. Spanish in the United States is valid). The region will decide which resources are shown on the resources page (not wired yet).
 
 ### How the region is chosen
 - The active region lives in `RegionProvider` ([RegionContext.tsx](src/context/RegionContext.tsx)), mounted in [App.tsx](src/App.tsx) inside `LanguageProvider`.
 - On first load, `loadStoredRegion()` ([region.ts](src/context/region.ts)) uses a previously saved choice, otherwise `DEFAULT_REGION` (`us`, the original market). The region is **never detected** from the browser or IP: auto-detection is out of scope.
 - The choice is saved in `localStorage` under `safety-plan-region`. Like the language and theme, it is a preference, not user data.
 - `useRegion()` without a provider returns `us` with a no-op setter, so components render in isolation.
-- The option labels live in `welcomeContent.ts` (`navRegionLabel`, `regionOptions`), in both languages; the codes (`us`, `mx`) are the same in both.
+- The option labels live in `welcomeContent.ts` (`navRegionLabel`, `regionOptions`), in both languages; the codes (`us`, `mx`, `global`) are the same in both. "Global" is the label in both languages.
 
 ### Regional formats
-[locale.ts](src/lib/locale.ts) holds the formatting helpers. Components should use the `useLocale()` hook, which binds them to the current language + region (locale tag `en-US`, `es-MX`, `es-US`, `en-MX`):
+[locale.ts](src/lib/locale.ts) holds the formatting helpers. Components should use the `useLocale()` hook, which binds them to the current language + region (locale tag `en-US`, `es-MX`, `es-US`, `en-MX`; for `global` only the language, `en` / `es`):
 - `formatDate` / `formatTime`: `Intl.DateTimeFormat` with the locale (US `3/5/2026`, MX `5/3/2026`).
-- `formatPhoneNumber`: US `(866) 488-7386`; MX `55 1234 5678` (Mexico City, Guadalajara, Monterrey) or `222 123 4567`. A leading `+1` / `+52` is accepted. Short codes (`988`, `911`) and anything that is not a 10-digit national number are returned unchanged, so a number is never broken.
-- `toTelHref`: international `tel:` link (`tel:+525512345678`); short codes stay as they are.
+- `formatPhoneNumber`: US `(866) 488-7386`; MX `55 1234 5678` (Mexico City, Guadalajara, Monterrey) or `222 123 4567`. A leading `+1` / `+52` is accepted. Short codes (`988`, `911`) and anything that is not a 10-digit national number are returned unchanged, so a number is never broken. In `global` numbers are always shown as written, since no single format applies.
+- `toTelHref`: international `tel:` link (`tel:+525512345678`); short codes stay as they are. In `global` no country code is added and a leading `+` is kept.
 
 ### Adding another region
 1. Add the code to `Region`, `REGION_CODES` and `isRegion()` in [region.ts](src/context/region.ts).
 2. Add its label to `regionOptions` in both languages in `welcomeContent.ts`.
-3. Add its country code (and phone format, if different) in [locale.ts](src/lib/locale.ts).
+3. Add its country code (and phone format, if different) in [locale.ts](src/lib/locale.ts). A region without a country, like `global`, needs no country code; handle it like `global` in `toLocaleTag`, `formatPhoneNumber` and `toTelHref`.
 4. Add it to the tests below.
 
 ### Region tests
 | Test file | What it checks |
 | --- | --- |
-| [region.test.ts](src/context/region.test.ts) | saved region, default `us`, no detection from the browser locale, invalid saved values, no-provider default |
+| [region.test.ts](src/context/region.test.ts) | saved region (including `global`), default `us`, no detection from the browser locale, invalid saved values, no-provider default |
 | [RegionContext.test.tsx](src/context/RegionContext.test.tsx) | switching from the desktop dropdown and the mobile menu, saving and restoring the choice, Spanish labels, independence from the language dropdown |
-| [locale.test.tsx](src/lib/locale.test.tsx) | locale tags, date/time formats per locale, US/MX phone formats and fallbacks, `tel:` links, `useLocale()` following both selectors |
+| [locale.test.tsx](src/lib/locale.test.tsx) | locale tags (language only for `global`), date/time formats per locale, US/MX phone formats and fallbacks, numbers unchanged in `global`, `tel:` links, `useLocale()` following both selectors |
 
 To start a test in a region, set `localStorage.setItem(REGION_STORAGE_KEY, 'mx')` before rendering; `renderResponsive` already wraps the UI in `RegionProvider`.
 

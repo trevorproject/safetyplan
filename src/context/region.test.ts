@@ -12,6 +12,8 @@ describe('loadStoredRegion', () => {
     expect(loadStoredRegion()).toBe('mx');
     window.localStorage.setItem(REGION_STORAGE_KEY, 'us');
     expect(loadStoredRegion()).toBe('us');
+    window.localStorage.setItem(REGION_STORAGE_KEY, 'global');
+    expect(loadStoredRegion()).toBe('global');
   });
 
   it('defaults to the United States when nothing is saved', () => {
@@ -31,10 +33,12 @@ describe('loadStoredRegion', () => {
 });
 
 describe('REGION_CODES / isRegion', () => {
-  it('supports the United States and Mexico only', () => {
-    expect(REGION_CODES).toEqual(['us', 'mx']);
+  it('supports the United States, Mexico and Global only', () => {
+    expect(REGION_CODES).toEqual(['us', 'mx', 'global']);
     expect(isRegion('us')).toBe(true);
     expect(isRegion('mx')).toBe(true);
+    expect(isRegion('global')).toBe(true);
+    expect(isRegion('GLOBAL')).toBe(false);
     expect(isRegion('MX')).toBe(false);
     expect(isRegion(null)).toBe(false);
   });

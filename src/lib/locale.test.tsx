@@ -21,6 +21,11 @@ describe('toLocaleTag', () => {
     expect(toLocaleTag('es', 'us')).toBe('es-US');
     expect(toLocaleTag('en', 'mx')).toBe('en-MX');
   });
+
+  it('uses only the language for the global region', () => {
+    expect(toLocaleTag('en', 'global')).toBe('en');
+    expect(toLocaleTag('es', 'global')).toBe('es');
+  });
 });
 
 describe('formatDate / formatTime', () => {
@@ -63,6 +68,11 @@ describe('formatPhoneNumber', () => {
     expect(formatPhoneNumber('911', 'mx')).toBe('911');
     expect(formatPhoneNumber('Text START to 678-678', 'us')).toBe('Text START to 678-678');
   });
+
+  it('leaves every number unchanged in the global region', () => {
+    expect(formatPhoneNumber('8664887386', 'global')).toBe('8664887386');
+    expect(formatPhoneNumber('+44 20 7946 0958', 'global')).toBe('+44 20 7946 0958');
+  });
 });
 
 describe('toTelHref', () => {
@@ -73,6 +83,11 @@ describe('toTelHref', () => {
 
   it('keeps short codes as they are', () => {
     expect(toTelHref('988', 'us')).toBe('tel:988');
+  });
+
+  it('adds no country code in the global region, keeping a leading +', () => {
+    expect(toTelHref('+44 20 7946 0958', 'global')).toBe('tel:+442079460958');
+    expect(toTelHref('866 488 7386', 'global')).toBe('tel:8664887386');
   });
 });
 
@@ -100,5 +115,9 @@ describe('useLocale', () => {
     act(() => result.current.language.setLanguage('es'));
     expect(result.current.locale.locale).toBe('es-MX');
     expect(result.current.locale.formatDate(date)).toBe('5 de marzo de 2026');
+
+    act(() => result.current.region.setRegion('global'));
+    expect(result.current.locale.locale).toBe('es');
+    expect(result.current.locale.formatPhoneNumber('5512345678')).toBe('5512345678');
   });
 });

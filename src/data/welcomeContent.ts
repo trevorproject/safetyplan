@@ -18,6 +18,7 @@ export const navRegionLabel = 'Region';
 export const regionOptions: { code: Region; label: string }[] = [
   { code: 'us', label: 'United States' },
   { code: 'mx', label: 'Mexico' },
+  { code: 'global', label: 'Global' },
 ];
 export const primaryNavAriaLabel = 'Primary';
 export const toggleMenuAriaLabel = 'Toggle menu';
@@ -98,6 +99,7 @@ const es: typeof en = {
   regionOptions: [
     { code: 'us', label: 'Estados Unidos' },
     { code: 'mx', label: 'México' },
+    { code: 'global', label: 'Global' },
   ],
   primaryNavAriaLabel: 'Principal',
   toggleMenuAriaLabel: 'Alternar menú',
