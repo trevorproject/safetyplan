@@ -7,27 +7,24 @@ import trevorLogo from '../../assets/ttp_logo_primary_ko.png';
 import trevorAvatar from '../../assets/ttp_logo_avatar_ko.png';
 import { useWelcomeContent } from '../../data/welcomeContent';
 import { LANGUAGE_OPTIONS, useLanguage } from '../../context/language';
+import { useRegion } from '../../context/region';
 
 const NAV_LINK_CLASS = 'text-sm leading-[160%] text-white transition hover:opacity-70';
 
 export function WelcomeNavbar() {
-  const [langOpen, setLangOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { navLinks, navActions, navLanguageLabel, primaryNavAriaLabel, toggleMenuAriaLabel } = useWelcomeContent();
+  const {
+    navLinks,
+    navActions,
+    navLanguageLabel,
+    navRegionLabel,
+    regionOptions,
+    primaryNavAriaLabel,
+    toggleMenuAriaLabel,
+  } = useWelcomeContent();
   const { language, setLanguage } = useLanguage();
-  const langRef = useRef<HTMLDivElement>(null);
+  const { region, setRegion } = useRegion();
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!langOpen) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [langOpen]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -58,39 +55,8 @@ export function WelcomeNavbar() {
             </SmartLink>
           ))}
 
-          <div className="relative" ref={langRef} onMouseLeave={() => setLangOpen(false)}>
-            <button
-              type="button"
-              onClick={() => setLangOpen((open) => !open)}
-              className={`flex items-center gap-1 ${NAV_LINK_CLASS}`}
-              aria-expanded={langOpen}
-            >
-              {navLanguageLabel}
-              <ChevronDownIcon className={`h-4 w-4 transition ${langOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {langOpen && (
-              <div className="absolute left-1/2 top-full w-36 -translate-x-1/2 pt-2">
-                <div className="flex flex-col gap-4 rounded-3xl bg-brand-orange p-6 shadow-lg">
-                  {LANGUAGE_OPTIONS.map((option) => (
-                    <button
-                      key={option.code}
-                      type="button"
-                      onClick={() => {
-                        setLanguage(option.code);
-                        setLangOpen(false);
-                      }}
-                      aria-pressed={language === option.code}
-                      className={`text-left text-sm leading-[160%] text-white transition hover:opacity-70 ${
-                        language === option.code ? 'font-semibold underline' : ''
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <NavDropdown label={navLanguageLabel} options={LANGUAGE_OPTIONS} value={language} onSelect={setLanguage} />
+          <NavDropdown label={navRegionLabel} options={regionOptions} value={region} onSelect={setRegion} />
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -128,25 +94,102 @@ export function WelcomeNavbar() {
                     {link.label}
                   </SmartLink>
                 ))}
-                <span className="text-sm leading-[160%] text-white/70">{navLanguageLabel}</span>
-                {LANGUAGE_OPTIONS.map((option) => (
-                  <button
-                    key={option.code}
-                    type="button"
-                    onClick={() => setLanguage(option.code)}
-                    aria-pressed={language === option.code}
-                    className={`text-left text-sm leading-[160%] text-white transition hover:opacity-70 ${
-                      language === option.code ? 'font-semibold underline' : ''
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+                <MobileOptionGroup
+                  label={navLanguageLabel}
+                  options={LANGUAGE_OPTIONS}
+                  value={language}
+                  onSelect={setLanguage}
+                />
+                <MobileOptionGroup label={navRegionLabel} options={regionOptions} value={region} onSelect={setRegion} />
               </nav>
             )}
           </div>
         </div>
       </div>
     </header>
+  );
+}
+
+interface OptionGroupProps<T extends string> {
+  label: string;
+  options: { code: T; label: string }[];
+  value: T;
+  onSelect: (code: T) => void;
+}
+
+function optionClass(selected: boolean) {
+  return `text-left text-sm leading-[160%] text-white transition hover:opacity-70 ${
+    selected ? 'font-semibold underline' : ''
+  }`;
+}
+
+/** Desktop navbar dropdown (language, region). */
+function NavDropdown<T extends string>({ label, options, value, onSelect }: OptionGroupProps<T>) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref} onMouseLeave={() => setOpen(false)}>
+      <button
+        type="button"
+        onClick={() => setOpen((isOpen) => !isOpen)}
+        className={`flex items-center gap-1 ${NAV_LINK_CLASS}`}
+        aria-expanded={open}
+      >
+        {label}
+        <ChevronDownIcon className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute left-1/2 top-full w-36 -translate-x-1/2 pt-2">
+          <div className="flex flex-col gap-4 rounded-3xl bg-brand-orange p-6 shadow-lg">
+            {options.map((option) => (
+              <button
+                key={option.code}
+                type="button"
+                onClick={() => {
+                  onSelect(option.code);
+                  setOpen(false);
+                }}
+                aria-pressed={value === option.code}
+                className={optionClass(value === option.code)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** The same choices listed inline in the mobile menu. */
+function MobileOptionGroup<T extends string>({ label, options, value, onSelect }: OptionGroupProps<T>) {
+  return (
+    <>
+      <span className="text-sm leading-[160%] text-white/70">{label}</span>
+      {options.map((option) => (
+        <button
+          key={option.code}
+          type="button"
+          onClick={() => onSelect(option.code)}
+          aria-pressed={value === option.code}
+          className={optionClass(value === option.code)}
+        >
+          {option.label}
+        </button>
+      ))}
+    </>
   );
 }

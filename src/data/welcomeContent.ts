@@ -1,5 +1,6 @@
 
 import { useLanguage } from '../context/language';
+import type { Region } from '../context/region';
 
 export const navLinks = [
   { label: 'Home', to: '/' },
@@ -13,6 +14,12 @@ export const navActions = {
 };
 
 export const navLanguageLabel = 'Language';
+export const navRegionLabel = 'Region';
+export const regionOptions: { code: Region; label: string }[] = [
+  { code: 'us', label: 'United States' },
+  { code: 'mx', label: 'Mexico' },
+  { code: 'global', label: 'Global' },
+];
 export const primaryNavAriaLabel = 'Primary';
 export const toggleMenuAriaLabel = 'Toggle menu';
 
@@ -64,6 +71,8 @@ const en = {
   navLinks,
   navActions,
   navLanguageLabel,
+  navRegionLabel,
+  regionOptions,
   primaryNavAriaLabel,
   toggleMenuAriaLabel,
   introContent,
@@ -86,6 +95,12 @@ const es: typeof en = {
     secondary: { label: 'Donar', to: 'https://www.thetrevorproject.org/donate/' },
   },
   navLanguageLabel: 'Idioma',
+  navRegionLabel: 'Región',
+  regionOptions: [
+    { code: 'us', label: 'Estados Unidos' },
+    { code: 'mx', label: 'México' },
+    { code: 'global', label: 'Global' },
+  ],
   primaryNavAriaLabel: 'Principal',
   toggleMenuAriaLabel: 'Alternar menú',
   introContent: {
