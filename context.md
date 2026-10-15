@@ -10,6 +10,7 @@ This project is being built as a frontend-first experience with a simple, browse
 - clear, supportive guidance
 - a calm mobile-first experience
 - content that can be updated by authorized admins without a database
+- crisis resources that match the user's region, read from a Firestore database (see "Region identification for resources (MPI-216)")
 
 ## Core Values
 - Privacy first: no accounts, no persistent user tracking, no analytics
@@ -28,6 +29,7 @@ This project is being built as a frontend-first experience with a simple, browse
   - admin configuration: localStorage
 - Hosting target: Vercel
 - Backend: not required for the first version; admin content is edited directly in the browser through a password-protected page
+- Database: Firebase Firestore (project `safety-plan-trevor`), read-only from the app, only for the region crisis resources. Configured in [firebase.ts](src/firebase.ts); Firebase Analytics is intentionally **not** initialised
 
 ## Current Implementation Status
 The initial version now includes:
@@ -39,6 +41,7 @@ The initial version now includes:
 - browser-based persistence for the plan and editable content
 - the whole site in English and Spanish, switchable at any time from the navbar (see "Multilanguage (English / Spanish)")
 - a region preference (United States / Mexico / Global) in the navbar, with regional date and phone formats (see "Localization (region: United States / Mexico / Global)")
+- crisis resources from Firestore filtered by that region, with international resources as a fallback (see "Region identification for resources (MPI-216)")
 
 ## Core Experience
 
@@ -50,6 +53,7 @@ The initial version now includes:
 
 ### 2. Resources Page
 - crisis hotlines and supportive resources
+- resources for the selected region first, then international ones
 - links open in new tabs
 - easy to read, accessible layout
 - designed for quick access during difficult moments
@@ -87,7 +91,8 @@ UX expectations:
 ## Privacy and Data Model
 - No user accounts
 - No database storage for user plans
-- No analytics or third-party trackers
+- The only database is Firestore, and the app only **reads** public crisis resources from it; nothing about the user is sent or stored there
+- No analytics or third-party trackers (Firebase Analytics is not used)
 - The safety plan is stored only in the browser session
 - Admin content is stored locally in the browser for the current prototype version
 - This is intentionally simple and privacy-preserving, not production-grade security
@@ -160,11 +165,11 @@ The plan stores the text of the options the user picked (e.g. `"Crying"`). So th
 5. Add the language to the tests (see "Multilanguage tests" below).
 
 ## Localization (region: United States / Mexico / Global)
-Separate from the language, the user can say where they are from the **Region / Región** dropdown in the desktop navbar or from the mobile menu: **United States**, **Mexico**, or **Global** for the rest of the world. Language and region are independent (e.g. Spanish in the United States is valid). The region will decide which resources are shown on the resources page (not wired yet).
+Separate from the language, the user can say where they are from the **Region / Región** dropdown in the desktop navbar or from the mobile menu: **United States**, **Mexico**, or **Global** for the rest of the world. Language and region are independent (e.g. Spanish in the United States is valid). The region decides which crisis resources are shown on the resources page (see "Region identification for resources (MPI-216)").
 
 ### How the region is chosen
 - The active region lives in `RegionProvider` ([RegionContext.tsx](src/context/RegionContext.tsx)), mounted in [App.tsx](src/App.tsx) inside `LanguageProvider`.
-- On first load, `loadStoredRegion()` ([region.ts](src/context/region.ts)) uses a previously saved choice, otherwise `DEFAULT_REGION` (`us`, the original market). The region is **never detected** from the browser or IP: auto-detection is out of scope.
+- On first load, `loadStoredRegion()` ([region.ts](src/context/region.ts)) uses a previously saved choice, otherwise `DEFAULT_REGION` (`us`, the original market). The region is **not detected yet** from the browser or IP; consented auto-detection is planned in MPI-216 (see below).
 - The choice is saved in `localStorage` under `safety-plan-region`. Like the language and theme, it is a preference, not user data.
 - `useRegion()` without a provider returns `us` with a no-op setter, so components render in isolation.
 - The option labels live in `welcomeContent.ts` (`navRegionLabel`, `regionOptions`), in both languages; the codes (`us`, `mx`, `global`) are the same in both. "Global" is the label in both languages.
@@ -189,6 +194,85 @@ Separate from the language, the user can say where they are from the **Region / 
 | [locale.test.tsx](src/lib/locale.test.tsx) | locale tags (language only for `global`), date/time formats per locale, US/MX phone formats and fallbacks, numbers unchanged in `global`, `tel:` links, `useLocale()` following both selectors |
 
 To start a test in a region, set `localStorage.setItem(REGION_STORAGE_KEY, 'mx')` before rendering; `renderResponsive` already wraps the UI in `RegionProvider`.
+
+## Region identification for resources (MPI-216)
+Branch: `mpi-216-region-identification` (created from `mpi-215-localization`, which holds the region selector).
+
+### User story
+As a user who is visiting the page from a particular location, I want to be shown the right resources that apply for me, so that I can actually contact anyone I need.
+
+### Feature description
+Detect (with user consent/control) or allow manual selection of the user's region, and surface crisis resources, hotlines and support services that are actually relevant and reachable from that location.
+
+### Why
+- Business value: a crisis hotline number that doesn't work in a user's country is worse than unhelpful — it can waste critical time during a crisis. Region-relevant resources directly support the app's core safety mission.
+- Success metrics: 95%+ of users in supported regions are shown at least one working, region-appropriate crisis resource; near-zero "non-functional resource" reports from users.
+- Permissions needed: any IP-based geolocation service/API used for auto-detection.
+
+### Acceptance criteria
+1. GIVEN a user opens the crisis resources section WHEN their region can be detected THEN resources relevant to that region are shown first, clearly labelled by region.
+2. GIVEN a user does not want their location auto-detected, or auto-detection fails, WHEN they view the crisis resources section THEN they are given a manual way to select their region/country.
+3. GIVEN a user's region has no dedicated resources in the database WHEN they view the crisis resources section THEN they are shown clearly labelled international/general resources as a fallback, rather than an empty or broken page.
+4. GIVEN a user selects or is shown a region-specific resource WHEN they attempt to use it THEN the resource is verified as currently active and correctly formatted for that region.
+5. GIVEN a user is concerned about privacy WHEN their region is being detected THEN it is done transparently, with a visible note about what is used to determine their location and no more precise than necessary.
+
+Out of scope: real-time verification/monitoring of third-party hotline uptime, and precise GPS-based location detection.
+
+### Status
+| Criterion | Status |
+| --- | --- |
+| 1. Region resources first, labelled | Region first: done for the **selected** region (detection pending). Region headings were removed at the user's request; the selected region is shown in the navbar Region dropdown |
+| 2. Manual selection | Done — the Region dropdown from MPI-215 (navbar + mobile menu) |
+| 3. International fallback | Done — `GLOBAL` resources always shown after the regional ones; The Trevor Project card is always shown, even when Firestore is unreachable |
+| 4. Active + correctly formatted | Done — only `isActive: true` documents with a valid contact are shown; phones use the resource region's format and an international `tel:` link |
+| 5. Transparent detection note | Pending — needs the auto-detection, plus the note's copy and design from the user |
+
+Pending (needs user decisions before building): which IP geolocation service to use (it is a third-party call, so it must be opt-in and country-level only), the consent UI, and the privacy note text. Until then the region stays a manual preference.
+
+### Firestore data model
+Collection `resources`, one document per resource (flat, no subcollections):
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `region` | `"US"` \| `"MX"` \| `"GLOBAL"` | required; maps to the app regions `us` / `mx` / `global` |
+| `isActive` | boolean | required; only `true` is shown (the "verified as active" switch for admins) |
+| `name` | string or `{ en, es }` | required |
+| `description` | string or `{ en, es }` | optional |
+| `phone` | string | optional; digits, spaces and `+ ( ) . -` only. Formatted with `formatPhoneNumber` for the resource's region; `GLOBAL` numbers are shown as written |
+| `url` | string | optional; must start with `https://` |
+| `order` | number | optional, default `99`; order inside its region group |
+| `imageUrl` | string | optional; `https://` URL of the card image (e.g. a Firebase Storage download URL). Cards without it render without the picture |
+| `type`, `hours`, `languages` | string, string, string[] | optional; stored but not shown yet (e.g. `"hotline"`, `"24/7"`, `["es"]`) |
+
+A document needs a `name` and at least one of `phone` / `url`; anything else (unknown region, `http://` links, text in `phone`…) is skipped, never shown broken. With `{ en, es }` text, the active language is used and the other one is the fallback.
+
+The Firestore security rules must allow reading `resources/{id}`. The query is `isActive == true` + `region in [<region>, "GLOBAL"]` (only `["GLOBAL"]` when the region is Global).
+
+### Adding resources (seed script)
+Resources are listed in [scripts/resources.json](scripts/resources.json), one object per organization, with the fields of the table above, plus two optional keys:
+- `id`: the document id. Without it the id is built from the region and name (`mx-safe-space-hotline`), so running the script again **updates** the same documents instead of duplicating them. Give an `id` to keep an existing document (e.g. one created from the console).
+- `image`: a local image (`.png`, `.jpg`, `.jpeg`, `.webp`) relative to the JSON file, e.g. `"resource-images/hotline.png"` (folder [scripts/resource-images/](scripts/resource-images/)). It is uploaded to Firebase Storage at `resources/<id>.<ext>` and its download URL is saved as `imageUrl`. Use `imageUrl` instead when the image is already online. Firebase Storage must be enabled in the project for this.
+
+Commands (from the project root, needs `serviceAccountKey.json`):
+- `npm run seed-resources -- --dry-run` — validates the file and prints the document ids; writes nothing.
+- `npm run seed-resources` — writes every resource in `scripts/resources.json`.
+- `npm run seed-resources -- path/to/other.json` — uses another file.
+
+Rules: the whole file is validated first and nothing is written if any entry is invalid (same rules the app uses: valid region, a name, an `https://` url and/or a valid phone, `https://` image URLs, no duplicate ids). Each listed document is **replaced** by what the file says (the JSON is the source of truth); documents not in the file are not touched or deleted. `isActive` defaults to `true` and `order` to `99`. To hide a resource, set `"isActive": false` and run the script again.
+
+`npm run add-resource` ([scripts/addResource.cjs](scripts/addResource.cjs)) is the first one-off example; prefer the seed script.
+
+### How it works in the code
+- [firebase.ts](src/firebase.ts) initialises the app and exports `db` (Firestore only).
+- [useResources.ts](src/hooks/useResources.ts): `useResources(region)` returns `{ resources, loading, error }`, re-querying when the region changes and ignoring stale answers. Pure helpers, all unit-tested: `regionsToQuery`, `toRegionResource` (validation), `sortResources` (region first, then `GLOBAL`, each by `order`), `pickText` (language), `toAppRegion` / `toDbRegion`.
+- [FreeResources.tsx](src/components/resources/FreeResources.tsx): The Trevor Project card is always shown; the 988 Lifeline card only in `us` (988 does not work elsewhere); below them, a single responsive grid of cards with no region headings (the user's region first, then `GLOBAL`) (`grid-cols-1` → `sm:grid-cols-2` → `xl:grid-cols-3`). Each card follows The Trevor Project card style: image (`aspect-[608/405]`, `rounded-[40px]`, `object-cover`, only if `imageUrl`), centred name, description, then the "Go to the website" link and/or the phone link. While loading or on error only the static cards are shown.
+- [HelpResourcesPanel.tsx](src/components/accessibility/HelpResourcesPanel.tsx) also hides the 988 card outside `us`.
+
+### Tests
+- [src/test/setup.ts](src/test/setup.ts) mocks `../firebase` and `firebase/firestore` for every test, so no test hits the network. `getDocs` returns no documents by default; set data with `vi.mocked(getDocs).mockResolvedValue({ docs: [{ id, data: () => ({...}) }] } as never)`.
+- [useResources.test.ts](src/hooks/useResources.test.ts): validation, language fallback, query regions, sorting, reload on region change, error handling.
+- [FreeResources.test.tsx](src/components/resources/FreeResources.test.tsx): 988 only in the US, regional resources before Global ones and no region headings, Global fallback, MX/US phone formats and `tel:` links, Spanish labels/text, card order (image → centred name → description → link) and grid classes, cards without image, Trevor card still shown when Firestore fails.
+- [HelpResourcesPanel.test.tsx](src/components/accessibility/HelpResourcesPanel.test.tsx): 988 hidden in Mexico.
 
 ## Design Direction
 The visual language should remain:
@@ -335,6 +419,8 @@ The app uses a default configuration object for core content so content can be e
 - improve the printable plan layout and export experience
 - strengthen admin editing flows and content validation
 - consider a future serverless setup if admin configuration needs to be shared across devices
+- MPI-216: consented, country-level auto-detection of the region and its privacy note (see "Region identification for resources (MPI-216)")
+- fill the Firestore `resources` collection with real resources: edit `scripts/resources.json` and run `npm run seed-resources` (see "Adding resources (seed script)"); `serviceAccountKey.json` is git-ignored and must never be committed
 - make the pages read the content saved from the admin screen (today they use the defaults in `src/data/defaultConfig.ts`, in both languages)
 
 ## Deployment Notes

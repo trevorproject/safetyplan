@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { HelpResourcesPanel } from './HelpResourcesPanel';
 import { lifelineCard, trevorCard } from '../../data/resourcesContent';
 import { accessibilityWidgetContent } from '../../data/accessibilityContent';
+import { RegionContext } from '../../context/region';
 
 describe('HelpResourcesPanel', () => {
   it('shows the Trevor and Lifeline cards with working links', () => {
@@ -35,5 +36,17 @@ describe('HelpResourcesPanel', () => {
       'href',
       accessibilityWidgetContent.help.viewAllTo,
     );
+  });
+
+  it('hides the 988 card outside the United States', () => {
+    render(
+      <MemoryRouter>
+        <RegionContext.Provider value={{ region: 'mx', setRegion: () => {} }}>
+          <HelpResourcesPanel />
+        </RegionContext.Provider>
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(trevorCard.heading)).toBeInTheDocument();
+    expect(screen.queryByText(lifelineCard.heading)).not.toBeInTheDocument();
   });
 });

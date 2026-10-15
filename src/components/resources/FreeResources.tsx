@@ -3,9 +3,16 @@ import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_Learn
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
 import { useResourcesContent } from '../../data/resourcesContent';
+import { useRegion } from '../../context/region';
+import { useLanguage } from '../../context/language';
+import { formatPhoneNumber, toTelHref } from '../../lib/locale';
+import { pickText, toAppRegion, useResources } from '../../hooks/useResources';
 
 export function FreeResources() {
   const { freeResourcesContent, lifelineCard, trevorCard } = useResourcesContent();
+  const { region } = useRegion();
+  const { language } = useLanguage();
+  const { resources } = useResources(region);
 
   return (
     <section className="flex flex-col items-center gap-20 bg-brand-purple px-6 pb-16 pt-[24px] lg:px-16 lg:pb-28">
@@ -48,29 +55,83 @@ export function FreeResources() {
             </div>
           </div>
 
-          <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-0.5">
-            <img
-              src={lifelineImage}
-              alt={lifelineCard.imageAlt}
-              className="h-[189px] w-full rounded-[40px] object-cover"
-            />
-            <div className="flex w-full flex-col items-start gap-6 pt-6">
-              <div className="flex flex-col items-start gap-4">
-                <h3 className="text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
-                  {lifelineCard.heading}
-                </h3>
-                <p className="text-lg leading-[160%] text-black">{lifelineCard.text}</p>
+          {/* 988 only works in the United States. */}
+          {region === 'us' && (
+            <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-0.5">
+              <img
+                src={lifelineImage}
+                alt={lifelineCard.imageAlt}
+                className="h-[189px] w-full rounded-[40px] object-cover"
+              />
+              <div className="flex w-full flex-col items-start gap-6 pt-6">
+                <div className="flex flex-col items-start gap-4">
+                  <h3 className="text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
+                    {lifelineCard.heading}
+                  </h3>
+                  <p className="text-lg leading-[160%] text-black">{lifelineCard.text}</p>
+                </div>
+                <SmartLink
+                  to={lifelineCard.action.to}
+                  className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
+                >
+                  {lifelineCard.action.label}
+                  <ChevronRightIcon className="h-6 w-6" />
+                </SmartLink>
               </div>
-              <SmartLink
-                to={lifelineCard.action.to}
-                className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
-              >
-                {lifelineCard.action.label}
-                <ChevronRightIcon className="h-6 w-6" />
-              </SmartLink>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* The user's region first, then the international fallback (already
+            sorted that way by useResources). */}
+        {resources.length > 0 && (
+          <ul className="grid w-full grid-cols-1 gap-16 sm:grid-cols-2 xl:grid-cols-3">
+            {resources.map((resource) => {
+              const phoneRegion = toAppRegion(resource.region);
+              const name = pickText(resource.name, language);
+              const description = pickText(resource.description, language);
+              return (
+                <li key={resource.id} className="flex w-full flex-col items-center gap-6">
+                  {resource.imageUrl && (
+                    <img
+                      src={resource.imageUrl}
+                      alt={name}
+                      width={608}
+                      height={405}
+                      className="aspect-[608/405] h-auto w-full rounded-[40px] object-cover"
+                    />
+                  )}
+                  <div className="flex w-full flex-col items-start gap-6">
+                    <div className="flex w-full flex-col items-start gap-4">
+                      <h3 className="w-full text-center text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
+                        {name}
+                      </h3>
+                      {description && <p className="text-lg leading-[160%] text-black">{description}</p>}
+                    </div>
+                    {resource.url && (
+                      <SmartLink
+                        to={resource.url}
+                        className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
+                      >
+                        {lifelineCard.action.label}
+                        <ChevronRightIcon className="h-6 w-6" />
+                      </SmartLink>
+                    )}
+                    {resource.phone && (
+                      <a
+                        href={toTelHref(resource.phone, phoneRegion)}
+                        className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
+                      >
+                        {formatPhoneNumber(resource.phone, phoneRegion)}
+                        <ChevronRightIcon className="h-6 w-6" />
+                      </a>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </section>
   );

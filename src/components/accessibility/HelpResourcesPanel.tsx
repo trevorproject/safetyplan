@@ -2,11 +2,14 @@ import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
 import { useAccessibilityContent } from '../../data/accessibilityContent';
 import { useResourcesContent } from '../../data/resourcesContent';
+import { useRegion } from '../../context/region';
 
 export function HelpResourcesPanel() {
   const content = useAccessibilityContent().help;
   const { lifelineCard, trevorCard } = useResourcesContent();
-  const CARDS = [trevorCard, lifelineCard];
+  const { region } = useRegion();
+  // 988 only works in the United States.
+  const CARDS = region === 'us' ? [trevorCard, lifelineCard] : [trevorCard];
 
   return (
     <div className="flex flex-col gap-4">

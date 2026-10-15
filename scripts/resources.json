@@ -1,0 +1,15 @@
+[
+  {
+    "id": "EAbVBhFZUTzkbL3nFnLs",
+    "name": "Safe Space Hotline",
+    "description": "24/7 support line",
+    "region": "MX",
+    "type": "hotline",
+    "url": "https://example.com/mx-hotline",
+    "hours": "24/7",
+    "languages": ["es"],
+    "isActive": true,
+    "order": 1,
+    "image": "resource-images/test1.jpg"
+  }
+]
