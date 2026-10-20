@@ -2,9 +2,10 @@ import { createContext, useContext } from 'react';
 
 /**
  * The country the user says they are in. It is a user preference only: it is
- * never detected automatically (auto-detection is out of scope), and it drives
- * region-specific formats and, later, the resources shown. `global` covers the
- * rest of the world and uses neutral, non-country-specific formats.
+ * not detected automatically yet (consented detection is planned in MPI-216),
+ * and it drives region-specific formats and the crisis resources shown (see
+ * useResources). `global` covers the rest of the world and uses neutral,
+ * non-country-specific formats.
  */
 export type Region = 'us' | 'mx' | 'global';
 
