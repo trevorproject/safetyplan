@@ -1,5 +1,5 @@
 import { LANGUAGE_OPTIONS, useLanguage, type Language } from '../context/language';
-import type { AppConfig, LocalizedConfig, SafetyPlanData } from '../types/app';
+import type { AppConfig, LocalizedConfig, PlanListField, SafetyPlanData } from '../types/app';
 
 const en: LocalizedConfig = {
   title: 'Safety Plan',
@@ -41,28 +41,28 @@ const en: LocalizedConfig = {
       id: 'warning-signs',
       title: 'Warning Signs',
       description: 'What are the things you think, feel or do when the times get rough?',
-      placeholder: 'Add your own',
+      placeholder: 'Write it in your own words...',
       options: ['Crying', 'Self Harm', 'Intrusive thoughts', 'Not eating', 'Shaking', 'Hopelessness', 'Heart Racing', 'Isolation'],
     },
     {
       id: 'coping',
       title: 'Coping',
       description: 'What makes you feel better when the warning signs appear?',
-      placeholder: 'Add your own',
+      placeholder: 'Write it in your own words...',
       options: ['Listening to music', 'Showering', 'Writing', 'Breathing', 'Drawing', 'Speaking to someone', 'Sleeping'],
     },
     {
       id: 'supports',
       title: 'Supports',
       description: 'Who are you comfortable talking to about what you are going through?',
-      placeholder: 'Add your own',
+      placeholder: 'Write it in your own words...',
       options: ['Friend', 'Mom/Dad', 'Therapist', 'Partner', 'Sibling', 'Counselor', 'Psychiatrist', 'Lifeline'],
     },
     {
       id: 'environment',
       title: 'Safer Environment',
       description: 'What can be done to make your surroundings safer for you?',
-      placeholder: 'Add your own',
+      placeholder: 'Write it in your own words...',
       options: ['Remove sharp objects', 'Remove fire ignition devices', 'Remove medications', 'Stay away from heights', 'Stay away from heavy machinery'],
     },
     {
@@ -114,28 +114,28 @@ const es: LocalizedConfig = {
       id: 'warning-signs',
       title: 'Señales de alerta',
       description: '¿Qué piensas, sientes o haces cuando los momentos se ponen difíciles?',
-      placeholder: 'Agrega la tuya',
+      placeholder: 'Escríbelo con tus propias palabras...',
       options: ['Llorar', 'Autolesión', 'Pensamientos intrusivos', 'No comer', 'Temblores', 'Desesperanza', 'Taquicardia', 'Aislamiento'],
     },
     {
       id: 'coping',
       title: 'Afrontamiento',
       description: '¿Qué te hace sentir mejor cuando aparecen las señales de alerta?',
-      placeholder: 'Agrega la tuya',
+      placeholder: 'Escríbelo con tus propias palabras...',
       options: ['Escuchar música', 'Bañarte', 'Escribir', 'Respirar', 'Dibujar', 'Hablar con alguien', 'Dormir'],
     },
     {
       id: 'supports',
       title: 'Apoyos',
       description: '¿Con quién te sientes cómodo o cómoda hablando sobre lo que estás viviendo?',
-      placeholder: 'Agrega la tuya',
+      placeholder: 'Escríbelo con tus propias palabras...',
       options: ['Amigue', 'Mamá/Papá', 'Terapeuta', 'Pareja', 'Hermane', 'Consejere', 'Psiquiatra', 'Línea de ayuda'],
     },
     {
       id: 'environment',
       title: 'Entorno más seguro',
       description: '¿Qué se puede hacer para que tu entorno sea más seguro para ti?',
-      placeholder: 'Agrega la tuya',
+      placeholder: 'Escríbelo con tus propias palabras...',
       options: ['Quitar objetos punzocortantes', 'Quitar encendedores de fuego', 'Quitar medicamentos', 'Mantenerte alejade de alturas', 'Mantenerte alejade de maquinaria pesada'],
     },
     {
@@ -154,9 +154,7 @@ export function useDefaultConfig(): LocalizedConfig {
   return defaultConfig[language];
 }
 
-type PlanListField = keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>;
-
-const PLAN_FIELD_STEP_IDS: Record<PlanListField, string> = {
+export const PLAN_FIELD_STEP_IDS: Record<PlanListField, string> = {
   warningSigns: 'warning-signs',
   copingStrategies: 'coping',
   supports: 'supports',
@@ -181,8 +179,15 @@ function translateOption(value: string, stepId: string, target: Language): strin
   return value;
 }
 
+export const emptyAnswers: Record<PlanListField, string> = {
+  warningSigns: '',
+  copingStrategies: '',
+  supports: '',
+  environment: '',
+};
+
 export function localizePlan(plan: SafetyPlanData, language: Language): SafetyPlanData {
-  const localized = { ...plan };
+  const localized = { ...plan, answers: { ...emptyAnswers, ...plan.answers } };
   for (const [field, stepId] of Object.entries(PLAN_FIELD_STEP_IDS) as [PlanListField, string][]) {
     localized[field] = Array.from(new Set((plan[field] ?? []).map((value) => translateOption(value, stepId, language))));
   }

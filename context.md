@@ -69,7 +69,9 @@ The wizard is structured as a six-step flow:
 
 UX expectations:
 - progress indicator throughout the flow
-- simple save/continue behavior using browser storage
+- each list section (warning signs, coping, supports, environment) is answered in the user's own words in a multi-line text field; the preset options are shown underneath only as optional suggestion chips. A section can be continued with written text, picked suggestions, or both. Typed text is stored per section in `SafetyPlanData.answers` and is never translated on a language switch; picked suggestions still are
+- the completed plan and the share text show the written answer (keeping its line breaks) followed by any picked suggestions
+- simple save/continue behavior using browser storage; the current section is saved too, so a reload resumes where the user left off
 - supportive language at each step
 - no forced interaction or alarming animation
 

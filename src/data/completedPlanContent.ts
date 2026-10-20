@@ -1,10 +1,9 @@
 
 import { useLanguage } from '../context/language';
-import type { SafetyPlanData } from '../types/app';
+import type { PlanListField } from '../types/app';
 
-type SectionField = keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>;
 interface FinishedPlanSection {
-  field: SectionField;
+  field: PlanListField;
   label: string;
 }
 

@@ -28,10 +28,14 @@ export interface AppConfig {
   adminPassword: string;
 }
 
+export type PlanListField = 'warningSigns' | 'copingStrategies' | 'supports' | 'environment';
+
 export interface SafetyPlanData {
   warningSigns: string[];
   copingStrategies: string[];
   supports: string[];
   environment: string[];
+  /** What the user wrote in their own words for each section; the list fields hold the suggestions they picked. */
+  answers: Record<PlanListField, string>;
   message: string;
 }

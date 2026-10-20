@@ -40,13 +40,13 @@ export const howItWorksContent = {
 export const buildPlanContent = {
   heading: 'Build your plan',
   body: 'Answer honestly. There are no wrong words here.',
-  otherLabel: 'Other...',
+  answerLabel: 'Your answer',
+  suggestionsLabel: 'Need ideas? Tap any suggestion that fits (optional)',
   consentLabel: 'I understand this is not emergency care',
   submitLabel: 'Build your plan',
   continueLabel: 'Continue',
   backLabel: 'Back',
   restartLabel: 'Restart',
-  selectPlaceholder: 'Select...',
   progressLabel: 'Safety plan progress',
 };
 
@@ -90,13 +90,13 @@ const es: typeof en = {
   buildPlanContent: {
     heading: 'Crea tu plan',
     body: 'Responde con honestidad. Aquí no hay respuestas incorrectas.',
-    otherLabel: 'Otro...',
+    answerLabel: 'Tu respuesta',
+    suggestionsLabel: '¿Necesitas ideas? Toca cualquier sugerencia que te sirva (opcional)',
     consentLabel: 'Entiendo que esto no es atención de emergencia',
     submitLabel: 'Crear tu plan',
     continueLabel: 'Continuar',
     backLabel: 'Atrás',
     restartLabel: 'Reiniciar',
-    selectPlaceholder: 'Selecciona...',
     progressLabel: 'Progreso del plan de seguridad',
   },
 };

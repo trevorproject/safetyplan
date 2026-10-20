@@ -5,26 +5,29 @@ import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { WizardHero } from '../components/wizard/WizardHero';
 import { HowItWorks } from '../components/wizard/HowItWorks';
 import { StepProgress } from '../components/wizard/StepProgress';
-import { MultiSelectField } from '../components/wizard/MultiSelectField';
-import { CheckboxGrid } from '../components/wizard/CheckboxGrid';
+import { SectionAnswerField } from '../components/wizard/SectionAnswerField';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import { localizePlan, useDefaultConfig } from '../data/defaultConfig';
+import { PLAN_FIELD_STEP_IDS, emptyAnswers, localizePlan, useDefaultConfig } from '../data/defaultConfig';
 import { useWizardContent } from '../data/wizardContent';
 import { useLanguage } from '../context/language';
-import { clearPlan, loadPlan, savePlan } from '../lib/storage';
-import type { SafetyPlanData } from '../types/app';
+import { clearPlan, loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
+import type { PlanListField, SafetyPlanData } from '../types/app';
 
 const initialPlan: SafetyPlanData = {
   warningSigns: [],
   copingStrategies: [],
   supports: [],
   environment: [],
+  answers: emptyAnswers,
   message: '',
 };
 
+const STEP_ID_PLAN_FIELDS = Object.fromEntries(
+  Object.entries(PLAN_FIELD_STEP_IDS).map(([field, stepId]) => [stepId, field]),
+) as Record<string, PlanListField | undefined>;
+
 export function WizardPage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(0);
   const { language } = useLanguage();
   const [plan, setPlan] = useState<SafetyPlanData>(() => localizePlan({ ...initialPlan, ...loadPlan() }, language));
   const [planLanguage, setPlanLanguage] = useState(language);
@@ -32,6 +35,7 @@ export function WizardPage() {
   const { buildPlanContent } = useWizardContent();
 
   const steps = useDefaultConfig().wizardSteps;
+  const [step, setStep] = useState(() => Math.min(loadStep(), steps.length - 1));
 
   // Keep already-selected options in step with the active language so they stay
   // checked and read correctly after switching languages mid-wizard.
@@ -44,10 +48,15 @@ export function WizardPage() {
     savePlan(plan);
   }, [plan]);
 
+  useEffect(() => {
+    saveStep(step);
+  }, [step]);
+
   const currentStep = steps[step];
+  const currentField = STEP_ID_PLAN_FIELDS[currentStep.id];
   const isLastStep = step === steps.length - 1;
 
-  const handleToggle = (field: keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>, value: string) => {
+  const handleToggle = (field: PlanListField, value: string) => {
     setPlan((prev) => {
       const current = prev[field] ?? [];
       return {
@@ -57,29 +66,17 @@ export function WizardPage() {
     });
   };
 
-  const handleAddCustom = (field: keyof Pick<SafetyPlanData, 'warningSigns' | 'copingStrategies' | 'supports' | 'environment'>, value: string) => {
-    setPlan((prev) => {
-      const current = prev[field] ?? [];
-      return current.includes(value) ? prev : { ...prev, [field]: [...current, value] };
-    });
+  const handleAnswerChange = (field: PlanListField, value: string) => {
+    setPlan((prev) => ({ ...prev, answers: { ...prev.answers, [field]: value } }));
   };
 
+  // A section counts as answered when the user wrote something or picked at least one suggestion.
   const isStepValid = useMemo(() => {
-    switch (step) {
-      case 0:
-        return plan.warningSigns.length > 0;
-      case 1:
-        return plan.copingStrategies.length > 0;
-      case 2:
-        return plan.supports.length > 0;
-      case 3:
-        return plan.environment.length > 0;
-      case 4:
-        return plan.message.trim().length > 0 && consent;
-      default:
-        return true;
-    }
-  }, [plan, step, consent]);
+    const answered = currentField
+      ? plan.answers[currentField].trim().length > 0 || plan[currentField].length > 0
+      : plan.message.trim().length > 0;
+    return answered && (!isLastStep || consent);
+  }, [plan, currentField, isLastStep, consent]);
 
   const next = () => {
     if (step < steps.length - 1) {
@@ -136,46 +133,20 @@ export function WizardPage() {
               <p className="text-base text-black/70 dark:text-white/70">{currentStep.description}</p>
             </div>
 
-            {step === 0 && (
-              <MultiSelectField
-                options={currentStep.options ?? []}
-                selected={plan.warningSigns}
-                onToggle={(value) => handleToggle('warningSigns', value)}
-                onAddCustom={(value) => handleAddCustom('warningSigns', value)}
+            {currentField ? (
+              <SectionAnswerField
+                value={plan.answers[currentField]}
+                onChange={(value) => handleAnswerChange(currentField, value)}
+                placeholder={currentStep.placeholder}
+                suggestions={currentStep.options ?? []}
+                selected={plan[currentField]}
+                onToggle={(value) => handleToggle(currentField, value)}
               />
-            )}
-
-            {step === 1 && (
-              <CheckboxGrid
-                options={currentStep.options ?? []}
-                selected={plan.copingStrategies}
-                onToggle={(value) => handleToggle('copingStrategies', value)}
-                onAddCustom={(value) => handleAddCustom('copingStrategies', value)}
-              />
-            )}
-
-            {step === 2 && (
-              <MultiSelectField
-                options={currentStep.options ?? []}
-                selected={plan.supports}
-                onToggle={(value) => handleToggle('supports', value)}
-                onAddCustom={(value) => handleAddCustom('supports', value)}
-              />
-            )}
-
-            {step === 3 && (
-              <CheckboxGrid
-                options={currentStep.options ?? []}
-                selected={plan.environment}
-                onToggle={(value) => handleToggle('environment', value)}
-                onAddCustom={(value) => handleAddCustom('environment', value)}
-              />
-            )}
-
-            {step === 4 && (
+            ) : (
               <textarea
                 value={plan.message}
                 onChange={(event) => setPlan((prev) => ({ ...prev, message: event.target.value }))}
+                aria-label={currentStep.title}
                 className="min-h-40 w-full rounded-3xl border-2 border-black p-4 text-base text-black dark:border-neutral-600 dark:bg-neutral-900 dark:text-white"
                 placeholder={currentStep.placeholder}
               />

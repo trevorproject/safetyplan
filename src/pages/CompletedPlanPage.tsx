@@ -17,9 +17,10 @@ function buildShareText(plan: SafetyPlanData | null, finishedPlanContent: Finish
   if (!plan) return '';
   const lines = [finishedPlanContent.shareSubject, ''];
   for (const section of finishedPlanContent.sections) {
+    const answer = plan.answers?.[section.field]?.trim();
     const items = plan[section.field];
-    if (items.length) {
-      lines.push(`${section.label}:`, ...items.map((item) => `- ${item}`), '');
+    if (answer || items.length) {
+      lines.push(`${section.label}:`, ...(answer ? [answer] : []), ...items.map((item) => `- ${item}`), '');
     }
   }
   if (plan.message.trim()) {
@@ -108,16 +109,22 @@ export function CompletedPlanPage() {
 
           <div className="flex w-full max-w-2xl flex-col items-start gap-8">
             {finishedPlanContent.sections.map((section) => {
+              const answer = plan?.answers[section.field].trim() ?? '';
               const items = plan?.[section.field] ?? [];
-              if (!items.length) return null;
+              if (!answer && !items.length) return null;
               return (
                 <div key={section.field} className="flex flex-col gap-2">
                   <h3 className="text-lg font-medium text-black dark:text-white">{section.label}</h3>
-                  <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
-                    {items.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+                  {answer && (
+                    <p className="whitespace-pre-line break-words text-base leading-[160%] text-black dark:text-white/80">{answer}</p>
+                  )}
+                  {items.length > 0 && (
+                    <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
+                      {items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               );
             })}
@@ -125,9 +132,7 @@ export function CompletedPlanPage() {
             {plan?.message.trim() && (
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-medium text-black dark:text-white">{finishedPlanContent.notesLabel}</h3>
-                <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
-                  <li>{plan.message}</li>
-                </ul>
+                <p className="whitespace-pre-line break-words text-base leading-[160%] text-black dark:text-white/80">{plan.message.trim()}</p>
               </div>
             )}
           </div>
