@@ -29,7 +29,7 @@ This project is being built as a frontend-first experience with a simple, browse
   - admin configuration: localStorage
 - Hosting target: Vercel
 - Backend: not required for the first version; admin content is edited directly in the browser through a password-protected page
-- Database: Firebase Firestore (project `safety-plan-trevor`), read-only from the app, only for the region crisis resources. Configured in [firebase.ts](src/firebase.ts); Firebase Analytics is intentionally **not** initialised
+- Database: Firebase Firestore, read-only from the app, only for the region crisis resources. Configured in [firebase.ts](src/firebase.ts) from `VITE_FIREBASE_*` env vars (`.env`, see "Firebase setup"); security rules in [firestore.rules](firestore.rules); Firebase Analytics is intentionally **not** initialised
 
 ## Current Implementation Status
 The initial version now includes:
@@ -229,6 +229,13 @@ Out of scope: real-time verification/monitoring of third-party hotline uptime, a
 
 Pending (needs user decisions before building): which IP geolocation service to use (it is a third-party call, so it must be opt-in and country-level only), the consent UI, and the privacy note text. Until then the region stays a manual preference.
 
+### Firebase setup (config and security rules)
+- **Web config via env vars.** [firebase.ts](src/firebase.ts) reads `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID` and `VITE_FIREBASE_APP_ID` (typed in [vite-env.d.ts](src/vite-env.d.ts)). Copy [.env.example](.env.example) to `.env` and fill it from Firebase Console → Project settings → Your apps. `.env` / `.env.*` are git-ignored; only `.env.example` is committed. On Vercel, set the same variables in the project's Environment Variables.
+- These values are **not secrets**: Vite embeds them in the built bundle, so anyone can read them from the live site. Keeping them out of the repo just avoids publishing the project's details in the open-source code; the data is protected by the rules below. Restrict the API key to the site's domains in Google Cloud → APIs & Services → Credentials.
+- If any variable is missing, `db` is `null`, an error is logged, and `useResources` reports an error: the page still renders the static Trevor (and 988 in the US) cards instead of crashing.
+- **Security rules** live in [firestore.rules](firestore.rules) (wired in [firebase.json](firebase.json)): anyone can read `resources` documents whose `isActive` is `true` (so queries must filter `isActive == true`, as `useResources` does); no writes from the browser; every other path is closed. The seed scripts use the Admin SDK, which bypasses the rules.
+- **Deploying the rules:** install the Firebase CLI (`npm install -g firebase-tools`), `firebase login`, then `firebase use --add` once to pick the project (writes `.firebaserc`, git-ignored), and run `npm run deploy:rules` (`firebase deploy --only firestore:rules`).
+
 ### Firestore data model
 Collection `resources`, one document per resource (flat, no subcollections):
 
@@ -246,7 +253,7 @@ Collection `resources`, one document per resource (flat, no subcollections):
 
 A document needs a `name` and at least one of `phone` / `url`; anything else (unknown region, `http://` links, text in `phone`…) is skipped, never shown broken. With `{ en, es }` text, the active language is used and the other one is the fallback.
 
-The Firestore security rules must allow reading `resources/{id}`. The query is `isActive == true` + `region in [<region>, "GLOBAL"]` (only `["GLOBAL"]` when the region is Global).
+The Firestore security rules ([firestore.rules](firestore.rules)) allow reading active `resources/{id}` documents only. The query is `isActive == true` + `region in [<region>, "GLOBAL"]` (only `["GLOBAL"]` when the region is Global).
 
 ### Adding resources (seed script)
 Resources are listed in [scripts/resources.json](scripts/resources.json), one object per organization, with the fields of the table above, plus two optional keys:

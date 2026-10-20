@@ -1,0 +1,24 @@
+rules_version = '2';
+
+// Deploy with: npm run deploy:rules  (firebase deploy --only firestore:rules)
+//
+// The web app only reads public crisis resources; nothing is ever written from
+// the browser. Resources are created/updated with scripts/seedResources.cjs,
+// which uses the Admin SDK and is not subject to these rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Anyone can read active resources. A query must ask for
+    // `isActive == true` (as src/hooks/useResources.ts does), so inactive
+    // resources are never sent to the browser.
+    match /resources/{resourceId} {
+      allow get, list: if resource.data.isActive == true;
+      allow write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

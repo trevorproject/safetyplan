@@ -24,3 +24,13 @@ dist-ssr
 *.sw?
 # Service account credentials
 serviceAccountKey.json
+
+# Environment variables (Firebase config). Commit only .env.example
+.env
+.env.*
+!.env.example
+
+# Firebase CLI: local project alias and cache
+.firebaserc
+.firebase/
+firebase-debug.log*

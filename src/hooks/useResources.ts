@@ -106,6 +106,7 @@ export function useResources(region: Region) {
 
     async function load() {
       try {
+        if (!db) throw new Error('Firebase is not configured');
         const q = query(
           collection(db, 'resources'),
           where('isActive', '==', true),
