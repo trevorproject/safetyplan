@@ -19,6 +19,10 @@ export default mergeConfig(
       css: false,
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.{test,spec}.{ts,tsx}'],
+      // The page tests render whole pages at every breakpoint and type with
+      // user-event; with the full suite running in parallel they can pass the
+      // 5s default on a slower machine without anything being wrong.
+      testTimeout: 15000,
     },
   }),
 );

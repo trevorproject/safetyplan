@@ -69,14 +69,17 @@ The wizard is structured as a six-step flow:
 
 UX expectations:
 - progress indicator throughout the flow
-- simple save/continue behavior using browser storage
+- each list section (warning signs, coping, supports, environment) is answered in the user's own words in a list of input fields (three to start). An "Add another …" button adds a field and each field can be removed (one always stays). The field placeholder and the add button text come from each step's `placeholder` and `addLabel` in [defaultConfig.ts](src/data/defaultConfig.ts). The preset options are shown underneath only as optional suggestion chips. A section can be continued with written entries, picked suggestions, or both. Entries are stored per section in `SafetyPlanData.answers` (one string per field) and are never translated on a language switch; picked suggestions still are
+- the completed plan and the share text list each section as bullet points: the written entries (blank fields skipped) followed by any picked suggestions
+- links into the wizard from anywhere except the navbar (welcome page CTAs, footer, "How the plan works" cards) use a hash (`/wizard#build-plan`, or `#<step id>` to open that step), which scrolls to the "Build your plan" form and moves focus to its heading. The navbar "Create plan" link has no hash and lands at the top of the page
+- simple save/continue behavior using browser storage; the current section is saved too, so a reload resumes where the user left off
 - supportive language at each step
 - no forced interaction or alarming animation
 
 ### 4. Completed Plan Page
 - full plan displayed in a clean, printable format
 - print action for paper use
-- restart action for creating a new plan
+- restart action for creating a new plan: "Make a new plan" / "Hacer un nuevo plan" asks for confirmation, erases the saved plan and section from sessionStorage, and reopens the wizard at the first section (`/wizard#build-plan`)
 - gentle reminder about getting support if needed
 
 ### 5. Admin Configuration Page

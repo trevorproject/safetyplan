@@ -7,6 +7,7 @@ const plan: SafetyPlanData = {
   copingStrategies: ['Writing'],
   supports: ['Therapist'],
   environment: ['Remove medications'],
+  answers: { warningSigns: ['My chest feels tight', ''], copingStrategies: [], supports: [''], environment: [''] },
   message: 'Hello',
 };
 
@@ -34,6 +35,7 @@ describe('localizePlan', () => {
       copingStrategies: ['Escribir'],
       supports: ['Terapeuta'],
       environment: ['Quitar medicamentos'],
+      answers: plan.answers,
       message: 'Hello',
     });
   });
@@ -51,6 +53,7 @@ describe('localizePlan', () => {
     const localized = localizePlan(custom, 'en');
     expect(localized.warningSigns).toEqual(['Me siento cansade']);
     expect(localized.message).toBe('Mensaje propio');
+    expect(localizePlan(plan, 'es').answers.warningSigns).toEqual(['My chest feels tight', '']);
   });
 
   it('drops duplicates that collapse onto the same option', () => {
@@ -64,8 +67,16 @@ describe('localizePlan', () => {
       copingStrategies: [],
       supports: [],
       environment: [],
+      answers: { warningSigns: ['', '', ''], copingStrategies: ['', '', ''], supports: ['', '', ''], environment: ['', '', ''] },
       message: '',
     });
+  });
+
+  it('turns a single paragraph saved by an older version into the first answer', () => {
+    const older = { ...plan, answers: { warningSigns: 'I go quiet', copingStrategies: '' } } as unknown as SafetyPlanData;
+    const localized = localizePlan(older, 'en');
+    expect(localized.answers.warningSigns).toEqual(['I go quiet']);
+    expect(localized.answers.copingStrategies).toEqual(['', '', '']);
   });
 
   it('does not mutate the plan it receives', () => {

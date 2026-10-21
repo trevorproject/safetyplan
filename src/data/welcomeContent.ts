@@ -27,13 +27,13 @@ export const introContent = {
   heading: 'Why we believe a safety plan is the right move',
   headingEmphasis: 'safety plan',
   body: 'A plan is a light in the dark. Watch to see how we help you find your own steady ground when the world gets rough.',
-  cta: { label: 'Build your plan', to: '/wizard' },
+  cta: { label: 'Build your plan', to: '/wizard#build-plan' },
 };
 
 export const heroContent = {
   heading: "Let's plan together",
   body: 'You are not alone in this. Build your own safety plan now or find immediate help.',
-  cta: { label: 'Build Safety Plan', to: '/wizard' },
+  cta: { label: 'Build Safety Plan', to: '/wizard#build-plan' },
 };
 
 export const featureContent = {
@@ -55,7 +55,7 @@ export const footerNavLinks = [
   { label: 'Get Help', to: '/resources' },
   { label: 'Home', to: '/' },
   { label: 'Resources', to: '/resources' },
-  { label: 'Create plan', to: '/wizard' },
+  { label: 'Create plan', to: '/wizard#build-plan' },
   { label: 'Donate', to: 'https://www.thetrevorproject.org/donate/' },
 ];
 
@@ -107,12 +107,12 @@ const es: typeof en = {
     heading: 'Creemos que un plan de seguridad es la decisión correcta',
     headingEmphasis: 'plan de seguridad',
     body: 'Un plan es una luz en la oscuridad. Descubre cómo te ayudamos a encontrar tu propio equilibrio cuando el mundo se pone difícil.',
-    cta: { label: 'Crea tu plan', to: '/wizard' },
+    cta: { label: 'Crea tu plan', to: '/wizard#build-plan' },
   },
   heroContent: {
     heading: 'Planeemos juntos',
     body: 'No estás por tu cuenta. Crea tu propio plan de seguridad ahora o encuentra ayuda inmediata.',
-    cta: { label: 'Crear plan de seguridad', to: '/wizard' },
+    cta: { label: 'Crear plan de seguridad', to: '/wizard#build-plan' },
   },
   featureContent: {
     intro:
@@ -132,7 +132,7 @@ const es: typeof en = {
     { label: 'Obtener ayuda', to: '/resources' },
     { label: 'Inicio', to: '/' },
     { label: 'Recursos', to: '/resources' },
-    { label: 'Crear plan', to: '/wizard' },
+    { label: 'Crear plan', to: '/wizard#build-plan' },
     { label: 'Donar', to: 'https://www.thetrevorproject.org/donate/' },
   ],
   footerLegalLinks: [

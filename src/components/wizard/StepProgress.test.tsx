@@ -18,6 +18,8 @@ describe('StepProgress responsiveness', () => {
     const bar = screen.getByRole('progressbar');
     expect(bar.className).toMatch(/w-full/);
     expect(bar.className).toMatch(/max-w-/);
+    // Capped narrower than the question block, so it sits centred under it.
+    expect(bar.className.split(' ')).toContain('mx-auto');
     // Each segment flexes rather than taking a fixed width.
     getClassSet(container).forEach((c) => expect(c).not.toMatch(/^w-\[\d+px\]$/));
     expectResponsiveBaseline(container);

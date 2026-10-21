@@ -16,6 +16,7 @@ const plan: SafetyPlanData = {
   copingStrategies: ['Writing'],
   supports: [],
   environment: [],
+  answers: { warningSigns: [''], copingStrategies: [''], supports: [''], environment: [''] },
   message: 'Hello',
 };
 
@@ -135,10 +136,21 @@ describe('wizard answers across a language switch', () => {
   it('translates selected options without touching custom entries', () => {
     savePlan(plan);
     renderResponsive(<WizardPage />, BREAKPOINTS.lg);
-    expect(screen.getByText('Crying, My own sign')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Crying' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'My own sign' })).toHaveAttribute('aria-pressed', 'true');
 
     switchLanguage('Español', 'Language');
-    expect(screen.getByText('Llorar, My own sign')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Llorar' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'My own sign' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('keeps what the user wrote exactly as typed', () => {
+    savePlan({ ...plan, answers: { ...plan.answers, warningSigns: ['I go quiet'] } });
+    renderResponsive(<WizardPage />, BREAKPOINTS.lg);
+
+    switchLanguage('Español', 'Language');
+    expect(screen.getByRole('textbox', { name: 'Señal de advertencia 1' })).toHaveValue('I go quiet');
+    expect(loadPlan()?.answers.warningSigns).toEqual(['I go quiet']);
   });
 
   it('saves the translated answers, so later steps show them as selected', () => {
@@ -149,7 +161,7 @@ describe('wizard answers across a language switch', () => {
     expect(loadPlan()?.copingStrategies).toEqual(['Escribir']);
 
     fireEvent.click(screen.getByRole('button', { name: 'Continuar' }));
-    expect(screen.getByRole('checkbox', { name: 'Escribir' })).toBeChecked();
+    expect(screen.getByRole('button', { name: 'Escribir' })).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('lets the user unselect an answer chosen in the other language', () => {
@@ -158,8 +170,8 @@ describe('wizard answers across a language switch', () => {
     switchLanguage('Español', 'Language');
     fireEvent.click(screen.getByRole('button', { name: 'Continuar' }));
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Escribir' }));
-    expect(screen.getByRole('checkbox', { name: 'Escribir' })).not.toBeChecked();
+    fireEvent.click(screen.getByRole('button', { name: 'Escribir' }));
+    expect(screen.getByRole('button', { name: 'Escribir' })).toHaveAttribute('aria-pressed', 'false');
     expect(loadPlan()?.copingStrategies).toEqual([]);
   });
 });
