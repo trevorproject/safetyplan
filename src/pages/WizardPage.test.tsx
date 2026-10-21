@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WizardPage } from './WizardPage';
@@ -46,19 +46,20 @@ describe('WizardPage responsiveness', () => {
 
 describe('WizardPage answers', () => {
   const steps = defaultConfig.en.wizardSteps;
-  const answerField = () => screen.getByRole('textbox', { name: buildPlanContent.answerLabel });
+  const answerInput = (n: number, step = steps[0]) => screen.getByRole('textbox', { name: `${step.placeholder} ${n}` });
   const continueButton = () => screen.getByRole('button', { name: buildPlanContent.continueLabel });
 
-  it('gives every list section a free-text answer, with the preset options only as suggestions', async () => {
+  it('gives every list section its own answer inputs, with the preset options only as suggestions', async () => {
     const user = userEvent.setup();
     renderResponsive(<WizardPage />, BREAKPOINTS.md);
     for (const step of steps.slice(0, 4)) {
       expect(screen.getByRole('heading', { name: step.title })).toBeInTheDocument();
-      expect(answerField()).toBeInTheDocument();
+      expect(answerInput(1, step)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: step.addLabel })).toBeInTheDocument();
       for (const option of step.options ?? []) {
         expect(screen.getByRole('button', { name: option })).toHaveAttribute('aria-pressed', 'false');
       }
-      await user.type(answerField(), `My answer for ${step.id}`);
+      await user.type(answerInput(1, step), `My answer for ${step.id}`);
       await user.click(continueButton());
     }
     expect(screen.getByRole('heading', { name: steps[4].title })).toBeInTheDocument();
@@ -68,8 +69,15 @@ describe('WizardPage answers', () => {
     const user = userEvent.setup();
     renderResponsive(<WizardPage />, BREAKPOINTS.md);
     expect(continueButton()).toBeDisabled();
-    await user.type(answerField(), 'I stop answering messages');
+    await user.type(answerInput(2), 'I stop answering messages');
     expect(continueButton()).toBeEnabled();
+  });
+
+  it('does not count blank inputs as an answer', async () => {
+    const user = userEvent.setup();
+    renderResponsive(<WizardPage />, BREAKPOINTS.md);
+    await user.type(answerInput(1), '   ');
+    expect(continueButton()).toBeDisabled();
   });
 
   it('lets the user continue by picking a suggestion alone', async () => {
@@ -79,17 +87,20 @@ describe('WizardPage answers', () => {
     expect(continueButton()).toBeEnabled();
   });
 
-  it('saves the written answer and keeps it unchanged when navigating back', async () => {
+  it('saves added answers and keeps them unchanged when navigating back', async () => {
     const user = userEvent.setup();
     renderResponsive(<WizardPage />, BREAKPOINTS.md);
-    await user.type(answerField(), 'First line{Enter}Second line');
+    await user.type(answerInput(1), 'I go quiet');
+    await user.click(screen.getByRole('button', { name: steps[0].addLabel }));
+    await user.type(answerInput(4), 'I skip meals');
     await user.click(screen.getByRole('button', { name: 'Isolation' }));
-    expect(loadPlan()?.answers.warningSigns).toBe('First line\nSecond line');
+    expect(loadPlan()?.answers.warningSigns).toEqual(['I go quiet', '', '', 'I skip meals']);
     expect(loadPlan()?.warningSigns).toEqual(['Isolation']);
 
     await user.click(continueButton());
     await user.click(screen.getByRole('button', { name: buildPlanContent.backLabel }));
-    expect(answerField()).toHaveValue('First line\nSecond line');
+    expect(answerInput(1)).toHaveValue('I go quiet');
+    expect(answerInput(4)).toHaveValue('I skip meals');
     expect(screen.getByRole('button', { name: 'Isolation' })).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -107,5 +118,28 @@ describe('WizardPage answers', () => {
     await user.click(screen.getByRole('button', { name: buildPlanContent.restartLabel }));
     expect(screen.getByRole('heading', { name: steps[0].title })).toBeInTheDocument();
     expect(loadStep()).toBe(0);
+  });
+});
+
+describe('WizardPage arrival', () => {
+  const steps = defaultConfig.en.wizardSteps;
+  const buildPlanHeading = () => screen.getByRole('heading', { name: buildPlanContent.heading });
+
+  it('moves focus to the "Build your plan" form when opened through #build-plan', () => {
+    const scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView');
+    renderResponsive(<WizardPage />, BREAKPOINTS.md, { route: '/wizard#build-plan' });
+    expect(buildPlanHeading()).toHaveFocus();
+    expect(scrollIntoView.mock.contexts).toContain(document.getElementById('build-plan'));
+  });
+
+  it('opens the matching step when a "How the plan works" card links to it', () => {
+    renderResponsive(<WizardPage />, BREAKPOINTS.md, { route: '/wizard#supports' });
+    expect(screen.getByRole('heading', { name: steps[2].title })).toBeInTheDocument();
+    expect(buildPlanHeading()).toHaveFocus();
+  });
+
+  it('leaves focus alone when opened from the navbar link, without a hash', () => {
+    renderResponsive(<WizardPage />, BREAKPOINTS.md, { route: '/wizard' });
+    expect(buildPlanHeading()).not.toHaveFocus();
   });
 });

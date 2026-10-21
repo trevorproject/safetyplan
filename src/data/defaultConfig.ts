@@ -41,28 +41,32 @@ const en: LocalizedConfig = {
       id: 'warning-signs',
       title: 'Warning Signs',
       description: 'What are the things you think, feel or do when the times get rough?',
-      placeholder: 'Write it in your own words...',
+      placeholder: 'Warning sign',
+      addLabel: 'Add another warning sign',
       options: ['Crying', 'Self Harm', 'Intrusive thoughts', 'Not eating', 'Shaking', 'Hopelessness', 'Heart Racing', 'Isolation'],
     },
     {
       id: 'coping',
       title: 'Coping',
       description: 'What makes you feel better when the warning signs appear?',
-      placeholder: 'Write it in your own words...',
+      placeholder: 'Coping strategy',
+      addLabel: 'Add another coping strategy',
       options: ['Listening to music', 'Showering', 'Writing', 'Breathing', 'Drawing', 'Speaking to someone', 'Sleeping'],
     },
     {
       id: 'supports',
       title: 'Supports',
       description: 'Who are you comfortable talking to about what you are going through?',
-      placeholder: 'Write it in your own words...',
+      placeholder: 'Support person',
+      addLabel: 'Add another support person',
       options: ['Friend', 'Mom/Dad', 'Therapist', 'Partner', 'Sibling', 'Counselor', 'Psychiatrist', 'Lifeline'],
     },
     {
       id: 'environment',
       title: 'Safer Environment',
       description: 'What can be done to make your surroundings safer for you?',
-      placeholder: 'Write it in your own words...',
+      placeholder: 'Change to your surroundings',
+      addLabel: 'Add another change',
       options: ['Remove sharp objects', 'Remove fire ignition devices', 'Remove medications', 'Stay away from heights', 'Stay away from heavy machinery'],
     },
     {
@@ -114,34 +118,38 @@ const es: LocalizedConfig = {
       id: 'warning-signs',
       title: 'Señales de alerta',
       description: '¿Qué piensas, sientes o haces cuando los momentos se ponen difíciles?',
-      placeholder: 'Escríbelo con tus propias palabras...',
+      placeholder: 'Señal de advertencia',
+      addLabel: 'Agregar otra señal de advertencia',
       options: ['Llorar', 'Autolesión', 'Pensamientos intrusivos', 'No comer', 'Temblores', 'Desesperanza', 'Taquicardia', 'Aislamiento'],
     },
     {
       id: 'coping',
       title: 'Afrontamiento',
       description: '¿Qué te hace sentir mejor cuando aparecen las señales de alerta?',
-      placeholder: 'Escríbelo con tus propias palabras...',
+      placeholder: 'Estrategia de afrontamiento',
+      addLabel: 'Agregar otra estrategia de afrontamiento',
       options: ['Escuchar música', 'Bañarte', 'Escribir', 'Respirar', 'Dibujar', 'Hablar con alguien', 'Dormir'],
     },
     {
       id: 'supports',
       title: 'Apoyos',
-      description: '¿Con quién te sientes cómodo o cómoda hablando sobre lo que estás viviendo?',
-      placeholder: 'Escríbelo con tus propias palabras...',
-      options: ['Amigue', 'Mamá/Papá', 'Terapeuta', 'Pareja', 'Hermane', 'Consejere', 'Psiquiatra', 'Línea de ayuda'],
+      description: '¿Con quién te sientes cómodx hablando sobre lo que estás viviendo?',
+      placeholder: 'Persona de apoyo',
+      addLabel: 'Agregar otra persona de apoyo',
+      options: ['Amigx', 'Mamá/Papá', 'Terapeuta', 'Pareja', 'Hermanx', 'Consejerx', 'Psiquiatra', 'Línea de ayuda'],
     },
     {
       id: 'environment',
       title: 'Entorno más seguro',
       description: '¿Qué se puede hacer para que tu entorno sea más seguro para ti?',
-      placeholder: 'Escríbelo con tus propias palabras...',
-      options: ['Quitar objetos punzocortantes', 'Quitar encendedores de fuego', 'Quitar medicamentos', 'Mantenerte alejade de alturas', 'Mantenerte alejade de maquinaria pesada'],
+      placeholder: 'Cambio en tu entorno',
+      addLabel: 'Agregar otro cambio',
+      options: ['Quitar objetos punzocortantes', 'Quitar encendedores de fuego', 'Quitar medicamentos', 'Mantenerte alejadx de alturas', 'Mantenerte alejadx de maquinaria pesada'],
     },
     {
       id: 'message',
       title: 'Comparte lo que quieras',
-      description: 'Escribe cualquier cosa que pueda ayudarte a estar más segure.',
+      description: 'Escribe cualquier cosa que pueda ayudarte a estar más segurx.',
       placeholder: 'Escribe tu mensaje...',
     },
   ],
@@ -179,15 +187,36 @@ function translateOption(value: string, stepId: string, target: Language): strin
   return value;
 }
 
-export const emptyAnswers: Record<PlanListField, string> = {
-  warningSigns: '',
-  copingStrategies: '',
-  supports: '',
-  environment: '',
+/** How many empty answer fields a section starts with. */
+export const DEFAULT_ANSWER_FIELDS = 3;
+
+const blankAnswers = () => Array.from({ length: DEFAULT_ANSWER_FIELDS }, () => '');
+
+export const emptyAnswers: Record<PlanListField, string[]> = {
+  warningSigns: blankAnswers(),
+  copingStrategies: blankAnswers(),
+  supports: blankAnswers(),
+  environment: blankAnswers(),
 };
 
+/** Older saved plans stored each section's answer as a single paragraph; keep it as the first entry. */
+function normalizeAnswers(answers: Partial<Record<PlanListField, string | string[]>> | undefined): Record<PlanListField, string[]> {
+  const normalized = { ...emptyAnswers };
+  for (const field of Object.keys(PLAN_FIELD_STEP_IDS) as PlanListField[]) {
+    const value = answers?.[field];
+    if (Array.isArray(value)) normalized[field] = value;
+    else if (typeof value === 'string' && value.trim()) normalized[field] = [value];
+  }
+  return normalized;
+}
+
+/** The answers the user actually wrote for a section, without the fields they left blank. */
+export function writtenAnswers(plan: SafetyPlanData, field: PlanListField): string[] {
+  return (plan.answers?.[field] ?? []).map((entry) => entry.trim()).filter(Boolean);
+}
+
 export function localizePlan(plan: SafetyPlanData, language: Language): SafetyPlanData {
-  const localized = { ...plan, answers: { ...emptyAnswers, ...plan.answers } };
+  const localized = { ...plan, answers: normalizeAnswers(plan.answers) };
   for (const [field, stepId] of Object.entries(PLAN_FIELD_STEP_IDS) as [PlanListField, string][]) {
     localized[field] = Array.from(new Set((plan[field] ?? []).map((value) => translateOption(value, stepId, language))));
   }

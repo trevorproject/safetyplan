@@ -10,7 +10,7 @@ export function StepProgress({ total, current }: StepProgressProps) {
 
   return (
     <div
-      className="flex w-full max-w-md gap-2"
+      className="mx-auto flex w-full max-w-md gap-2"
       role="progressbar"
       aria-label={buildPlanContent.progressLabel}
       aria-valuemin={1}

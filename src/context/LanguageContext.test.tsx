@@ -16,7 +16,7 @@ const plan: SafetyPlanData = {
   copingStrategies: ['Writing'],
   supports: [],
   environment: [],
-  answers: { warningSigns: '', copingStrategies: '', supports: '', environment: '' },
+  answers: { warningSigns: [''], copingStrategies: [''], supports: [''], environment: [''] },
   message: 'Hello',
 };
 
@@ -145,12 +145,12 @@ describe('wizard answers across a language switch', () => {
   });
 
   it('keeps what the user wrote exactly as typed', () => {
-    savePlan({ ...plan, answers: { ...plan.answers, warningSigns: 'I go quiet' } });
+    savePlan({ ...plan, answers: { ...plan.answers, warningSigns: ['I go quiet'] } });
     renderResponsive(<WizardPage />, BREAKPOINTS.lg);
 
     switchLanguage('Español', 'Language');
-    expect(screen.getByRole('textbox', { name: 'Tu respuesta' })).toHaveValue('I go quiet');
-    expect(loadPlan()?.answers.warningSigns).toBe('I go quiet');
+    expect(screen.getByRole('textbox', { name: 'Señal de advertencia 1' })).toHaveValue('I go quiet');
+    expect(loadPlan()?.answers.warningSigns).toEqual(['I go quiet']);
   });
 
   it('saves the translated answers, so later steps show them as selected', () => {

@@ -11,6 +11,8 @@ export interface WizardStepConfig {
   title: string;
   description: string;
   placeholder?: string;
+  /** Label of the button that adds one more answer field, e.g. "Add another warning sign". */
+  addLabel?: string;
   options?: string[];
 }
 
@@ -35,7 +37,7 @@ export interface SafetyPlanData {
   copingStrategies: string[];
   supports: string[];
   environment: string[];
-  /** What the user wrote in their own words for each section; the list fields hold the suggestions they picked. */
-  answers: Record<PlanListField, string>;
+  /** What the user wrote in their own words for each section, one entry per field; the list fields hold the suggestions they picked. */
+  answers: Record<PlanListField, string[]>;
   message: string;
 }

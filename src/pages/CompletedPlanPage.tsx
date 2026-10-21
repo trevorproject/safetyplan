@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { SmartLink } from '../components/welcome/SmartLink';
 import { ChevronRightIcon } from '../components/welcome/icons';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
-import { loadPlan } from '../lib/storage';
+import { clearPlan, loadPlan } from '../lib/storage';
 import { useCompletedPlanContent } from '../data/completedPlanContent';
-import { localizePlan } from '../data/defaultConfig';
+import { localizePlan, writtenAnswers } from '../data/defaultConfig';
 import { useLanguage } from '../context/language';
 import type { SafetyPlanData } from '../types/app';
 
@@ -17,10 +18,9 @@ function buildShareText(plan: SafetyPlanData | null, finishedPlanContent: Finish
   if (!plan) return '';
   const lines = [finishedPlanContent.shareSubject, ''];
   for (const section of finishedPlanContent.sections) {
-    const answer = plan.answers?.[section.field]?.trim();
-    const items = plan[section.field];
-    if (answer || items.length) {
-      lines.push(`${section.label}:`, ...(answer ? [answer] : []), ...items.map((item) => `- ${item}`), '');
+    const items = [...writtenAnswers(plan, section.field), ...plan[section.field]];
+    if (items.length) {
+      lines.push(`${section.label}:`, ...items.map((item) => `- ${item}`), '');
     }
   }
   if (plan.message.trim()) {
@@ -35,6 +35,7 @@ export function CompletedPlanPage() {
   const plan = storedPlan && localizePlan(storedPlan, language);
   const { completedPlanHeroContent, reminderCardContent, finishedPlanContent } = useCompletedPlanContent();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const navigate = useNavigate();
 
   // Once the plan is built the user lands here from the wizard; move focus (and
   // the viewport) to the top of the page so keyboard and screen-reader users
@@ -45,6 +46,13 @@ export function CompletedPlanPage() {
   }, []);
 
   const handlePrint = () => window.print();
+
+  // Erasing the plan can't be undone, so ask first; then reopen the wizard at the first section.
+  const handleNewPlan = () => {
+    if (!window.confirm(finishedPlanContent.newPlanConfirm)) return;
+    clearPlan();
+    navigate('/wizard#build-plan');
+  };
 
   const handleShare = async () => {
     const text = buildShareText(plan, finishedPlanContent);
@@ -109,22 +117,19 @@ export function CompletedPlanPage() {
 
           <div className="flex w-full max-w-2xl flex-col items-start gap-8">
             {finishedPlanContent.sections.map((section) => {
-              const answer = plan?.answers[section.field].trim() ?? '';
-              const items = plan?.[section.field] ?? [];
-              if (!answer && !items.length) return null;
+              // What the user wrote comes first, then the suggestions they picked.
+              const items = plan ? [...writtenAnswers(plan, section.field), ...plan[section.field]] : [];
+              if (!items.length) return null;
               return (
                 <div key={section.field} className="flex flex-col gap-2">
                   <h3 className="text-lg font-medium text-black dark:text-white">{section.label}</h3>
-                  {answer && (
-                    <p className="whitespace-pre-line break-words text-base leading-[160%] text-black dark:text-white/80">{answer}</p>
-                  )}
-                  {items.length > 0 && (
-                    <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
-                      {items.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  )}
+                  <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
+                    {items.map((item, index) => (
+                      <li key={`${index}-${item}`} className="break-words">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               );
             })}
@@ -151,6 +156,13 @@ export function CompletedPlanPage() {
               className="w-56 rounded-full bg-brand-purple px-8 py-3 text-center text-base font-medium text-white transition hover:opacity-90"
             >
               {finishedPlanContent.shareLabel}
+            </button>
+            <button
+              type="button"
+              onClick={handleNewPlan}
+              className="w-56 rounded-full border-2 border-black px-8 py-3 text-center text-base font-medium text-black transition hover:opacity-70 dark:border-neutral-500 dark:text-white"
+            >
+              {finishedPlanContent.newPlanLabel}
             </button>
           </div>
         </div>

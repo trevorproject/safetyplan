@@ -27,6 +27,8 @@ export const finishedPlanContent: {
   printLabel: string;
   shareLabel: string;
   shareSubject: string;
+  newPlanLabel: string;
+  newPlanConfirm: string;
 } = {
   body: 'You can print this page, save it as a PDF, or share it with someone you trust when you feel ready.',
   sections: [
@@ -39,6 +41,8 @@ export const finishedPlanContent: {
   printLabel: 'Print',
   shareLabel: 'Share',
   shareSubject: 'My Safety Plan',
+  newPlanLabel: 'Make a new plan',
+  newPlanConfirm: 'This will erase your current plan from this device so you can start from scratch. Print or share it first if you want to keep it. Continue?',
 };
 
 const en = { completedPlanHeroContent, reminderCardContent, finishedPlanContent };
@@ -56,7 +60,7 @@ const es: typeof en = {
     action: { label: 'Recursos de crisis', to: '/resources' },
   },
   finishedPlanContent: {
-    body: 'Puedes imprimir esta página, guardarla como PDF o compartirla con alguien de confianza cuando te sientas preparade.',
+    body: 'Puedes imprimir esta página, guardarla como PDF o compartirla con alguien de confianza cuando te sientas preparadx.',
     sections: [
       { field: 'warningSigns', label: 'Señales de alerta' },
       { field: 'copingStrategies', label: 'Estrategias de afrontamiento' },
@@ -67,6 +71,8 @@ const es: typeof en = {
     printLabel: 'Imprimir',
     shareLabel: 'Compartir',
     shareSubject: 'Mi plan de seguridad',
+    newPlanLabel: 'Hacer un nuevo plan',
+    newPlanConfirm: 'Esto borrará tu plan actual de este dispositivo para que puedas empezar desde cero. Si quieres conservarlo, imprímelo o compártelo antes. ¿Continuar?',
   },
 };
 

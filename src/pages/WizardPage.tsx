@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { WizardHero } from '../components/wizard/WizardHero';
@@ -7,7 +7,7 @@ import { HowItWorks } from '../components/wizard/HowItWorks';
 import { StepProgress } from '../components/wizard/StepProgress';
 import { SectionAnswerField } from '../components/wizard/SectionAnswerField';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import { PLAN_FIELD_STEP_IDS, emptyAnswers, localizePlan, useDefaultConfig } from '../data/defaultConfig';
+import { PLAN_FIELD_STEP_IDS, emptyAnswers, localizePlan, useDefaultConfig, writtenAnswers } from '../data/defaultConfig';
 import { useWizardContent } from '../data/wizardContent';
 import { useLanguage } from '../context/language';
 import { clearPlan, loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
@@ -26,8 +26,14 @@ const STEP_ID_PLAN_FIELDS = Object.fromEntries(
   Object.entries(PLAN_FIELD_STEP_IDS).map(([field, stepId]) => [stepId, field]),
 ) as Record<string, PlanListField | undefined>;
 
+/** Links from anywhere but the navbar point here, so the user lands on the form itself. */
+export const BUILD_PLAN_SECTION_ID = 'build-plan';
+
 export function WizardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const buildPlanRef = useRef<HTMLElement>(null);
+  const buildPlanHeadingRef = useRef<HTMLHeadingElement>(null);
   const { language } = useLanguage();
   const [plan, setPlan] = useState<SafetyPlanData>(() => localizePlan({ ...initialPlan, ...loadPlan() }, language));
   const [planLanguage, setPlanLanguage] = useState(language);
@@ -52,6 +58,25 @@ export function WizardPage() {
     saveStep(step);
   }, [step]);
 
+  // `#build-plan` (welcome page and footer links) and `#<step id>` (the "How the
+  // plan works" cards) bring the form into view and move focus to its heading,
+  // so keyboard and screen-reader users start right at the questions. A step
+  // card also opens that step. The navbar link has no hash and lands at the top.
+  const hashTarget = decodeURIComponent(location.hash.slice(1));
+  const hashStepIndex = steps.findIndex((item) => item.id === hashTarget);
+  const focusesForm = hashTarget === BUILD_PLAN_SECTION_ID || hashStepIndex !== -1;
+  const [handledLocationKey, setHandledLocationKey] = useState<string | null>(null);
+  if (handledLocationKey !== location.key) {
+    setHandledLocationKey(location.key);
+    if (hashStepIndex !== -1) setStep(hashStepIndex);
+  }
+
+  useEffect(() => {
+    if (!focusesForm) return;
+    buildPlanRef.current?.scrollIntoView({ block: 'start' });
+    buildPlanHeadingRef.current?.focus({ preventScroll: true });
+  }, [location.key, focusesForm]);
+
   const currentStep = steps[step];
   const currentField = STEP_ID_PLAN_FIELDS[currentStep.id];
   const isLastStep = step === steps.length - 1;
@@ -66,14 +91,14 @@ export function WizardPage() {
     });
   };
 
-  const handleAnswerChange = (field: PlanListField, value: string) => {
-    setPlan((prev) => ({ ...prev, answers: { ...prev.answers, [field]: value } }));
+  const handleAnswerChange = (field: PlanListField, values: string[]) => {
+    setPlan((prev) => ({ ...prev, answers: { ...prev.answers, [field]: values } }));
   };
 
   // A section counts as answered when the user wrote something or picked at least one suggestion.
   const isStepValid = useMemo(() => {
     const answered = currentField
-      ? plan.answers[currentField].trim().length > 0 || plan[currentField].length > 0
+      ? writtenAnswers(plan, currentField).length > 0 || plan[currentField].length > 0
       : plan.message.trim().length > 0;
     return answered && (!isLastStep || consent);
   }, [plan, currentField, isLastStep, consent]);
@@ -110,10 +135,14 @@ export function WizardPage() {
         <HowItWorks />
       </SpeakableSection>
 
-      <section className="flex flex-col items-center gap-16 bg-white px-6 py-16 dark:bg-black lg:px-16 lg:py-24">
+      <section
+        ref={buildPlanRef}
+        id={BUILD_PLAN_SECTION_ID}
+        className="flex scroll-mt-4 flex-col items-center gap-16 bg-white px-6 py-16 dark:bg-black lg:px-16 lg:py-24"
+      >
         <div className="flex w-full max-w-[1280px] flex-col items-center gap-16">
           <div className="flex w-full max-w-[768px] flex-col items-center gap-4 text-center">
-            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black dark:text-white sm:text-4xl lg:text-[52px]">
+            <h2 ref={buildPlanHeadingRef} tabIndex={-1} className="outline-none text-3xl font-medium leading-[120%] tracking-[0.01em] text-black dark:text-white sm:text-4xl lg:text-[52px]">
               {buildPlanContent.heading}
             </h2>
             <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{buildPlanContent.body}</p>
@@ -135,9 +164,11 @@ export function WizardPage() {
 
             {currentField ? (
               <SectionAnswerField
-                value={plan.answers[currentField]}
-                onChange={(value) => handleAnswerChange(currentField, value)}
+                key={currentField}
+                values={plan.answers[currentField]}
+                onChange={(values) => handleAnswerChange(currentField, values)}
                 placeholder={currentStep.placeholder}
+                addLabel={currentStep.addLabel}
                 suggestions={currentStep.options ?? []}
                 selected={plan[currentField]}
                 onToggle={(value) => handleToggle(currentField, value)}
