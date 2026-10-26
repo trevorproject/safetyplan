@@ -69,12 +69,23 @@ The wizard is structured as a six-step flow:
 
 UX expectations:
 - progress indicator throughout the flow
-- each list section (warning signs, coping, supports, environment) is answered in the user's own words in a list of input fields (three to start). An "Add another …" button adds a field and each field can be removed (one always stays). The field placeholder and the add button text come from each step's `placeholder` and `addLabel` in [defaultConfig.ts](src/data/defaultConfig.ts). The preset options are shown underneath only as optional suggestion chips. A section can be continued with written entries, picked suggestions, or both. Entries are stored per section in `SafetyPlanData.answers` (one string per field) and are never translated on a language switch; picked suggestions still are
-- the completed plan and the share text list each section as bullet points: the written entries (blank fields skipped) followed by any picked suggestions
+- each list section (warning signs, coping, supports, environment) is answered in the user's own words in a list of input fields (one to start, `DEFAULT_ANSWER_FIELDS`). An "Add another …" button adds a field and each field can be removed (one always stays). The field placeholder and the add button text come from each step's `placeholder` and `addLabel` in [defaultConfig.ts](src/data/defaultConfig.ts). The preset options are shown underneath only as optional suggestion chips. A section can be continued with written entries, picked suggestions, or both. Entries are stored per section in `SafetyPlanData.answers` (one string per field) and are never translated on a language switch; picked suggestions still are
+- with more than one field, the user can rank their written entries (MPI-228, see "Ranking answers (MPI-228)")
+- the completed plan and the share text list each section as bullet points: the written entries in the order the user ranked them (blank fields skipped) followed by any picked suggestions
 - links into the wizard from anywhere except the navbar (welcome page CTAs, footer, "How the plan works" cards) use a hash (`/wizard#build-plan`, or `#<step id>` to open that step), which scrolls to the "Build your plan" form and moves focus to its heading. The navbar "Create plan" link has no hash and lands at the top of the page
 - simple save/continue behavior using browser storage; the current section is saved too, so a reload resumes where the user left off
 - supportive language at each step
 - no forced interaction or alarming animation
+
+### Ranking answers (MPI-228)
+Users put the written entries of a list section in order of what matters most to them. All of it lives in [SectionAnswerField.tsx](src/components/wizard/SectionAnswerField.tsx) and only shows when the section has two or more fields:
+- **Scope:** only the written entries, within one section. Picked suggestion chips are not ranked and still come after the written entries in the plan. Nothing moves between sections.
+- **Drag:** each row has a `⠿` handle on the left. It uses Pointer Events, so mouse, touch and pen all work with no library. The handle has `touch-none`, so a touch drag doesn't scroll the page. The list reorders live as the pointer passes the middle of another row, and the row being dragged gets `border-brand-purple`. The handle is `aria-hidden`; keyboard and screen-reader users use the buttons below.
+- **Accessible alternative:** each row has ↑ / ↓ buttons (styled like the × remove button). ↑ is disabled on the first row and ↓ on the last. Focus follows the moved answer to its new row and switches to the other button when the answer reaches an end.
+- **Screen readers:** a polite `aria-live` region announces `movedAnnouncement` ("{answer} moved to position {position} of {total}"; a blank entry is named by the field placeholder). The `reorderHint` text is shown above the fields and is also the answers group's `aria-describedby`.
+- **Saving:** a move calls `onChange` with the new array, so it is saved to `SafetyPlanData.answers` (sessionStorage) the same way typing is. `writtenAnswers()` keeps that order for the completed plan and the share text. No data model change.
+- **Copy:** `reorderHint`, `moveUpLabel`, `moveDownLabel` and `movedAnnouncement` in `buildPlanContent` ([wizardContent.ts](src/data/wizardContent.ts)), in English and Spanish. The button labels follow the remove button pattern ("Move up warning sign 2").
+- **Tests:** [SectionAnswerField.test.tsx](src/components/wizard/SectionAnswerField.test.tsx) checks that the controls only show with 2+ fields, up/down moves and disabled ends, focus following, the announcements, live reordering while dragging (mouse and touch, down and back up, by faking row rects since jsdom has no layout), cancel, ignored stray or non-primary pointers, and `touch-none`. [WizardPage.test.tsx](src/pages/WizardPage.test.tsx) checks that the ranked order is saved.
 
 ### 4. Completed Plan Page
 - full plan displayed in a clean, printable format

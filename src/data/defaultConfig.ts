@@ -188,7 +188,7 @@ function translateOption(value: string, stepId: string, target: Language): strin
 }
 
 /** How many empty answer fields a section starts with. */
-export const DEFAULT_ANSWER_FIELDS = 3;
+export const DEFAULT_ANSWER_FIELDS = 1;
 
 const blankAnswers = () => Array.from({ length: DEFAULT_ANSWER_FIELDS }, () => '');
 

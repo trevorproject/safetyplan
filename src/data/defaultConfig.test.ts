@@ -67,7 +67,7 @@ describe('localizePlan', () => {
       copingStrategies: [],
       supports: [],
       environment: [],
-      answers: { warningSigns: ['', '', ''], copingStrategies: ['', '', ''], supports: ['', '', ''], environment: ['', '', ''] },
+      answers: { warningSigns: [''], copingStrategies: [''], supports: [''], environment: [''] },
       message: '',
     });
   });
@@ -76,7 +76,7 @@ describe('localizePlan', () => {
     const older = { ...plan, answers: { warningSigns: 'I go quiet', copingStrategies: '' } } as unknown as SafetyPlanData;
     const localized = localizePlan(older, 'en');
     expect(localized.answers.warningSigns).toEqual(['I go quiet']);
-    expect(localized.answers.copingStrategies).toEqual(['', '', '']);
+    expect(localized.answers.copingStrategies).toEqual(['']);
   });
 
   it('does not mutate the plan it receives', () => {
