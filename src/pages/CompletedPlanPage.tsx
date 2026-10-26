@@ -5,7 +5,7 @@ import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { SmartLink } from '../components/welcome/SmartLink';
 import { ChevronRightIcon } from '../components/welcome/icons';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
-import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.png';
+import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.webp';
 import { clearPlan, loadPlan } from '../lib/storage';
 import { useCompletedPlanContent } from '../data/completedPlanContent';
 import { localizePlan, writtenAnswers } from '../data/defaultConfig';

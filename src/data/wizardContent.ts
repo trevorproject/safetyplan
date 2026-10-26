@@ -6,33 +6,59 @@ export const wizardHeroContent = {
   body: 'A clear path forward whether you need help right now or want to prepare for any hard days.',
 };
 
-export const howItWorksContent = {
-  heading: 'How the plan works',
-  body: 'A few simple questions to build something solid and true.',
-  cards: [
+/**
+ * Plain-language help shown next to each wizard question. `steps` explains the
+ * question as a whole (opened from the info icon by its title); `terms` explains
+ * one phrase inside the question's description, which becomes its own trigger.
+ * A term only shows up when its text appears in that step's description.
+ */
+export const questionHelpContent = {
+  stepHelpLabel: 'What this question means: {title}',
+  termHelpLabel: 'What “{term}” means',
+  closeLabel: 'Close explanation',
+  exampleLabel: 'For example:',
+  steps: [
     {
       stepId: 'warning-signs',
-      heading: 'Name the hard moments',
       text: 'We ask what comes before the darkness. The places. The feelings.',
-      linkLabel: 'Warning Signs',
     },
     {
       stepId: 'coping',
-      heading: 'Find what steadies you',
       text: 'You tell us what action quiets the noise. A walk. A song.',
-      linkLabel: 'Coping',
     },
     {
       stepId: 'supports',
-      heading: 'Choose your people',
       text: 'Select the trusted voices you can call when the weight is heavy.',
-      linkLabel: 'Supports',
     },
     {
       stepId: 'environment',
-      heading: 'Build a safe space',
       text: 'Define the physical place or mental image that feels like shelter.',
-      linkLabel: 'Environment',
+    },
+  ],
+  terms: [
+    {
+      stepId: 'warning-signs',
+      term: 'the times get rough',
+      explanation: 'Moments when you feel very sad, scared, overwhelmed or not safe.',
+      example: 'After a fight, when you feel alone at night, or after bad news.',
+    },
+    {
+      stepId: 'coping',
+      term: 'warning signs',
+      explanation: 'The thoughts, feelings or actions you wrote in the first step. They tell you a hard moment may be starting.',
+      example: 'Crying, not eating, or wanting to be alone.',
+    },
+    {
+      stepId: 'supports',
+      term: 'comfortable talking to',
+      explanation: 'People you trust and feel safe with. You do not have to tell them everything.',
+      example: 'A friend, a family member, a teacher or a counselor.',
+    },
+    {
+      stepId: 'environment',
+      term: 'surroundings',
+      explanation: 'The places where you spend time, like your room, home, school or work, and the things in them.',
+      example: 'Asking someone you trust to keep your medicine for you.',
     },
   ],
 };
@@ -52,40 +78,60 @@ export const buildPlanContent = {
   progressLabel: 'Safety plan progress',
 };
 
-const en = { wizardHeroContent, howItWorksContent, buildPlanContent };
+const en = { wizardHeroContent, questionHelpContent, buildPlanContent };
 
 const es: typeof en = {
   wizardHeroContent: {
     heading: 'Tu plan de seguridad',
     body: 'Un camino claro hacia adelante, ya sea que necesites ayuda ahora mismo o quieras prepararte para los días difíciles.',
   },
-  howItWorksContent: {
-    heading: 'Cómo funciona el plan',
-    body: 'Unas preguntas sencillas para construir algo sólido y verdadero.',
-    cards: [
+  questionHelpContent: {
+    stepHelpLabel: 'Qué significa esta pregunta: {title}',
+    termHelpLabel: 'Qué significa “{term}”',
+    closeLabel: 'Cerrar explicación',
+    exampleLabel: 'Por ejemplo:',
+    steps: [
       {
         stepId: 'warning-signs',
-        heading: 'Nombra los momentos difíciles',
         text: 'Te preguntamos qué aparece antes de la oscuridad. Los lugares. Los sentimientos.',
-        linkLabel: 'Señales de alerta',
       },
       {
         stepId: 'coping',
-        heading: 'Encuentra lo que te da estabilidad',
         text: 'Nos dices qué acción calma el ruido. Una caminata. Una canción.',
-        linkLabel: 'Afrontamiento',
       },
       {
         stepId: 'supports',
-        heading: 'Elige a tu gente',
         text: 'Selecciona las voces de confianza a las que puedes llamar cuando el peso es demasiado.',
-        linkLabel: 'Apoyos',
       },
       {
         stepId: 'environment',
-        heading: 'Construye un espacio seguro',
         text: 'Define el lugar físico o la imagen mental que se siente como refugio.',
-        linkLabel: 'Entorno',
+      },
+    ],
+    terms: [
+      {
+        stepId: 'warning-signs',
+        term: 'los momentos se ponen difíciles',
+        explanation: 'Momentos en los que te sientes muy triste, con miedo, abrumadx o en peligro.',
+        example: 'Después de una pelea, cuando te sientes solx en la noche o después de una mala noticia.',
+      },
+      {
+        stepId: 'coping',
+        term: 'señales de alerta',
+        explanation: 'Los pensamientos, sentimientos o acciones que escribiste en el primer paso. Te avisan que un momento difícil puede estar empezando.',
+        example: 'Llorar, no comer o querer estar solx.',
+      },
+      {
+        stepId: 'supports',
+        term: 'te sientes cómodx hablando',
+        explanation: 'Personas en las que confías y con las que te sientes segurx. No tienes que contarles todo.',
+        example: 'Unx amigx, alguien de tu familia, unx maestrx o unx consejerx.',
+      },
+      {
+        stepId: 'environment',
+        term: 'entorno',
+        explanation: 'Los lugares donde pasas tiempo, como tu cuarto, tu casa, la escuela o el trabajo, y las cosas que hay en ellos.',
+        example: 'Pedirle a alguien de confianza que guarde tus medicinas.',
       },
     ],
   },

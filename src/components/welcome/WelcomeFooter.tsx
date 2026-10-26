@@ -1,6 +1,6 @@
 import { SmartLink } from './SmartLink';
-import trevorLogo from '../../assets/ttp_logo_oneline_ko.png';
-import trevorAvatar from '../../assets/ttp_logo_avatar_ko.png';
+import trevorLogo from '../../assets/ttp_logo_oneline_ko.webp';
+import trevorAvatar from '../../assets/ttp_logo_avatar_ko.webp';
 import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function WelcomeFooter() {
@@ -9,7 +9,7 @@ export function WelcomeFooter() {
   return (
     <footer className="flex flex-col bg-brand-gray dark:bg-neutral-900">
       <div className="hidden items-center justify-center bg-brand-orange px-6 py-4 lg:flex lg:px-16">
-        <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-auto" />
+        <img src={trevorLogo} alt="The Trevor Project" className="h-8 w-auto" loading="lazy" />
       </div>
 
       <div className="flex flex-col items-center gap-16 px-6 py-16 lg:px-16">
@@ -55,7 +55,7 @@ export function WelcomeFooter() {
         <SmartLink to={footerCredit.to} className="text-sm leading-[160%] text-white underline hover:opacity-70">
           {footerCredit.label}
         </SmartLink>
-        <img src={trevorAvatar} alt="The Trevor Project" className="mt-2 h-12 w-12" />
+        <img src={trevorAvatar} alt="The Trevor Project" className="mt-2 h-12 w-12" loading="lazy" />
       </div>
     </footer>
   );

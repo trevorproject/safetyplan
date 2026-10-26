@@ -1,5 +1,5 @@
-import lifelineImage from '../../assets/988.png';
-import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_LearnTogether_Horizontal.png';
+import lifelineImage from '../../assets/988.webp';
+import learnTogetherIllustration from '../../assets/TTP_BrandIllustrations_LearnTogether_Horizontal.webp';
 import { SmartLink } from '../welcome/SmartLink';
 import { ChevronRightIcon } from '../welcome/icons';
 import { useResourcesContent } from '../../data/resourcesContent';
@@ -35,6 +35,7 @@ export function FreeResources() {
               src={learnTogetherIllustration}
               alt={freeResourcesContent.learnTogetherImageAlt}
               className="h-[405px] w-full rounded-[40px] object-cover"
+              loading="lazy"
             />
             <div className="flex w-full flex-col items-start gap-6">
               <div className="flex flex-col items-start gap-4">
@@ -62,6 +63,7 @@ export function FreeResources() {
                 src={lifelineImage}
                 alt={lifelineCard.imageAlt}
                 className="h-[189px] w-full rounded-[40px] object-cover"
+                loading="lazy"
               />
               <div className="flex w-full flex-col items-start gap-6 pt-6">
                 <div className="flex flex-col items-start gap-4">

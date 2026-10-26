@@ -132,7 +132,7 @@ describe('WizardPage arrival', () => {
     expect(scrollIntoView.mock.contexts).toContain(document.getElementById('build-plan'));
   });
 
-  it('opens the matching step when a "How the plan works" card links to it', () => {
+  it('opens the matching step when a link points at its id', () => {
     renderResponsive(<WizardPage />, BREAKPOINTS.md, { route: '/wizard#supports' });
     expect(screen.getByRole('heading', { name: steps[2].title })).toBeInTheDocument();
     expect(buildPlanHeading()).toHaveFocus();
