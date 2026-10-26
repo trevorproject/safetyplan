@@ -1,5 +1,5 @@
 import gardenIllustration from '../../assets/TTP_BrandIllustrations_TogetherWeGrow_Horizontal.webp';
-import trevorLogo from '../../assets/ttp_logo_primary_tagline_ko.png';
+import trevorLogo from '../../assets/ttp_logo_primary_tagline_ko.webp';
 import { useWelcomeContent } from '../../data/welcomeContent';
 
 export function FeatureShowcase() {
@@ -10,7 +10,7 @@ export function FeatureShowcase() {
       <div className="flex w-full max-w-[1280px] flex-col gap-20">
         <div className="flex flex-col items-center gap-16 lg:flex-row lg:items-start">
           <div className="flex w-full items-center justify-center rounded-xl bg-brand-purple-light p-8 lg:w-1/2 lg:min-h-[380px]">
-            <img src={trevorLogo} alt="The Trevor Project - For Young LGBTQ+ Lives" className="w-full max-w-[360px]" />
+            <img src={trevorLogo} alt="The Trevor Project - For Young LGBTQ+ Lives" className="w-full max-w-[360px]" loading="lazy" />
           </div>
 
           <div className="flex w-full flex-col gap-8 lg:w-1/2">

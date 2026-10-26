@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { ChevronDownIcon, ChevronRightIcon, GlobeIcon, ImagePlaceholderIcon } from './icons';
+import { ChevronDownIcon, ChevronRightIcon, GlobeIcon, ImagePlaceholderIcon, InfoIcon } from './icons';
 import { BREAKPOINT_LIST } from '../../test/responsive';
 
 const ICONS = [
@@ -8,6 +8,7 @@ const ICONS = [
   ['ChevronRightIcon', ChevronRightIcon],
   ['GlobeIcon', GlobeIcon],
   ['ImagePlaceholderIcon', ImagePlaceholderIcon],
+  ['InfoIcon', InfoIcon],
 ] as const;
 
 describe('icon responsiveness', () => {

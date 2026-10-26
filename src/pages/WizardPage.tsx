@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
 import { WizardHero } from '../components/wizard/WizardHero';
-import { HowItWorks } from '../components/wizard/HowItWorks';
+import { QuestionPrompt } from '../components/wizard/QuestionPrompt';
 import { StepProgress } from '../components/wizard/StepProgress';
 import { SectionAnswerField } from '../components/wizard/SectionAnswerField';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
@@ -58,10 +58,10 @@ export function WizardPage() {
     saveStep(step);
   }, [step]);
 
-  // `#build-plan` (welcome page and footer links) and `#<step id>` (the "How the
-  // plan works" cards) bring the form into view and move focus to its heading,
-  // so keyboard and screen-reader users start right at the questions. A step
-  // card also opens that step. The navbar link has no hash and lands at the top.
+  // `#build-plan` (welcome page and footer links) and `#<step id>` (a deep link
+  // to one step) bring the form into view and move focus to its heading, so
+  // keyboard and screen-reader users start right at the questions. A step link
+  // also opens that step. The navbar link has no hash and lands at the top.
   const hashTarget = decodeURIComponent(location.hash.slice(1));
   const hashStepIndex = steps.findIndex((item) => item.id === hashTarget);
   const focusesForm = hashTarget === BUILD_PLAN_SECTION_ID || hashStepIndex !== -1;
@@ -131,9 +131,6 @@ export function WizardPage() {
       <SpeakableSection id="wizard-hero">
         <WizardHero />
       </SpeakableSection>
-      <SpeakableSection id="wizard-how-it-works">
-        <HowItWorks />
-      </SpeakableSection>
 
       <section
         ref={buildPlanRef}
@@ -157,10 +154,12 @@ export function WizardPage() {
               </button>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <h3 className="text-2xl font-medium text-black dark:text-white">{currentStep.title}</h3>
-              <p className="text-base text-black/70 dark:text-white/70">{currentStep.description}</p>
-            </div>
+            <QuestionPrompt
+              key={`question-${currentStep.id}`}
+              stepId={currentStep.id}
+              title={currentStep.title}
+              description={currentStep.description}
+            />
 
             {currentField ? (
               <SectionAnswerField
