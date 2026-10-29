@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WizardPage } from './WizardPage';
 import { buildPlanContent } from '../data/wizardContent';
-import { defaultConfig } from '../data/defaultConfig';
+import { defaultConfig, writtenAnswers } from '../data/defaultConfig';
 import { loadPlan, loadStep, saveStep } from '../lib/storage';
 import {
   atEachBreakpoint,
@@ -69,7 +69,7 @@ describe('WizardPage answers', () => {
     const user = userEvent.setup();
     renderResponsive(<WizardPage />, BREAKPOINTS.md);
     expect(continueButton()).toBeDisabled();
-    await user.type(answerInput(2), 'I stop answering messages');
+    await user.type(answerInput(1), 'I stop answering messages');
     expect(continueButton()).toBeEnabled();
   });
 
@@ -92,16 +92,27 @@ describe('WizardPage answers', () => {
     renderResponsive(<WizardPage />, BREAKPOINTS.md);
     await user.type(answerInput(1), 'I go quiet');
     await user.click(screen.getByRole('button', { name: steps[0].addLabel }));
-    await user.type(answerInput(4), 'I skip meals');
+    await user.type(answerInput(2), 'I skip meals');
     await user.click(screen.getByRole('button', { name: 'Isolation' }));
-    expect(loadPlan()?.answers.warningSigns).toEqual(['I go quiet', '', '', 'I skip meals']);
+    expect(loadPlan()?.answers.warningSigns).toEqual(['I go quiet', 'I skip meals']);
     expect(loadPlan()?.warningSigns).toEqual(['Isolation']);
 
     await user.click(continueButton());
     await user.click(screen.getByRole('button', { name: buildPlanContent.backLabel }));
     expect(answerInput(1)).toHaveValue('I go quiet');
-    expect(answerInput(4)).toHaveValue('I skip meals');
+    expect(answerInput(2)).toHaveValue('I skip meals');
     expect(screen.getByRole('button', { name: 'Isolation' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('saves the order the user ranks their answers in, so the plan lists them that way', async () => {
+    const user = userEvent.setup();
+    renderResponsive(<WizardPage />, BREAKPOINTS.md);
+    await user.type(answerInput(1), 'I go quiet');
+    await user.click(screen.getByRole('button', { name: steps[0].addLabel }));
+    await user.type(answerInput(2), 'I skip meals');
+    await user.click(screen.getByRole('button', { name: `${buildPlanContent.moveUpLabel} warning sign 2` }));
+    expect(loadPlan()?.answers.warningSigns).toEqual(['I skip meals', 'I go quiet']);
+    expect(writtenAnswers(loadPlan()!, 'warningSigns')).toEqual(['I skip meals', 'I go quiet']);
   });
 
   it('resumes from the section the user was last on', () => {
