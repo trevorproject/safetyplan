@@ -92,6 +92,8 @@ Users put the written entries of a list section in order of what matters most to
 - print action for paper use
 - restart action for creating a new plan: "Make a new plan" / "Hacer un nuevo plan" asks for confirmation, erases the saved plan and section from sessionStorage, and reopens the wizard at the first section (`/wizard#build-plan`)
 - gentle reminder about getting support if needed
+- layout (MPI-233): on wide screens (`lg`) the plan and the "A gentle reminder" card sit side by side in a grid, the card on the left and the plan with its buttons on the right. On smaller screens they stack, with the card after the plan at the bottom of the page. The card comes after the plan in the DOM (so screen readers and the mobile layout read the plan first) and is moved into the first column with `lg:col-start-1 lg:row-start-1`
+- the "print, save as PDF or share" text is a tooltip on an info icon next to "Keep it close to you and don't forget to ask for help if you need it" (`completedPlanHeroContent.tip` / `tipLabel`). The tooltip is the reusable [InfoTooltip](src/components/common/InfoTooltip.tsx): opens on mouse hover and on tap/click/Enter/Space, closes with Escape, a second click or a tap elsewhere, is announced through a polite live region, and is hidden when printing
 
 ### 5. Admin Configuration Page
 - password-protected access for editing the app content

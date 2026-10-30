@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { screen, within } from '@testing-library/react';
 import { CompletedPlanPage } from './CompletedPlanPage';
-import { finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
+import { completedPlanHeroContent, finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
 import { loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
 import {
   atEachBreakpoint,
@@ -48,6 +48,30 @@ describe('CompletedPlanPage responsiveness', () => {
     expectAdaptsAt(container, ['sm', 'lg']);
     expectResponsiveHorizontalPadding(container);
     expectResponsiveBaseline(container);
+  });
+});
+
+describe('CompletedPlanPage layout', () => {
+  it('shows the plan first and the reminder after it in reading order, moving the reminder to the left column on wide screens', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.lg);
+    const printButton = screen.getByRole('button', { name: finishedPlanContent.printLabel });
+    const reminder = screen.getByRole('heading', { name: reminderCardContent.heading });
+    expect(printButton.compareDocumentPosition(reminder) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    const card = reminder.closest('.rounded-3xl') as HTMLElement;
+    expect(card).toHaveClass('lg:col-start-1', 'lg:row-start-1');
+    expect(card.parentElement?.parentElement).toHaveClass('grid', 'lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]');
+  });
+
+  it('explains how to keep the plan in a tooltip next to the intro text', async () => {
+    const user = userEvent.setup();
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByText(completedPlanHeroContent.tip)).not.toBeInTheDocument();
+
+    const trigger = screen.getByRole('button', { name: completedPlanHeroContent.tipLabel });
+    expect(trigger.closest('p')).toHaveTextContent(completedPlanHeroContent.body);
+    await user.click(trigger);
+    expect(screen.getByText(completedPlanHeroContent.tip)).toBeInTheDocument();
   });
 });
 

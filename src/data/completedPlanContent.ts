@@ -12,6 +12,8 @@ export const completedPlanHeroContent = {
   headingScript: 'your',
   headingTail: ' plan',
   body: "Keep it close to you and don't forget to ask for help if you need it",
+  tipLabel: 'How to keep your plan',
+  tip: 'You can print this page, save it as a PDF, or share it with someone you trust when you feel ready.',
 };
 
 export const reminderCardContent = {
@@ -21,7 +23,6 @@ export const reminderCardContent = {
 };
 
 export const finishedPlanContent: {
-  body: string;
   sections: FinishedPlanSection[];
   notesLabel: string;
   printLabel: string;
@@ -30,7 +31,6 @@ export const finishedPlanContent: {
   newPlanLabel: string;
   newPlanConfirm: string;
 } = {
-  body: 'You can print this page, save it as a PDF, or share it with someone you trust when you feel ready.',
   sections: [
     { field: 'warningSigns', label: 'Warning Signs' },
     { field: 'copingStrategies', label: 'Coping Strategies' },
@@ -53,6 +53,8 @@ const es: typeof en = {
     headingScript: 'tu',
     headingTail: ' plan',
     body: 'Guárdalo cerca de ti y no olvides pedir ayuda si la necesitas',
+    tipLabel: 'Cómo guardar tu plan',
+    tip: 'Puedes imprimir esta página, guardarla como PDF o compartirla con alguien de confianza cuando te sientas preparadx.',
   },
   reminderCardContent: {
     heading: 'Un recordatorio amable',
@@ -60,7 +62,6 @@ const es: typeof en = {
     action: { label: 'Recursos de crisis', to: '/resources' },
   },
   finishedPlanContent: {
-    body: 'Puedes imprimir esta página, guardarla como PDF o compartirla con alguien de confianza cuando te sientas preparadx.',
     sections: [
       { field: 'warningSigns', label: 'Señales de alerta' },
       { field: 'copingStrategies', label: 'Estrategias de afrontamiento' },
