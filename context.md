@@ -88,7 +88,7 @@ Users put the written entries of a list section in order of what matters most to
 - **Tests:** [SectionAnswerField.test.tsx](src/components/wizard/SectionAnswerField.test.tsx) checks that the controls only show with 2+ fields, up/down moves and disabled ends, focus following, the announcements, live reordering while dragging (mouse and touch, down and back up, by faking row rects since jsdom has no layout), cancel, ignored stray or non-primary pointers, and `touch-none`. [WizardPage.test.tsx](src/pages/WizardPage.test.tsx) checks that the ranked order is saved.
 
 ### 4. Completed Plan Page
-- full plan displayed in a clean, printable format
+- full plan displayed in a clean, printable format, inside its own card (an `<article>` titled "My Safety Plan" / "Mi plan de seguridad" with a white background, black border and a thin divider between sections) so it reads as a separate document from the page. The card is left out when the plan has no entries
 - print action for paper use
 - restart action for creating a new plan: "Make a new plan" / "Hacer un nuevo plan" asks for confirmation, erases the saved plan and section from sessionStorage, and reopens the wizard at the first section (`/wizard#build-plan`)
 - gentle reminder about getting support if needed

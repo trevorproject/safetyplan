@@ -103,6 +103,29 @@ describe('CompletedPlanPage report', () => {
     expect(screen.getByText('Remember: this feeling passes.')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Support' })).not.toBeInTheDocument();
   });
+
+  it('shows the plan inside its own titled card', () => {
+    savePlan({
+      warningSigns: ['Crying'],
+      copingStrategies: [],
+      supports: [],
+      environment: [],
+      answers: { warningSigns: [''], copingStrategies: [''], supports: [''], environment: [''] },
+      message: 'Thank you',
+    });
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+
+    const card = screen.getByRole('article', { name: finishedPlanContent.shareSubject });
+    expect(card).toHaveClass('rounded-3xl', 'border-2');
+    expect(within(card).getByRole('heading', { name: 'Warning Signs' })).toBeInTheDocument();
+    expect(within(card).getByText('Thank you')).toBeInTheDocument();
+    expect(within(card).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('leaves the card out when there is nothing in the plan yet', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByRole('article')).not.toBeInTheDocument();
+  });
 });
 
 describe('CompletedPlanPage new plan', () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WelcomeNavbar } from '../components/welcome/WelcomeNavbar';
 import { WelcomeFooter } from '../components/welcome/WelcomeFooter';
@@ -36,6 +36,14 @@ export function CompletedPlanPage() {
   const plan = storedPlan && localizePlan(storedPlan, language);
   const { completedPlanHeroContent, reminderCardContent, finishedPlanContent } = useCompletedPlanContent();
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const planTitleId = useId();
+  // What the user wrote comes first in each section, then the suggestions they picked.
+  const planSections = plan
+    ? finishedPlanContent.sections
+        .map((section) => ({ ...section, items: [...writtenAnswers(plan, section.field), ...plan[section.field]] }))
+        .filter((section) => section.items.length > 0)
+    : [];
+  const notes = plan?.message.trim();
   const navigate = useNavigate();
 
   // Once the plan is built the user lands here from the wizard; move focus (and
@@ -104,32 +112,37 @@ export function CompletedPlanPage() {
         <div className="grid w-full max-w-[1280px] gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-16">
           <SpeakableSection id="plan-details">
           <div className="flex w-full flex-col items-center gap-12 lg:col-start-2 lg:row-start-1 lg:items-start">
-            <div className="flex w-full max-w-2xl flex-col items-start gap-8">
-              {finishedPlanContent.sections.map((section) => {
-                // What the user wrote comes first, then the suggestions they picked.
-                const items = plan ? [...writtenAnswers(plan, section.field), ...plan[section.field]] : [];
-                if (!items.length) return null;
-                return (
-                  <div key={section.field} className="flex flex-col gap-2">
-                    <h3 className="text-lg font-medium text-black dark:text-white">{section.label}</h3>
-                    <ul className="list-disc space-y-1 pl-5 text-base text-black dark:text-white/80">
-                      {items.map((item, index) => (
-                        <li key={`${index}-${item}`} className="break-words">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
+            {(planSections.length > 0 || notes) && (
+              <article
+                aria-labelledby={planTitleId}
+                className="flex w-full max-w-2xl flex-col gap-6 rounded-3xl border-2 border-black bg-white p-6 shadow-sm dark:border-neutral-600 dark:bg-neutral-800 sm:p-10 print:shadow-none"
+              >
+                <h2 id={planTitleId} className="text-2xl font-medium text-black dark:text-white">
+                  {finishedPlanContent.shareSubject}
+                </h2>
+                <div className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
+                  {planSections.map(({ field, label, items }) => (
+                    <div key={field} className="flex flex-col gap-2 py-5 first:pt-0 last:pb-0">
+                      <h3 className="text-lg font-medium text-black dark:text-white">{label}</h3>
+                      <ul className="list-disc space-y-1 pl-5 text-base text-black marker:text-brand-purple dark:text-white/80 dark:marker:text-brand-purple-light">
+                        {items.map((item, index) => (
+                          <li key={`${index}-${item}`} className="break-words">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
 
-              {plan?.message.trim() && (
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-lg font-medium text-black dark:text-white">{finishedPlanContent.notesLabel}</h3>
-                  <p className="whitespace-pre-line break-words text-base leading-[160%] text-black dark:text-white/80">{plan.message.trim()}</p>
+                  {notes && (
+                    <div className="flex flex-col gap-2 py-5 first:pt-0 last:pb-0">
+                      <h3 className="text-lg font-medium text-black dark:text-white">{finishedPlanContent.notesLabel}</h3>
+                      <p className="whitespace-pre-line break-words text-base leading-[160%] text-black dark:text-white/80">{notes}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </article>
+            )}
 
             <div className="flex w-full flex-col items-center gap-3 print:hidden lg:items-start">
               <button
