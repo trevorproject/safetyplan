@@ -7,7 +7,7 @@ import { ChevronRightIcon } from '../components/welcome/icons';
 import { SpeakableSection } from '../components/accessibility/SpeakableSection';
 import { InfoTooltip } from '../components/common/InfoTooltip';
 import callIcon from '../assets/TTP_IconsLibrary_White_Call Alt.webp';
-import trevorLogo from '../assets/ttp_logo_oneline_ko.png';
+import trevorLogo from '../assets/ttp_logo_oneline_black.png';
 import { clearPlan, loadPlan } from '../lib/storage';
 import { useCompletedPlanContent } from '../data/completedPlanContent';
 import { localizePlan } from '../data/defaultConfig';
@@ -17,6 +17,9 @@ import { buildPlanText, downloadPlan, planSectionsFor, type DownloadFormat } fro
 type DownloadState = { status: 'idle' } | { status: 'pending' | 'error'; format: DownloadFormat };
 
 const DOWNLOAD_FORMATS: DownloadFormat[] = ['pdf', 'txt'];
+
+/** Sharing is switched off for now; flip this to bring the Share button back. */
+const SHARE_ENABLED = false;
 
 export function CompletedPlanPage() {
   const { language } = useLanguage();
@@ -85,8 +88,8 @@ export function CompletedPlanPage() {
       <WelcomeNavbar />
       <main>
 
-      {/* Printed pages replace the navbar with the same orange logo band the downloaded PDF starts with. */}
-      <div className="print-exact mx-auto hidden w-full max-w-2xl items-center justify-center rounded-3xl bg-brand-orange py-5 print:flex">
+      {/* Printed pages replace the navbar with the black logo the downloaded PDF also starts with. */}
+      <div className="hidden justify-center print:flex">
         <img src={trevorLogo} alt="The Trevor Project" className="h-9 w-auto" />
       </div>
 
@@ -131,7 +134,7 @@ export function CompletedPlanPage() {
                   {planSections.map(({ field, label, items }) => (
                     <div key={field} className="flex flex-col gap-2 py-5 first:pt-0 last:pb-0">
                       <h3 className="text-lg font-medium text-black break-after-avoid dark:text-white">{label}</h3>
-                      <ul className="list-disc space-y-1 pl-5 text-base text-black marker:text-brand-purple dark:text-white/80 dark:marker:text-brand-purple-light">
+                      <ul className="list-disc space-y-1 pl-5 text-base text-black marker:text-brand-purple dark:text-white/80 dark:marker:text-brand-purple-light print:marker:text-[#6b6b6b]">
                         {items.map((item, index) => (
                           <li key={`${index}-${item}`} className="break-words break-inside-avoid">
                             {item}
@@ -211,13 +214,15 @@ export function CompletedPlanPage() {
               >
                 {finishedPlanContent.printLabel}
               </button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="w-56 rounded-full bg-brand-purple px-8 py-3 text-center text-base font-medium text-white transition hover:opacity-90"
-              >
-                {finishedPlanContent.shareLabel}
-              </button>
+              {SHARE_ENABLED && (
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="w-56 rounded-full bg-brand-purple px-8 py-3 text-center text-base font-medium text-white transition hover:opacity-90"
+                >
+                  {finishedPlanContent.shareLabel}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleNewPlan}
@@ -230,11 +235,12 @@ export function CompletedPlanPage() {
           </SpeakableSection>
 
           <SpeakableSection id="plan-reminder">
-          <div className="print-exact mx-auto flex w-full max-w-lg flex-col gap-6 rounded-3xl border-2 border-black bg-brand-purple-light p-8 break-inside-avoid lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none print:col-start-auto print:row-start-auto print:mx-auto print:max-w-2xl print:p-6">
+          {/* On paper the reminder is a quieter black-and-white note, as in the downloaded PDF. */}
+          <div className="mx-auto flex w-full max-w-lg flex-col gap-6 rounded-3xl border-2 border-black bg-brand-purple-light p-8 break-inside-avoid lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none print:col-start-auto print:row-start-auto print:mx-auto print:max-w-2xl print:gap-0 print:rounded-2xl print:border print:bg-white print:px-5 print:py-4">
             <img src={callIcon} alt="" className="mx-auto h-14 w-14 object-contain print:hidden" />
-            <div className="flex flex-col items-start gap-3">
-              <h2 className="text-2xl font-medium text-white">{reminderCardContent.heading}</h2>
-              <p className="text-base leading-[160%] text-white">{reminderCardContent.body}</p>
+            <div className="flex flex-col items-start gap-3 print:gap-1">
+              <h2 className="text-2xl font-medium text-white print:text-base print:text-black">{reminderCardContent.heading}</h2>
+              <p className="text-base leading-[160%] text-white print:text-sm print:text-black">{reminderCardContent.body}</p>
               <SmartLink
                 to={reminderCardContent.action.to}
                 className="inline-flex items-center gap-1 text-base font-medium text-white transition hover:opacity-80 print:hidden"

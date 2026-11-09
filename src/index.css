@@ -76,10 +76,4 @@ body {
   nav {
     display: none !important;
   }
-
-  /* Browsers drop background colors when printing unless told otherwise; brand blocks keep theirs. */
-  .print-exact {
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
 }

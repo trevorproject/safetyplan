@@ -2,26 +2,23 @@ import { jsPDF } from 'jspdf';
 import manropeRegularUrl from '../assets/fonts/Manrope-Regular.ttf?url';
 import manropeMediumUrl from '../assets/fonts/Manrope-Medium.ttf?url';
 import caveatUrl from '../assets/fonts/Caveat-Regular.ttf?url';
-// A PNG copy of the white one-line logo, cropped to the artwork: jsPDF can't read WebP, and the printed page uses the same file.
-import trevorLogoUrl from '../assets/ttp_logo_oneline_ko.png?url';
+// A black PNG of the one-line logo, cropped to the artwork: jsPDF can't read WebP, and the printed page uses the same file.
+import trevorLogoUrl from '../assets/ttp_logo_oneline_black.png?url';
 import { planSectionsFor, type CompletedPlanContent } from './planExport';
 import type { SafetyPlanData } from '../types/app';
 
-// The PDF mirrors the printed completed plan page: the orange logo band, the "Here is your plan" heading,
-// the plan inside a rounded black-bordered card with purple bullets, and the
-// purple reminder card. Sizes are in points on a US Letter page.
+// The PDF mirrors the printed completed plan page: the black logo, the "Here is your plan" heading,
+// the plan inside a rounded black-bordered card with gray bullets, and a
+// small black-and-white reminder note. Sizes are in points on a US Letter page.
 const PAGE = { width: 612, height: 792, margin: 54 };
 const CARD = { padding: 28, radius: 18, border: 2 };
 const COLORS = {
   ink: '#191919',
-  orange: '#ff5a3d',
-  purple: '#7155ff',
-  purpleLight: '#9b88ff',
   divider: '#e0e0e0',
   muted: '#6b6b6b',
 };
 const LINE_HEIGHT = 1.5;
-const LOGO = { height: 27, aspectRatio: 302 / 47, bandPadding: 15 };
+const LOGO = { height: 27, aspectRatio: 302 / 47 };
 
 const FONTS = [
   { url: manropeRegularUrl, file: 'Manrope-Regular.ttf', family: 'Manrope', style: 'normal' },
@@ -86,13 +83,9 @@ export async function buildPlanPdf(plan: SafetyPlanData, content: CompletedPlanC
   };
   const lineHeight = (size: number) => size * LINE_HEIGHT;
 
-  // The orange band with the white logo, like the app's header.
   const logoWidth = LOGO.height * LOGO.aspectRatio;
-  const bandHeight = LOGO.height + LOGO.bandPadding * 2;
-  doc.setFillColor(COLORS.orange);
-  doc.roundedRect(PAGE.margin, y, contentWidth, bandHeight, CARD.radius, CARD.radius, 'F');
-  doc.addImage(logo, 'PNG', (PAGE.width - logoWidth) / 2, y + LOGO.bandPadding, logoWidth, LOGO.height, 'trevor-logo');
-  y += bandHeight + 24;
+  doc.addImage(logo, 'PNG', (PAGE.width - logoWidth) / 2, y, logoWidth, LOGO.height, 'trevor-logo');
+  y += LOGO.height + 24;
 
   // Heading, with the script word in Caveat like on the page.
   const headingParts = [
@@ -173,7 +166,7 @@ export async function buildPlanPdf(plan: SafetyPlanData, content: CompletedPlanC
         ensureCardSpace(lineHeight(12));
         y += lineHeight(12);
         if (bullets && lineIndex === 0) {
-          doc.setFillColor(COLORS.purple);
+          doc.setFillColor(COLORS.muted);
           doc.circle(innerX + 5, y - 4, 2.2, 'F');
         }
         setText('Manrope', 'normal', 12);
@@ -195,28 +188,27 @@ export async function buildPlanPdf(plan: SafetyPlanData, content: CompletedPlanC
   doc.setPage(lastPage);
   y = cardSegments[cardSegments.length - 1].bottom + 24;
 
-  // The reminder card stays in one piece; it moves to a new page if it doesn't fit.
-  const reminderPadding = 24;
-  const reminderWidth = contentWidth - reminderPadding * 2;
-  setText('Manrope', 'normal', 12);
+  // The reminder is a small black-and-white note that stays in one piece; it moves to a new page if it doesn't fit.
+  const reminderPadding = { x: 15, y: 12 };
+  const reminderWidth = contentWidth - reminderPadding.x * 2;
+  setText('Manrope', 'normal', 10.5);
   const reminderLines = doc.splitTextToSize(reminder.body, reminderWidth) as string[];
-  const reminderHeight = reminderPadding * 2 + 18 + 10 + reminderLines.length * lineHeight(12);
+  const reminderHeight = reminderPadding.y * 2 + lineHeight(12) + 3 + reminderLines.length * lineHeight(10.5);
   if (y + reminderHeight > bottom) {
     doc.addPage();
     y = PAGE.margin;
   }
-  doc.setFillColor(COLORS.purpleLight);
   doc.setDrawColor(COLORS.ink);
-  doc.setLineWidth(CARD.border);
-  doc.roundedRect(PAGE.margin, y, contentWidth, reminderHeight, CARD.radius, CARD.radius, 'FD');
-  let reminderY = y + reminderPadding + 16;
-  setText('Manrope', 'medium', 18, '#ffffff');
-  doc.text(reminder.heading, PAGE.margin + reminderPadding, reminderY);
-  reminderY += 10;
-  setText('Manrope', 'normal', 12, '#ffffff');
+  doc.setLineWidth(0.75);
+  doc.roundedRect(PAGE.margin, y, contentWidth, reminderHeight, 12, 12, 'S');
+  let reminderY = y + reminderPadding.y + 12;
+  setText('Manrope', 'medium', 12);
+  doc.text(reminder.heading, PAGE.margin + reminderPadding.x, reminderY);
+  reminderY += 3;
+  setText('Manrope', 'normal', 10.5);
   for (const line of reminderLines) {
-    reminderY += lineHeight(12);
-    doc.text(line, PAGE.margin + reminderPadding, reminderY);
+    reminderY += lineHeight(10.5);
+    doc.text(line, PAGE.margin + reminderPadding.x, reminderY);
   }
 
   const pageCount = doc.getNumberOfPages();

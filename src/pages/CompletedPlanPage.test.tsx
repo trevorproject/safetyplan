@@ -26,7 +26,8 @@ describe('CompletedPlanPage responsiveness', () => {
       expect(screen.getByRole('button', { name: 'Toggle menu' }), `navbar missing at ${width}px`).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: reminderCardContent.heading })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.printLabel })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: finishedPlanContent.shareLabel })).toBeInTheDocument();
+      // Sharing is switched off for now (SHARE_ENABLED), so there is no Share button.
+      expect(screen.queryByRole('button', { name: finishedPlanContent.shareLabel })).not.toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.newPlanLabel })).toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: 'Footer' })).toBeInTheDocument();
     });
@@ -39,16 +40,18 @@ describe('CompletedPlanPage responsiveness', () => {
     expect(heading).toHaveFocus();
   });
 
-  it('shows The Trevor Project logo band only on the printed page', () => {
+  it('shows The Trevor Project logo only on the printed page', () => {
     renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
-    const band = within(screen.getByRole('main')).getByRole('img', { name: 'The Trevor Project' }).parentElement as HTMLElement;
-    expect(band).toHaveClass('hidden', 'print:flex', 'bg-brand-orange', 'print-exact');
+    const logo = within(screen.getByRole('main')).getByRole('img', { name: 'The Trevor Project' });
+    expect(logo.parentElement).toHaveClass('hidden', 'print:flex');
   });
 
-  it('keeps the reminder card colored and drops its on-screen-only parts when printed', () => {
+  it('prints the reminder as a small black-and-white note without its on-screen-only parts', () => {
     renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
-    const card = screen.getByRole('heading', { name: reminderCardContent.heading }).closest('.rounded-3xl') as HTMLElement;
-    expect(card).toHaveClass('print-exact', 'break-inside-avoid');
+    const heading = screen.getByRole('heading', { name: reminderCardContent.heading });
+    const card = heading.closest('.rounded-3xl') as HTMLElement;
+    expect(card).toHaveClass('print:bg-white', 'print:border', 'break-inside-avoid');
+    expect(heading).toHaveClass('print:text-black', 'print:text-base');
     expect(within(card).getByRole('link', { name: reminderCardContent.action.label })).toHaveClass('print:hidden');
   });
 
