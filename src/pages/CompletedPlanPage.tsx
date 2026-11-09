@@ -19,7 +19,7 @@ type DownloadState = { status: 'idle' } | { status: 'pending' | 'error'; format:
 const DOWNLOAD_FORMATS: DownloadFormat[] = ['pdf', 'txt'];
 
 /** Sharing is switched off for now; flip this to bring the Share button back. */
-const SHARE_ENABLED = false;
+const SHARE_ENABLED = true;
 
 export function CompletedPlanPage() {
   const { language } = useLanguage();
