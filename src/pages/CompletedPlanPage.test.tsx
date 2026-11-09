@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { screen, within } from '@testing-library/react';
 import { CompletedPlanPage } from './CompletedPlanPage';
-import { finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
+import { completedPlanHeroContent, finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
 import { loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
 import {
   atEachBreakpoint,
@@ -51,6 +51,30 @@ describe('CompletedPlanPage responsiveness', () => {
   });
 });
 
+describe('CompletedPlanPage layout', () => {
+  it('shows the plan first and the reminder after it in reading order, moving the reminder to the left column on wide screens', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.lg);
+    const printButton = screen.getByRole('button', { name: finishedPlanContent.printLabel });
+    const reminder = screen.getByRole('heading', { name: reminderCardContent.heading });
+    expect(printButton.compareDocumentPosition(reminder) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    const card = reminder.closest('.rounded-3xl') as HTMLElement;
+    expect(card).toHaveClass('lg:col-start-1', 'lg:row-start-1');
+    expect(card.parentElement?.parentElement).toHaveClass('grid', 'lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]');
+  });
+
+  it('explains how to keep the plan in a tooltip next to the intro text', async () => {
+    const user = userEvent.setup();
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByText(completedPlanHeroContent.tip)).not.toBeInTheDocument();
+
+    const trigger = screen.getByRole('button', { name: completedPlanHeroContent.tipLabel });
+    expect(trigger.closest('p')).toHaveTextContent(completedPlanHeroContent.body);
+    await user.click(trigger);
+    expect(screen.getByText(completedPlanHeroContent.tip)).toBeInTheDocument();
+  });
+});
+
 describe('CompletedPlanPage report', () => {
   it('lists what the user wrote in each section as bullets, followed by the suggestions they picked', () => {
     savePlan({
@@ -78,6 +102,29 @@ describe('CompletedPlanPage report', () => {
     expect(screen.getByText('Walking my dog around the block').tagName).toBe('LI');
     expect(screen.getByText('Remember: this feeling passes.')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Support' })).not.toBeInTheDocument();
+  });
+
+  it('shows the plan inside its own titled card', () => {
+    savePlan({
+      warningSigns: ['Crying'],
+      copingStrategies: [],
+      supports: [],
+      environment: [],
+      answers: { warningSigns: [''], copingStrategies: [''], supports: [''], environment: [''] },
+      message: 'Thank you',
+    });
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+
+    const card = screen.getByRole('article', { name: finishedPlanContent.shareSubject });
+    expect(card).toHaveClass('rounded-3xl', 'border-2');
+    expect(within(card).getByRole('heading', { name: 'Warning Signs' })).toBeInTheDocument();
+    expect(within(card).getByText('Thank you')).toBeInTheDocument();
+    expect(within(card).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('leaves the card out when there is nothing in the plan yet', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByRole('article')).not.toBeInTheDocument();
   });
 });
 

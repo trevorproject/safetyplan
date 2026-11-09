@@ -88,10 +88,12 @@ Users put the written entries of a list section in order of what matters most to
 - **Tests:** [SectionAnswerField.test.tsx](src/components/wizard/SectionAnswerField.test.tsx) checks that the controls only show with 2+ fields, up/down moves and disabled ends, focus following, the announcements, live reordering while dragging (mouse and touch, down and back up, by faking row rects since jsdom has no layout), cancel, ignored stray or non-primary pointers, and `touch-none`. [WizardPage.test.tsx](src/pages/WizardPage.test.tsx) checks that the ranked order is saved.
 
 ### 4. Completed Plan Page
-- full plan displayed in a clean, printable format
+- full plan displayed in a clean, printable format, inside its own card (an `<article>` titled "My Safety Plan" / "Mi plan de seguridad" with a white background, black border and a thin divider between sections) so it reads as a separate document from the page. The card is left out when the plan has no entries
 - print action for paper use
 - restart action for creating a new plan: "Make a new plan" / "Hacer un nuevo plan" asks for confirmation, erases the saved plan and section from sessionStorage, and reopens the wizard at the first section (`/wizard#build-plan`)
 - gentle reminder about getting support if needed
+- layout (MPI-233): on wide screens (`lg`) the plan and the "A gentle reminder" card sit side by side in a grid, the card on the left and the plan with its buttons on the right. On smaller screens they stack, with the card after the plan at the bottom of the page. The card comes after the plan in the DOM (so screen readers and the mobile layout read the plan first) and is moved into the first column with `lg:col-start-1 lg:row-start-1`
+- the "print, save as PDF or share" text is a tooltip on an info icon next to "Keep it close to you and don't forget to ask for help if you need it" (`completedPlanHeroContent.tip` / `tipLabel`). The tooltip is the reusable [InfoTooltip](src/components/common/InfoTooltip.tsx): opens on mouse hover and on tap/click/Enter/Space, closes with Escape, a second click or a tap elsewhere, is announced through a polite live region, and is hidden when printing
 
 ### 5. Admin Configuration Page
 - password-protected access for editing the app content
