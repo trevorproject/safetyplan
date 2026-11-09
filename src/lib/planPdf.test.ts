@@ -54,6 +54,11 @@ describe('buildPlanPdf', () => {
     expect(source).toMatch(/Caveat/);
   });
 
+  it('starts with The Trevor Project logo, like the printed page', async () => {
+    const source = await pdfSource(await buildPlanPdf(plan, content, 'en'));
+    expect(source).toMatch(/\/Subtype \/Image/);
+  });
+
   it('keeps the metadata to a title, with no author, subject or keywords', async () => {
     const source = await pdfSource(await buildPlanPdf(plan, content, 'en'));
     expect(source).toContain(`/Title (${finishedPlanContent.shareSubject})`);

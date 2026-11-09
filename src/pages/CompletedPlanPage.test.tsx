@@ -39,6 +39,19 @@ describe('CompletedPlanPage responsiveness', () => {
     expect(heading).toHaveFocus();
   });
 
+  it('shows The Trevor Project logo band only on the printed page', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const band = within(screen.getByRole('main')).getByRole('img', { name: 'The Trevor Project' }).parentElement as HTMLElement;
+    expect(band).toHaveClass('hidden', 'print:flex', 'bg-brand-orange', 'print-exact');
+  });
+
+  it('keeps the reminder card colored and drops its on-screen-only parts when printed', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const card = screen.getByRole('heading', { name: reminderCardContent.heading }).closest('.rounded-3xl') as HTMLElement;
+    expect(card).toHaveClass('print-exact', 'break-inside-avoid');
+    expect(within(card).getByRole('link', { name: reminderCardContent.action.label })).toHaveClass('print:hidden');
+  });
+
   it('hides the on-screen action buttons in print layout', () => {
     const { container } = renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
     expect(getClassSet(container).has('print:hidden')).toBe(true);
