@@ -5,6 +5,7 @@ import { screen, within } from '@testing-library/react';
 import { CompletedPlanPage } from './CompletedPlanPage';
 import { completedPlanHeroContent, finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
 import { loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
+import * as planExport from '../lib/planExport';
 import {
   atEachBreakpoint,
   renderResponsive,
@@ -171,5 +172,65 @@ describe('CompletedPlanPage new plan', () => {
     await user.click(screen.getByRole('button', { name: finishedPlanContent.newPlanLabel }));
     expect(loadPlan()).toEqual(savedPlan);
     expect(screen.getByRole('heading', { name: 'Warning Signs' })).toBeInTheDocument();
+  });
+});
+
+describe('CompletedPlanPage download', () => {
+  const savedPlan = {
+    warningSigns: ['Crying'],
+    copingStrategies: [],
+    supports: [],
+    environment: [],
+    answers: { warningSigns: ['I go quiet'], copingStrategies: [''], supports: [''], environment: [''] },
+    message: '',
+  };
+  const { download } = finishedPlanContent;
+
+  async function openFormats() {
+    const user = userEvent.setup();
+    savePlan(savedPlan);
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const toggle = screen.getByRole('button', { name: download.label });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    return user;
+  }
+
+  it('offers the plan as a PDF or a text file', async () => {
+    await openFormats();
+    const formats = screen.getByRole('group', { name: download.formatsLabel });
+    expect(within(formats).getAllByRole('button').map((button) => button.textContent)).toEqual([
+      download.formats.pdf,
+      download.formats.txt,
+    ]);
+  });
+
+  it('downloads the chosen format with the plan in the current language', async () => {
+    const downloadPlan = vi.spyOn(planExport, 'downloadPlan').mockResolvedValue();
+    const user = await openFormats();
+
+    await user.click(screen.getByRole('button', { name: download.formats.txt }));
+    expect(downloadPlan).toHaveBeenCalledWith('txt', savedPlan, expect.objectContaining({ finishedPlanContent }), 'en');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('shows an error with a retry for the same format when the download fails', async () => {
+    const downloadPlan = vi.spyOn(planExport, 'downloadPlan').mockRejectedValueOnce(new Error('offline'));
+    const user = await openFormats();
+
+    await user.click(screen.getByRole('button', { name: download.formats.pdf }));
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(download.error);
+
+    downloadPlan.mockResolvedValueOnce();
+    await user.click(within(alert).getByRole('button', { name: download.retryLabel }));
+    expect(downloadPlan).toHaveBeenLastCalledWith('pdf', savedPlan, expect.anything(), 'en');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('has nothing to download before the plan has any answers', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByRole('button', { name: download.label })).not.toBeInTheDocument();
   });
 });
