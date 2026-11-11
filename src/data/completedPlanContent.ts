@@ -13,7 +13,7 @@ export const completedPlanHeroContent = {
   headingTail: ' plan',
   body: "Keep it close to you and don't forget to ask for help if you need it",
   tipLabel: 'How to keep your plan',
-  tip: 'You can print this page, save it as a PDF, or share it with someone you trust when you feel ready.',
+  tip: 'You can download your plan as a PDF or text file to keep it on your device without internet, print it, or share it with someone you trust when you feel ready.',
 };
 
 export const reminderCardContent = {
@@ -30,6 +30,15 @@ export const finishedPlanContent: {
   shareSubject: string;
   newPlanLabel: string;
   newPlanConfirm: string;
+  download: {
+    label: string;
+    formatsLabel: string;
+    formats: { pdf: string; txt: string };
+    pending: string;
+    error: string;
+    retryLabel: string;
+    fileName: string;
+  };
 } = {
   sections: [
     { field: 'warningSigns', label: 'Warning Signs' },
@@ -42,7 +51,16 @@ export const finishedPlanContent: {
   shareLabel: 'Share',
   shareSubject: 'My Safety Plan',
   newPlanLabel: 'Make a new plan',
-  newPlanConfirm: 'This will erase your current plan from this device so you can start from scratch. Print or share it first if you want to keep it. Continue?',
+  newPlanConfirm: 'This will erase your current plan from this device so you can start from scratch. Download, print or share it first if you want to keep it. Continue?',
+  download: {
+    label: 'Download',
+    formatsLabel: 'Choose a file format',
+    formats: { pdf: 'PDF document (.pdf)', txt: 'Text file (.txt)' },
+    pending: 'Preparing your file…',
+    error: "We couldn't create your file. Your plan is still here, so you can try again.",
+    retryLabel: 'Try again',
+    fileName: 'safety-plan',
+  },
 };
 
 const en = { completedPlanHeroContent, reminderCardContent, finishedPlanContent };
@@ -54,7 +72,7 @@ const es: typeof en = {
     headingTail: ' plan',
     body: 'Guárdalo cerca de ti y no olvides pedir ayuda si la necesitas',
     tipLabel: 'Cómo guardar tu plan',
-    tip: 'Puedes imprimir esta página, guardarla como PDF o compartirla con alguien de confianza cuando te sientas preparadx.',
+    tip: 'Puedes descargar tu plan como PDF o archivo de texto para tenerlo en tu dispositivo sin internet, imprimirlo o compartirlo con alguien de confianza cuando te sientas preparadx.',
   },
   reminderCardContent: {
     heading: 'Un recordatorio amable',
@@ -73,7 +91,16 @@ const es: typeof en = {
     shareLabel: 'Compartir',
     shareSubject: 'Mi plan de seguridad',
     newPlanLabel: 'Hacer un nuevo plan',
-    newPlanConfirm: 'Esto borrará tu plan actual de este dispositivo para que puedas empezar desde cero. Si quieres conservarlo, imprímelo o compártelo antes. ¿Continuar?',
+    newPlanConfirm: 'Esto borrará tu plan actual de este dispositivo para que puedas empezar desde cero. Si quieres conservarlo, descárgalo, imprímelo o compártelo antes. ¿Continuar?',
+    download: {
+      label: 'Descargar',
+      formatsLabel: 'Elige un formato de archivo',
+      formats: { pdf: 'Documento PDF (.pdf)', txt: 'Archivo de texto (.txt)' },
+      pending: 'Preparando tu archivo…',
+      error: 'No pudimos crear tu archivo. Tu plan sigue aquí, así que puedes intentarlo de nuevo.',
+      retryLabel: 'Intentar de nuevo',
+      fileName: 'plan-de-seguridad',
+    },
   },
 };
 

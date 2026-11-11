@@ -1,6 +1,13 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Dark mode is screen-only: printed pages always use the light colors, like the downloaded PDF. */
+@custom-variant dark {
+  @media screen {
+    &:where(.dark, .dark *) {
+      @slot;
+    }
+  }
+}
 
 @theme {
   --font-body: 'Manrope', system-ui, sans-serif;

@@ -5,6 +5,7 @@ import { screen, within } from '@testing-library/react';
 import { CompletedPlanPage } from './CompletedPlanPage';
 import { completedPlanHeroContent, finishedPlanContent, reminderCardContent } from '../data/completedPlanContent';
 import { loadPlan, loadStep, savePlan, saveStep } from '../lib/storage';
+import * as planExport from '../lib/planExport';
 import {
   atEachBreakpoint,
   renderResponsive,
@@ -25,7 +26,8 @@ describe('CompletedPlanPage responsiveness', () => {
       expect(screen.getByRole('button', { name: 'Toggle menu' }), `navbar missing at ${width}px`).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: reminderCardContent.heading })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.printLabel })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: finishedPlanContent.shareLabel })).toBeInTheDocument();
+      // Sharing is switched off for now (SHARE_ENABLED), so there is no Share button.
+      expect(screen.queryByRole('button', { name: finishedPlanContent.shareLabel })).not.toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.newPlanLabel })).toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: 'Footer' })).toBeInTheDocument();
     });
@@ -36,6 +38,21 @@ describe('CompletedPlanPage responsiveness', () => {
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveAttribute('tabindex', '-1');
     expect(heading).toHaveFocus();
+  });
+
+  it('shows The Trevor Project logo only on the printed page', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const logo = within(screen.getByRole('main')).getByRole('img', { name: 'The Trevor Project' });
+    expect(logo.parentElement).toHaveClass('hidden', 'print:flex');
+  });
+
+  it('prints the reminder as a small black-and-white note without its on-screen-only parts', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const heading = screen.getByRole('heading', { name: reminderCardContent.heading });
+    const card = heading.closest('.rounded-3xl') as HTMLElement;
+    expect(card).toHaveClass('print:bg-white', 'print:border', 'break-inside-avoid');
+    expect(heading).toHaveClass('print:text-black', 'print:text-base');
+    expect(within(card).getByRole('link', { name: reminderCardContent.action.label })).toHaveClass('print:hidden');
   });
 
   it('hides the on-screen action buttons in print layout', () => {
@@ -171,5 +188,65 @@ describe('CompletedPlanPage new plan', () => {
     await user.click(screen.getByRole('button', { name: finishedPlanContent.newPlanLabel }));
     expect(loadPlan()).toEqual(savedPlan);
     expect(screen.getByRole('heading', { name: 'Warning Signs' })).toBeInTheDocument();
+  });
+});
+
+describe('CompletedPlanPage download', () => {
+  const savedPlan = {
+    warningSigns: ['Crying'],
+    copingStrategies: [],
+    supports: [],
+    environment: [],
+    answers: { warningSigns: ['I go quiet'], copingStrategies: [''], supports: [''], environment: [''] },
+    message: '',
+  };
+  const { download } = finishedPlanContent;
+
+  async function openFormats() {
+    const user = userEvent.setup();
+    savePlan(savedPlan);
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    const toggle = screen.getByRole('button', { name: download.label });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    return user;
+  }
+
+  it('offers the plan as a PDF or a text file', async () => {
+    await openFormats();
+    const formats = screen.getByRole('group', { name: download.formatsLabel });
+    expect(within(formats).getAllByRole('button').map((button) => button.textContent)).toEqual([
+      download.formats.pdf,
+      download.formats.txt,
+    ]);
+  });
+
+  it('downloads the chosen format with the plan in the current language', async () => {
+    const downloadPlan = vi.spyOn(planExport, 'downloadPlan').mockResolvedValue();
+    const user = await openFormats();
+
+    await user.click(screen.getByRole('button', { name: download.formats.txt }));
+    expect(downloadPlan).toHaveBeenCalledWith('txt', savedPlan, expect.objectContaining({ finishedPlanContent }), 'en');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('shows an error with a retry for the same format when the download fails', async () => {
+    const downloadPlan = vi.spyOn(planExport, 'downloadPlan').mockRejectedValueOnce(new Error('offline'));
+    const user = await openFormats();
+
+    await user.click(screen.getByRole('button', { name: download.formats.pdf }));
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(download.error);
+
+    downloadPlan.mockResolvedValueOnce();
+    await user.click(within(alert).getByRole('button', { name: download.retryLabel }));
+    expect(downloadPlan).toHaveBeenLastCalledWith('pdf', savedPlan, expect.anything(), 'en');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('has nothing to download before the plan has any answers', () => {
+    renderResponsive(<CompletedPlanPage />, BREAKPOINTS.md);
+    expect(screen.queryByRole('button', { name: download.label })).not.toBeInTheDocument();
   });
 });
