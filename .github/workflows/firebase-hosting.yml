@@ -1,11 +1,15 @@
 name: Deploy to Firebase Hosting
 
+# Pull request -> per-PR preview for code review (7 days)
+# Merge to main -> "qa" preview channel for QA (30 days)
+# Published GitHub release -> live (production) site
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  push:
+    branches: [main]
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -14,7 +18,8 @@ permissions:
 
 concurrency:
   group: firebase-hosting-${{ github.ref }}
-  cancel-in-progress: true
+  # Only cancel superseded PR runs; never interrupt a QA or live deploy
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build-and-deploy:
@@ -41,8 +46,8 @@ jobs:
       - run: npm test
       - run: npm run build
 
-      # Pull requests: deploy to a temporary preview channel and comment the URL on the PR
-      - name: Deploy preview
+      # Code review: temporary preview for this PR; the URL is commented on the PR
+      - name: Deploy PR preview
         if: github.event_name == 'pull_request'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -51,9 +56,20 @@ jobs:
           projectId: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
           expires: 7d
 
-      # Push to main / manual run: deploy to the live site
+      # QA: every merge to main redeploys the fixed "qa" channel (same URL, expiry resets to 30 days)
+      - name: Deploy QA preview
+        if: github.event_name == 'push'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          channelId: qa
+          expires: 30d
+
+      # Production: only when a GitHub release is published
       - name: Deploy live
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'release'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
