@@ -26,8 +26,7 @@ describe('CompletedPlanPage responsiveness', () => {
       expect(screen.getByRole('button', { name: 'Toggle menu' }), `navbar missing at ${width}px`).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: reminderCardContent.heading })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.printLabel })).toBeInTheDocument();
-      // Sharing is switched off for now (SHARE_ENABLED), so there is no Share button.
-      expect(screen.queryByRole('button', { name: finishedPlanContent.shareLabel })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: finishedPlanContent.shareLabel })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: finishedPlanContent.newPlanLabel })).toBeInTheDocument();
       expect(screen.getByRole('navigation', { name: 'Footer' })).toBeInTheDocument();
     });
