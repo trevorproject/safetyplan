@@ -16,9 +16,21 @@
   --color-brand-orange: #ff5a3d;
   --color-brand-purple: #7155ff;
   --color-brand-purple-light: #9b88ff;
+  /* Links on white: 7.85:1 contrast, where brand-purple only reaches 4.72:1. */
+  --color-brand-purple-dark: #4b2fd6;
   --color-brand-gray: #f2f2f2;
   --color-brand-gray-button: #b2b2b2;
   --color-brand-ink: #191919;
+}
+
+/* Script words inside regular text. Caveat's x-height (0.40em) is much smaller than
+   Manrope's (0.54em), so at the same font-size it looks tiny; 1.25em evens them out.
+   Being relative to the surrounding text, it scales with it at every breakpoint. */
+@utility font-script-inline {
+  font-family: var(--font-script);
+  font-size: 1.25em;
+  font-weight: 400;
+  line-height: 1;
 }
 
 :root {

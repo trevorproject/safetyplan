@@ -30,6 +30,13 @@ describe('IntroSection responsiveness', () => {
     expectAdaptsAt(container, ['sm', 'lg']);
   });
 
+  it('sizes the script word relative to the heading so it scales with it', () => {
+    renderResponsive(<IntroSection />, BREAKPOINTS.xs);
+    const script = screen.getByText(introContent.headingEmphasis);
+    expect(script).toHaveClass('font-script-inline');
+    expect(script.className).not.toMatch(/text-\[\d+px\]/);
+  });
+
   it('grows the media placeholder from mobile to desktop height', () => {
     const { container } = renderResponsive(<IntroSection />, BREAKPOINTS.lg);
     const classes = getClassSet(container);

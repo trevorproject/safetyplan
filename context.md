@@ -122,6 +122,10 @@ Users put the written entries of a list section in order of what matters most to
 - no shame-based or overly clinical language
 - calm visual design informed by the Figma prototype
 
+### Typography and Free Resources readability (MPI-249)
+- **Script words inside regular text** (Caveat next to Manrope, e.g. "Create *your* safety plan") use the `font-script-inline` utility from [index.css](src/index.css): `font-size: 1.25em`, `line-height: 1`. Caveat's x-height is 0.40em against Manrope's 0.54em, so at the same size it looks tiny; 1.25em evens it out, and being relative it scales with the surrounding text at every breakpoint. Never give these spans their own `text-*` size. Standalone script text (feature headings, the script `PillButton`) keeps `font-script`. The PDF uses the same ratio (Caveat 35pt in a 28pt heading).
+- **Free Resources** ([FreeResources.tsx](src/components/resources/FreeResources.tsx)): black on `brand-purple` was 4.45:1 (fails AA), so the section heading and lead are white (4.72:1) and every resource (Trevor, 988, Firestore ones) sits on its own card: `brand-ink` on white (17.6:1) or white on `neutral-900` in dark mode. Card links are underlined and use `brand-purple-dark` (`#4b2fd6`, 7.85:1 on white) or `brand-purple-light` in dark mode (6.28:1 on neutral-900), with a visible focus outline.
+
 ## Multilanguage (English / Spanish)
 Every page, including the accessibility panel and the admin page, is available in English (`en`) and Spanish (`es`). The user can switch at any moment from the **Language / Idioma** dropdown in the desktop navbar or from the mobile menu, and the admin page has its own language toggle that also selects which language's content is being edited.
 

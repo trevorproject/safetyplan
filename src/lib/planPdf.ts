@@ -90,7 +90,7 @@ export async function buildPlanPdf(plan: SafetyPlanData, content: CompletedPlanC
   // Heading, with the script word in Caveat like on the page.
   const headingParts = [
     { text: hero.headingLead, family: 'Manrope', style: 'medium', size: 28 },
-    { text: hero.headingScript, family: 'Caveat', style: 'normal', size: 34 },
+    { text: hero.headingScript, family: 'Caveat', style: 'normal', size: 35 }, // 1.25em, like font-script-inline
     { text: hero.headingTail, family: 'Manrope', style: 'medium', size: 28 },
   ];
   const widths = headingParts.map(({ text, family, style, size }) => {

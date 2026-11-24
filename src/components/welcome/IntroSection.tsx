@@ -12,7 +12,7 @@ export function IntroSection() {
         <div className="flex w-full max-w-[768px] flex-col items-center gap-8 text-center">
           <h1 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black dark:text-white sm:text-4xl lg:text-[52px]">
             {headingBefore}
-            <span className="font-script text-[60px] font-normal leading-none">{introContent.headingEmphasis}</span>
+            <span className="font-script-inline">{introContent.headingEmphasis}</span>
             {headingAfter}
           </h1>
           <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl">{introContent.body}</p>
