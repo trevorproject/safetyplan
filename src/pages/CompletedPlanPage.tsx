@@ -102,7 +102,7 @@ export function CompletedPlanPage() {
             className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black outline-none dark:text-white sm:text-4xl lg:text-[52px] print:text-4xl"
           >
             {completedPlanHeroContent.headingLead}
-            <span className="font-script">{completedPlanHeroContent.headingScript}</span>
+            <span className="font-script-inline">{completedPlanHeroContent.headingScript}</span>
             {completedPlanHeroContent.headingTail}
           </h1>
           <p className="text-lg leading-[160%] text-black dark:text-white/80 lg:text-2xl print:text-base">

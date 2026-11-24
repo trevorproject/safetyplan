@@ -42,6 +42,42 @@ describe('FreeResources responsiveness', () => {
   });
 });
 
+describe('FreeResources readability', () => {
+  it('uses white text on the purple section instead of black', () => {
+    renderResponsive(<FreeResources />, BREAKPOINTS.lg);
+    const heading = screen.getByRole('heading', { name: freeResourcesContent.heading });
+    expect(heading).toHaveClass('text-white');
+    expect(heading).not.toHaveClass('text-black');
+    expect(screen.getByText(freeResourcesContent.textScript).closest('p')).toHaveClass('text-white');
+  });
+
+  it('sizes the script words relative to the text around them', () => {
+    renderResponsive(<FreeResources />, BREAKPOINTS.lg);
+    for (const text of [freeResourcesContent.textScript, trevorCard.textScript]) {
+      const script = screen.getByText(text);
+      expect(script).toHaveClass('font-script-inline');
+      expect(script.className).not.toMatch(/text-(lg|xl|2xl|\[)/);
+    }
+  });
+
+  it('puts every resource on its own light card with underlined, high-contrast links', async () => {
+    window.localStorage.setItem(REGION_STORAGE_KEY, 'us');
+    vi.mocked(getDocs).mockResolvedValue({
+      docs: [{ id: 'us', data: () => ({ region: 'US', isActive: true, name: 'US line', url: 'https://us.example.org' }) }],
+    } as never);
+    renderResponsive(<FreeResources />, BREAKPOINTS.lg);
+
+    const headings = [trevorCard.heading, lifelineCard.heading, 'US line'];
+    await screen.findByRole('heading', { name: 'US line' });
+    for (const name of headings) {
+      const card = screen.getByRole('heading', { name }).closest('div.rounded-\\[32px\\], li')!;
+      expect(card, `card for ${name}`).toHaveClass('bg-white', 'text-brand-ink', 'dark:bg-neutral-900');
+      const link = card.querySelector('a')!;
+      expect(link).toHaveClass('underline', 'text-brand-purple-dark', 'dark:text-brand-purple-light');
+    }
+  });
+});
+
 describe('FreeResources region resources', () => {
   beforeEach(() => {
     window.localStorage.clear();

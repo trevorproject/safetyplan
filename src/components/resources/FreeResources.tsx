@@ -8,6 +8,17 @@ import { useLanguage } from '../../context/language';
 import { formatPhoneNumber, toTelHref } from '../../lib/locale';
 import { pickText, toAppRegion, useResources } from '../../hooks/useResources';
 
+// Light cards on the purple section keep every resource easy to tell apart. Text on
+// the cards is brand-ink on white (17.6:1) or white on neutral-900 in dark mode, and
+// links are underlined in a purple that passes AA on the card (7.85:1 / 6.28:1).
+const CARD_CLASS =
+  'flex w-full flex-col overflow-hidden rounded-[32px] bg-white text-brand-ink shadow-lg ring-1 ring-black/5 dark:bg-neutral-900 dark:text-white dark:ring-white/10';
+const CARD_BODY_CLASS = 'flex w-full flex-1 flex-col items-start gap-6 p-6 lg:p-8';
+const CARD_HEADING_CLASS = 'text-xl font-medium leading-[140%] tracking-[0.01em] sm:text-2xl lg:text-[28px]';
+const CARD_TEXT_CLASS = 'text-lg leading-[160%] text-brand-ink/90 dark:text-white/85';
+const CARD_LINK_CLASS =
+  'mt-auto inline-flex items-center gap-2 rounded text-lg font-semibold leading-[160%] text-brand-purple-dark underline decoration-2 underline-offset-4 transition hover:decoration-transparent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-purple-dark dark:text-brand-purple-light dark:focus-visible:outline-brand-purple-light';
+
 export function FreeResources() {
   const { freeResourcesContent, lifelineCard, trevorCard } = useResourcesContent();
   const { region } = useRegion();
@@ -16,40 +27,35 @@ export function FreeResources() {
 
   return (
     <section className="flex flex-col items-center gap-20 bg-brand-purple px-6 pb-16 pt-[24px] lg:px-16 lg:pb-28">
-      <div className="flex w-full max-w-[1280px] flex-col items-start gap-20">
+      <div className="flex w-full max-w-[1280px] flex-col items-start gap-12 lg:gap-16">
         <div className="flex w-full max-w-[768px] flex-col items-start gap-4">
-          <div className="flex flex-col items-start gap-12">
-            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-black sm:text-4xl lg:text-[52px]">
+          <div className="flex flex-col items-start gap-6 lg:gap-8">
+            <h2 className="text-3xl font-medium leading-[120%] tracking-[0.01em] text-white sm:text-4xl lg:text-[52px]">
               {freeResourcesContent.heading}
             </h2>
-            <p className="text-lg leading-[160%] text-black lg:text-2xl">
+            <p className="text-lg leading-[160%] text-white lg:text-2xl">
               {freeResourcesContent.textLead}{' '}
-              <span className="font-script text-lg lg:text-2xl">{freeResourcesContent.textScript}</span>
+              <span className="font-script-inline">{freeResourcesContent.textScript}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-start gap-16 lg:flex-row">
-          <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-8">
+        <div className="flex w-full flex-col items-stretch gap-8 lg:flex-row">
+          <div className={`${CARD_CLASS} max-w-[608px] flex-1 lg:max-w-none`}>
             <img
               src={learnTogetherIllustration}
               alt={freeResourcesContent.learnTogetherImageAlt}
-              className="h-[405px] w-full rounded-[40px] object-cover"
+              className="h-[240px] w-full object-cover sm:h-[320px] lg:h-[405px]"
               loading="lazy"
             />
-            <div className="flex w-full flex-col items-start gap-6">
+            <div className={CARD_BODY_CLASS}>
               <div className="flex flex-col items-start gap-4">
-                <h3 className="text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
-                  {trevorCard.heading}
-                </h3>
-                <p className="text-xl leading-[160%] text-black">
-                  <span className="font-script">{trevorCard.textScript}</span> {trevorCard.textRest}
+                <h3 className={CARD_HEADING_CLASS}>{trevorCard.heading}</h3>
+                <p className={CARD_TEXT_CLASS}>
+                  <span className="font-script-inline">{trevorCard.textScript}</span> {trevorCard.textRest}
                 </p>
               </div>
-              <SmartLink
-                to={trevorCard.action.to}
-                className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
-              >
+              <SmartLink to={trevorCard.action.to} className={CARD_LINK_CLASS}>
                 {trevorCard.action.label}
                 <ChevronRightIcon className="h-6 w-6" />
               </SmartLink>
@@ -58,24 +64,19 @@ export function FreeResources() {
 
           {/* 988 only works in the United States. */}
           {region === 'us' && (
-            <div className="flex w-full max-w-[608px] flex-1 flex-col items-center gap-0.5">
+            <div className={`${CARD_CLASS} max-w-[608px] flex-1 lg:max-w-none`}>
               <img
                 src={lifelineImage}
                 alt={lifelineCard.imageAlt}
-                className="h-[189px] w-full rounded-[40px] object-cover"
+                className="h-[189px] w-full object-cover"
                 loading="lazy"
               />
-              <div className="flex w-full flex-col items-start gap-6 pt-6">
+              <div className={CARD_BODY_CLASS}>
                 <div className="flex flex-col items-start gap-4">
-                  <h3 className="text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
-                    {lifelineCard.heading}
-                  </h3>
-                  <p className="text-lg leading-[160%] text-black">{lifelineCard.text}</p>
+                  <h3 className={CARD_HEADING_CLASS}>{lifelineCard.heading}</h3>
+                  <p className={CARD_TEXT_CLASS}>{lifelineCard.text}</p>
                 </div>
-                <SmartLink
-                  to={lifelineCard.action.to}
-                  className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
-                >
+                <SmartLink to={lifelineCard.action.to} className={CARD_LINK_CLASS}>
                   {lifelineCard.action.label}
                   <ChevronRightIcon className="h-6 w-6" />
                 </SmartLink>
@@ -87,47 +88,42 @@ export function FreeResources() {
         {/* The user's region first, then the international fallback (already
             sorted that way by useResources). */}
         {resources.length > 0 && (
-          <ul className="grid w-full grid-cols-1 gap-16 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
             {resources.map((resource) => {
               const phoneRegion = toAppRegion(resource.region);
               const name = pickText(resource.name, language);
               const description = pickText(resource.description, language);
               return (
-                <li key={resource.id} className="flex w-full flex-col items-center gap-6">
+                <li key={resource.id} className={CARD_CLASS}>
                   {resource.imageUrl && (
                     <img
                       src={resource.imageUrl}
                       alt={name}
                       width={608}
                       height={405}
-                      className="aspect-[608/405] h-auto w-full rounded-[40px] object-cover"
+                      className="aspect-[608/405] h-auto w-full object-cover"
                     />
                   )}
-                  <div className="flex w-full flex-col items-start gap-6">
+                  <div className={CARD_BODY_CLASS}>
                     <div className="flex w-full flex-col items-start gap-4">
-                      <h3 className="w-full text-center text-2xl font-medium leading-[140%] tracking-[0.01em] text-black lg:text-[36px]">
-                        {name}
-                      </h3>
-                      {description && <p className="text-lg leading-[160%] text-black">{description}</p>}
+                      <h3 className={`w-full text-center ${CARD_HEADING_CLASS}`}>{name}</h3>
+                      {description && <p className={CARD_TEXT_CLASS}>{description}</p>}
                     </div>
-                    {resource.url && (
-                      <SmartLink
-                        to={resource.url}
-                        className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
-                      >
-                        {lifelineCard.action.label}
-                        <ChevronRightIcon className="h-6 w-6" />
-                      </SmartLink>
-                    )}
-                    {resource.phone && (
-                      <a
-                        href={toTelHref(resource.phone, phoneRegion)}
-                        className="inline-flex items-center gap-2 text-lg leading-[160%] text-black transition hover:opacity-80"
-                      >
-                        {formatPhoneNumber(resource.phone, phoneRegion)}
-                        <ChevronRightIcon className="h-6 w-6" />
-                      </a>
-                    )}
+                    {/* mt-auto keeps the actions at the bottom of every card in a row. */}
+                    <div className="mt-auto flex flex-col items-start gap-3">
+                      {resource.url && (
+                        <SmartLink to={resource.url} className={CARD_LINK_CLASS}>
+                          {lifelineCard.action.label}
+                          <ChevronRightIcon className="h-6 w-6" />
+                        </SmartLink>
+                      )}
+                      {resource.phone && (
+                        <a href={toTelHref(resource.phone, phoneRegion)} className={CARD_LINK_CLASS}>
+                          {formatPhoneNumber(resource.phone, phoneRegion)}
+                          <ChevronRightIcon className="h-6 w-6" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </li>
               );
